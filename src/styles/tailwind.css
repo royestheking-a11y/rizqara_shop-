@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+    --font-sans: "Hind Siliguri", sans-serif;
+    --font-serif: "Hind Siliguri", serif;
+}
