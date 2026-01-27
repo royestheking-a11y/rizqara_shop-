@@ -13,7 +13,7 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'service-worker.js',
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'pwa-icon-192.png', 'pwa-icon-512.png', 'categories/*.png'],
       manifest: {
         name: 'RizQara Shop',
         short_name: 'RizQara',
