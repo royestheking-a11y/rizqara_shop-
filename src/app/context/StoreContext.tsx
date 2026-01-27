@@ -492,7 +492,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const socketRef = useRef<any>(null);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:5001');
+    // Derive Socket URL from API_URL
+    // API_URL is guaranteed to be like "https://domain.com/api" or "http://localhost:5000/api"
+    // We want "https://domain.com" or "http://localhost:5000"
+    const socketUrl = API_URL.replace(/\/api\/??$/, '');
+    socketRef.current = io(socketUrl);
 
     socketRef.current.on('connect', () => {
       console.log('Connected to socket server');
