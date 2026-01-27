@@ -270,7 +270,7 @@ export const AdminProducts = () => {
                                         <label className="block text-sm font-semibold text-gray-700">{t('শিরোনাম (বাংলা)', 'Title (Bangla)')} *</label>
                                         <AutoTranslator
                                             sourceText={formData.title_en}
-                                            onTranslate={(translated) => setFormData(prev => ({ ...prev, title_bn: translated }))}
+                                            onTranslate={(translated) => setFormData((prev: any) => ({ ...prev, title_bn: translated }))}
                                         />
                                     </div>
                                     <input
@@ -390,7 +390,7 @@ export const AdminProducts = () => {
                                         <label className="block text-sm font-semibold text-gray-700">{t('বিবরণ (বাংলা)', 'Description (Bangla)')} *</label>
                                         <AutoTranslator
                                             sourceText={formData.desc_en}
-                                            onTranslate={(translated) => setFormData(prev => ({ ...prev, desc_bn: translated }))}
+                                            onTranslate={(translated) => setFormData((prev: any) => ({ ...prev, desc_bn: translated }))}
                                         />
                                     </div>
                                     <textarea

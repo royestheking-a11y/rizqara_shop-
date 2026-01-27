@@ -74,7 +74,7 @@ export const AdminMessages = () => {
   };
 
   // Group messages by User AND Context
-  const threads = messages.reduce((acc, msg) => {
+  const threads = messages.reduce((acc: Record<string, { userId: string, context: string, messages: Message[], unreadCount: number, lastMessage: Message }>, msg) => {
     if (msg.senderId === 'admin' || msg.senderId === 'admin_1') return acc;
 
     const userId = msg.senderId;
@@ -260,8 +260,8 @@ export const AdminMessages = () => {
                   setShowContextDrawer(false);
                 }}
                 className={`p-4 border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition relative ${selectedThread?.userId === thread.userId && selectedThread?.context === thread.context
-                    ? 'bg-pink-50/50 border-l-4 border-l-[#D91976]'
-                    : 'border-l-4 border-l-transparent'
+                  ? 'bg-pink-50/50 border-l-4 border-l-[#D91976]'
+                  : 'border-l-4 border-l-transparent'
                   }`}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -355,8 +355,8 @@ export const AdminMessages = () => {
                 activeMessages.map(msg => (
                   <div key={msg.id} className={`flex ${msg.senderId === 'admin' || msg.senderId === 'admin_1' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[70%] sm:max-w-[60%] p-3 rounded-2xl text-sm shadow-sm ${msg.senderId === 'admin' || msg.senderId === 'admin_1'
-                        ? 'bg-[#D91976] text-white rounded-br-none'
-                        : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
+                      ? 'bg-[#D91976] text-white rounded-br-none'
+                      : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
                       }`}>
                       <p className="whitespace-pre-wrap break-words">{msg.text}</p>
                       <p className={`text-[10px] mt-1 text-right ${msg.senderId === 'admin' || msg.senderId === 'admin_1' ? 'text-pink-200' : 'text-gray-400'}`}>
@@ -511,8 +511,8 @@ export const AdminMessages = () => {
                           <div className="flex justify-between items-start mb-1">
                             <span className="text-xs font-mono font-bold text-gray-700">{order.invoiceNo}</span>
                             <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${order.status === 'delivered' ? 'bg-pink-100 text-pink-700' :
-                                order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                                  'bg-yellow-100 text-yellow-700'
+                              order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                                'bg-yellow-100 text-yellow-700'
                               }`}>
                               {order.status}
                             </span>

@@ -208,7 +208,7 @@ export interface OTPState {
   email: string;
   type: 'signup' | 'reset';
   expiration: number;
-  pendingData?: any; // To store name/password during signup flow
+  pendingData?: { name?: string; email?: string; password?: string; phone?: string }; // typed pending data
 }
 
 
@@ -355,7 +355,7 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
-export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }: { children: React.ReactNode }) => {
   // State
   // State with lazy initialization to prevent data loss on refresh/tab open
   const [language, setLanguage] = useState<Language>(() => (localStorage.getItem('rizqara_lang') as Language) || 'bn');
@@ -489,7 +489,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     socketRef.current.on('receive_message', (message: Message) => {
-      setMessages((prev) => [...prev, message]);
+      setMessages((prev: Message[]) => [...prev, message]);
       toast.info('New message received');
     });
 
@@ -525,7 +525,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const updateOrderTotal = (orderId: string, total: number) => {
-    setOrders(prev => prev.map(o => {
+    setOrders((prev: Order[]) => prev.map((o: Order) => {
       if (o.id === orderId) {
         // Also update notification
         const notification: Notification = {
@@ -540,7 +540,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           timestamp: new Date().toISOString(),
           link: '/account/profile'
         };
-        setNotifications(n => [notification, ...n]);
+        setNotifications((n: Notification[]) => [notification, ...n]);
 
         // Sync with backend
         const token = localStorage.getItem('rizqara_token');
@@ -799,7 +799,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const logout = () => {
     // Persist cart to user object in mock DB
     if (user) {
-      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, cart: cart } : u));
+      setUsers((prev: User[]) => prev.map((u: User) => u.id === user.id ? { ...u, cart: cart } : u));
     }
     setUser(null);
     setCart([]);
@@ -809,18 +809,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const banUser = (userId: string, reason: string) => {
-    setUsers(users.map(u => u.id === userId ? { ...u, isBanned: true, bannedReason: reason } : u));
+    setUsers(users.map((u: User) => u.id === userId ? { ...u, isBanned: true, bannedReason: reason } : u));
     toast.success('User banned');
   };
 
   const unbanUser = (userId: string) => {
-    setUsers(users.map(u => u.id === userId ? { ...u, isBanned: false, bannedReason: undefined } : u));
+    setUsers(users.map((u: User) => u.id === userId ? { ...u, isBanned: false, bannedReason: undefined } : u));
     toast.success('User unbanned');
   };
 
   const deleteUser = (userId: string) => {
     // Soft delete
-    setUsers(users.map(u => u.id === userId ? { ...u, isDeleted: true } : u));
+    setUsers(users.map((u: User) => u.id === userId ? { ...u, isDeleted: true } : u));
     toast.success('User account deleted');
   };
 
@@ -836,7 +836,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const updatedData = await apiCall('/auth/profile', 'PUT', data, token || undefined);
 
       setUser(updatedData);
-      setUsers(users.map(u => u.id === user.id ? updatedData : u));
+      setUsers(users.map((u: User) => u.id === user.id ? updatedData : u));
 
       // Update local storage
       localStorage.setItem('rizqara_user', JSON.stringify(updatedData));
@@ -889,7 +889,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
 
       const newProd = await apiCall('/products', 'POST', formData, token || undefined);
-      setProducts(prev => [...prev, newProd]);
+      setProducts((prev: Product[]) => [...prev, newProd]);
       toast.success(t('পণ্য সফলভাবে যোগ করা হয়েছে', 'Product added successfully'));
     } catch (error: any) {
       console.error(error);
@@ -905,7 +905,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Remove File object if present in images (should handle upload separately if needed, 
       // but assuming images are already URLs here or handled by separate upload logic)
       const data = await apiCall(`/products/${updatedProduct.id}`, 'PUT', updatedProduct);
-      setProducts(prev => prev.map(p => p.id === updatedProduct.id ? data : p));
+      setProducts((prev: Product[]) => prev.map((p: Product) => p.id === updatedProduct.id ? data : p));
       toast.success(t('পণ্য আপডেট করা হয়েছে', 'Product updated successfully'));
     } catch (error: any) {
       toast.error(error.message || 'Failed to update product');
@@ -918,7 +918,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       setIsLoading(true);
       await apiCall(`/products/${productId}`, 'DELETE');
-      setProducts(prev => prev.filter(p => p.id !== productId));
+      setProducts((prev: Product[]) => prev.filter((p: Product) => p.id !== productId));
       toast.success(t('পণ্য মুছে ফেলা হয়েছে', 'Product deleted successfully'));
     } catch (error: any) {
       toast.error(error.message || 'Failed to delete product');
@@ -948,7 +948,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const removeFromCart = (cartId: string) => {
-    setCart(cart.filter(item => item.cartId !== cartId));
+    setCart(cart.filter((item: CartItem) => item.cartId !== cartId));
     toast.info(t('কার্ট থেকে সরানো হয়েছে', 'Removed from cart'));
   };
 
@@ -957,7 +957,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       removeFromCart(cartId);
       return;
     }
-    setCart(cart.map(item => (item.cartId === cartId ? { ...item, quantity } : item)));
+    setCart(cart.map((item: CartItem) => (item.cartId === cartId ? { ...item, quantity } : item)));
   };
 
   const clearCart = () => {
@@ -978,7 +978,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       read: false,
       timestamp: new Date().toISOString(),
     };
-    setNotifications(prev => [notif, ...prev]);
+    setNotifications((prev: Notification[]) => [notif, ...prev]);
   };
 
   // Send Order Email
@@ -1004,13 +1004,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const templateId = type === 'confirm' ? EMAILJS_TEMPLATE_ORDER_CONFIRM : EMAILJS_TEMPLATE_ORDER_DELIVERED;
 
     // Calculate subtotal and discount (approximate for display if not stored directly)
-    const subtotal = order.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const subtotal = order.items.reduce((acc: number, item: CartItem) => acc + (item.price * item.quantity), 0);
     const discount = subtotal + order.deliveryFee - order.total; // Re-calculate based on total
 
     const formattedDate = new Date(order.date).toLocaleDateString();
 
     // Format items for email
-    const itemsList = order.items.map(item =>
+    const itemsList = order.items.map((item: CartItem) =>
       `${item.title_en} x ${item.quantity} - ৳${item.price * item.quantity}`
     ).join('\n');
 
@@ -1061,7 +1061,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const token = localStorage.getItem('rizqara_token');
       const response = await apiCall('/orders', 'POST', { ...orderData, userId: user.id }, token || undefined);
 
-      setOrders(prev => [...prev, response]);
+      setOrders((prev: Order[]) => [...prev, response]);
 
       // Update local cart if needed (or backend handles it)
       // If order successful, clear cart
@@ -1081,7 +1081,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 
   const updateOrderStatus = (orderId: string, status: Order['status'], trackingCode?: string) => {
-    setOrders(orders.map(o => {
+    setOrders(orders.map((o: Order) => {
       if (o.id === orderId) {
         let history = [...o.trackingHistory, { status, date: new Date().toISOString(), note: trackingCode ? `Tracking: ${trackingCode}` : undefined }];
         let paymentStatus = o.paymentStatus;
@@ -1098,7 +1098,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // Fraud Protection Logic
         if (status === 'cancelled') {
           const uId = o.userId;
-          setUsers(currentUsers => currentUsers.map(u => {
+          setUsers((currentUsers: User[]) => currentUsers.map((u: User) => {
             if (u.id === uId) {
               const newFailedCount = (u.failedDeliveries || 0) + 1;
               const shouldBan = newFailedCount >= 5;
@@ -1124,7 +1124,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Send emails based on status
     if (status === 'delivered' || status === 'confirmed') {
-      const targetOrder = orders.find(o => o.id === orderId);
+      const targetOrder = orders.find((o: Order) => o.id === orderId);
       if (targetOrder) {
         // Use updated values for the email
         const updatedOrdr = { ...targetOrder, status, trackingCode: trackingCode || targetOrder.trackingCode };
@@ -1136,7 +1136,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateOrderConsigneeInfo = (orderId: string, confirmation: boolean, note: string) => {
-    setOrders(orders.map(o => {
+    setOrders(orders.map((o: Order) => {
       if (o.id === orderId) {
         return { ...o, consigneeConfirmation: confirmation, consigneeNote: note };
       }
@@ -1146,7 +1146,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const verifyPayment = (orderId: string, verified: boolean) => {
-    setOrders(prev => prev.map(o => {
+    setOrders((prev: Order[]) => prev.map((o: Order) => {
       if (o.id === orderId) {
         const newPaymentStatus = verified ? 'verified' : 'failed';
         let status = o.status;
@@ -1169,7 +1169,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteOrder = (orderId: string) => {
-    setOrders(prev => prev.filter(o => o.id !== orderId));
+    setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== orderId));
     toast.success('Order deleted');
   };
 
@@ -1178,7 +1178,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const requestRefund = (orderId: string, reason: string, paymentNumber?: string) => {
-    setOrders(orders.map(o => {
+    setOrders(orders.map((o: Order) => {
       if (o.id === orderId) {
         const history = [...o.trackingHistory, { status: 'refund-requested', date: new Date().toISOString(), note: `Refund requested: ${reason}` }];
 
@@ -1194,7 +1194,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const processRefund = (orderId: string, approved: boolean, refundPaymentNumber?: string) => {
-    setOrders(orders.map(o => {
+    setOrders(orders.map((o: Order) => {
       if (o.id === orderId) {
         const newStatus = approved ? 'refunded' : 'cancelled';
         const history = [...o.trackingHistory, { status: newStatus, date: new Date().toISOString(), note: approved ? 'Refund Approved' : 'Refund Rejected' }];
@@ -1211,18 +1211,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const updateUserAddress = (address: Address) => {
     if (!user) return;
-    setUser(prev => {
+    setUser((prev: User | null) => {
       if (!prev) return prev;
-      const existingIndex = prev.addresses.findIndex(a => a.id === address.id);
+      const existingIndex = prev.addresses.findIndex((a: Address) => a.id === address.id);
       let newAddresses;
       if (existingIndex >= 0) {
-        newAddresses = prev.addresses.map(a => a.id === address.id ? address : a);
+        newAddresses = prev.addresses.map((a: Address) => a.id === address.id ? address : a);
       } else {
         newAddresses = [...prev.addresses, address];
       }
       // If this is set as default, unset others
       if (address.isDefault) {
-        newAddresses = newAddresses.map(a => ({ ...a, isDefault: a.id === address.id }));
+        newAddresses = newAddresses.map((a: Address) => ({ ...a, isDefault: a.id === address.id }));
       }
       return { ...prev, addresses: newAddresses };
     });
@@ -1262,12 +1262,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const getMessagesForUser = (userId: string) => {
-    return messages.filter(m => m.senderId === userId || m.receiverId === userId)
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    return messages.filter((m: Message) => m.senderId === userId || m.receiverId === userId)
+      .sort((a: Message, b: Message) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   };
 
   const markMessagesAsRead = (userId: string) => {
-    setMessages(messages.map(m => {
+    setMessages(messages.map((m: Message) => {
       if (m.receiverId === userId && !m.read) {
         return { ...m, read: true };
       }
@@ -1276,7 +1276,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteMessage = (messageId: string) => {
-    setMessages(messages.filter(m => m.id !== messageId));
+    setMessages(messages.filter((m: Message) => m.id !== messageId));
     toast.success('Message deleted');
   };
 
@@ -1288,7 +1288,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ...review,
         date: new Date().toISOString().split('T')[0]
       });
-      setReviews(prev => [newReview, ...prev]);
+      setReviews((prev: Review[]) => [newReview, ...prev]);
       toast.success(t('রিভিউ যোগ করা হয়েছে', 'Review added successfully'));
     } catch (error) {
       toast.error('Failed to add review');
@@ -1298,7 +1298,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteUserReview = async (id: string) => {
     try {
       await apiCall(`/reviews/${id}`, 'DELETE');
-      setReviews(prev => prev.filter(r => r.id !== id));
+      setReviews((prev: Review[]) => prev.filter((r: Review) => r.id !== id));
       toast.success('Review deleted');
     } catch (error) {
       toast.error('Failed to delete review');
@@ -1311,18 +1311,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       id: `prev_${Date.now()}`,
       date: new Date().toISOString(),
     };
-    setPremiumReviews(prev => [newReview, ...prev]);
+    setPremiumReviews((prev: PremiumReview[]) => [newReview, ...prev]);
     toast.success('Premium review added');
   };
 
   const deletePremiumReview = (id: string) => {
-    setPremiumReviews(prev => prev.filter(r => r.id !== id));
+    setPremiumReviews((prev: PremiumReview[]) => prev.filter((r: PremiumReview) => r.id !== id));
     toast.success('Premium review deleted');
   };
 
   // Notifications
   const markNotificationAsRead = (id: string) => {
-    setNotifications(notifications.map(n => (n.id === id ? { ...n, read: true } : n)));
+    setNotifications(notifications.map((n: Notification) => (n.id === id ? { ...n, read: true } : n)));
   };
 
   // --- Vouchers ---
@@ -1332,7 +1332,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ...voucher,
         usedCount: 0
       });
-      setVouchers(prev => [...prev, newVoucher]);
+      setVouchers((prev: Voucher[]) => [...prev, newVoucher]);
       toast.success('Voucher added');
     } catch (error) {
       toast.error('Failed to add voucher');
@@ -1342,7 +1342,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateVoucher = async (voucher: Voucher) => {
     try {
       const updated = await apiCall(`/vouchers/${voucher.id}`, 'PUT', voucher);
-      setVouchers(prev => prev.map(v => v.id === voucher.id ? updated : v));
+      setVouchers((prev: Voucher[]) => prev.map((v: Voucher) => v.id === voucher.id ? updated : v));
       toast.success('Voucher updated');
     } catch (error) {
       toast.error('Failed to update voucher');
@@ -1352,7 +1352,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteVoucher = async (voucherId: string) => {
     try {
       await apiCall(`/vouchers/${voucherId}`, 'DELETE');
-      setVouchers(prev => prev.filter(v => v.id !== voucherId));
+      setVouchers((prev: Voucher[]) => prev.filter((v: Voucher) => v.id !== voucherId));
       toast.success('Voucher deleted');
     } catch (error) {
       toast.error('Failed to delete voucher');
@@ -1360,7 +1360,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const applyVoucher = (code: string, cartTotal: number): { discount: number; error?: string } => {
-    const voucher = vouchers.find(v => v.code.toUpperCase() === code.toUpperCase() && v.isActive);
+    const voucher = vouchers.find((v: Voucher) => v.code.toUpperCase() === code.toUpperCase() && v.isActive);
 
     if (!voucher) {
       return { discount: 0, error: t('ভাউচার কোড সঠিক নয়', 'Invalid voucher code') };
@@ -1383,7 +1383,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const discountAmount = Math.min((cartTotal * voucher.discount) / 100, voucher.maxDiscount);
 
     // Increment usage count
-    setVouchers(vouchers.map(v => v.id === voucher.id ? { ...v, usedCount: v.usedCount + 1 } : v));
+    setVouchers(vouchers.map((v: Voucher) => v.id === voucher.id ? { ...v, usedCount: v.usedCount + 1 } : v));
 
     return { discount: discountAmount };
   };
@@ -1392,7 +1392,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addCarouselSlide = async (slide: Omit<CarouselSlide, 'id'>) => {
     try {
       const newSlide = await apiCall('/carousels', 'POST', slide);
-      setCarouselSlides(prev => [...prev, newSlide]);
+      setCarouselSlides((prev: CarouselSlide[]) => [...prev, newSlide]);
       toast.success('Slide added');
     } catch (error) {
       toast.error('Failed to add slide');
@@ -1504,7 +1504,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const token = localStorage.getItem('rizqara_token');
       await apiCall(`/orders/${orderId}/status`, 'PUT', { status: 'cancelled', trackingHistory: [{ status: 'cancelled', date: new Date().toISOString(), note: `Cancelled: ${reason}` }] }, token || undefined);
 
-      setOrders(prev => prev.map(o => {
+      setOrders((prev: Order[]) => prev.map((o: Order) => {
         if (o.id === orderId) {
           const history = [...o.trackingHistory, {
             status: 'cancelled',
