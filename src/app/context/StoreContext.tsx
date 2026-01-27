@@ -217,7 +217,13 @@ const EMAILJS_ORDER_SERVICE_ID = import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID;
 const EMAILJS_ORDER_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_ORDER_PUBLIC_KEY;
 const EMAILJS_TEMPLATE_ORDER_CONFIRM = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_CONFIRM;
 const EMAILJS_TEMPLATE_ORDER_DELIVERED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_DELIVERED;
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Sanitize API_URL
+let envApiUrl = import.meta.env.VITE_API_URL;
+if (envApiUrl && envApiUrl.endsWith('/')) {
+  envApiUrl = envApiUrl.slice(0, -1);
+}
+const API_URL = envApiUrl || 'http://localhost:5000/api';
 
 // Helper for API calls
 const apiCall = async (endpoint: string, method: string = 'GET', body?: any, token?: string) => {
