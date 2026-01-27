@@ -217,12 +217,23 @@ const EMAILJS_ORDER_SERVICE_ID = import.meta.env.VITE_EMAILJS_ORDER_SERVICE_ID;
 const EMAILJS_ORDER_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_ORDER_PUBLIC_KEY;
 const EMAILJS_TEMPLATE_ORDER_CONFIRM = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_CONFIRM;
 const EMAILJS_TEMPLATE_ORDER_DELIVERED = import.meta.env.VITE_EMAILJS_TEMPLATE_ORDER_DELIVERED;
-
 // Sanitize API_URL
 let envApiUrl = import.meta.env.VITE_API_URL;
-if (envApiUrl && envApiUrl.endsWith('/')) {
-  envApiUrl = envApiUrl.slice(0, -1);
+
+// 1. Remove all trailing slashes to clean the base
+if (envApiUrl) {
+  while (envApiUrl.endsWith('/')) {
+    envApiUrl = envApiUrl.slice(0, -1);
+  }
 }
+
+// 2. Ensure it ends with /api (unless it is just localhost default which we handle below)
+// If the user provided a domain like "https://myapp.com", we append "/api"
+// If they provided "https://myapp.com/api", we leave it.
+if (envApiUrl && !envApiUrl.endsWith('/api')) {
+  envApiUrl = `${envApiUrl}/api`;
+}
+
 const API_URL = envApiUrl || 'http://localhost:5000/api';
 
 // Helper for API calls
