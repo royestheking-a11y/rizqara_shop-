@@ -124,10 +124,15 @@ export const AdminMessages = () => {
   });
 
   const activeMessages = selectedThread
-    ? messages.filter(m =>
-      (m.senderId === selectedThread.userId || m.receiverId === selectedThread.userId) &&
-      (selectedThread.context === 'support' ? m.type === 'support' : m.orderId === selectedThread.context)
-    ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+    ? messages.filter(m => {
+      // Check if message belongs to this user (either sent by them or sent to them)
+      const isUserMatch = m.senderId === selectedThread.userId || m.receiverId === selectedThread.userId;
+      if (!isUserMatch) return false;
+
+      // Check context match using same logic as thread grouping
+      const msgContext = m.type === 'order' && m.orderId ? m.orderId : 'support';
+      return msgContext === selectedThread.context;
+    }).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     : [];
 
   const userOrders = selectedThread
