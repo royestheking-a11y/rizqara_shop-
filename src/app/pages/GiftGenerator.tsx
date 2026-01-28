@@ -19,6 +19,8 @@ const MESSAGES: Record<string, string[]> = {
     'default': ['আপনার প্রিয়জনের জন্য ভালোবাসার উপহার! 🎁', 'উপহারের সাথে রইল একরাশ ভালোবাসা।'],
 };
 
+import SEO from '@/app/components/SEO';
+
 export const GiftGenerator = () => {
     const { t, products, addToCart } = useStore();
 
@@ -286,6 +288,11 @@ export const GiftGenerator = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4">
+            <SEO
+                title={t('গিফট ফাইন্ডার | আবেগ অনুযায়ী সেরা উপহার খুঁজুন | রিজকারা শপ', 'Gift Finder Tool | Find Perfect Gift by Emotion | Rizqara Shop')}
+                description={t('উপলক্ষ ও প্রিয়জন অনুযায়ী সেরা উপহার খুঁজুন রিজকারা শপের গিফট জেনারেটর দিয়ে। জন্মদিন, ঈদ, ভালোবাসা – সব কিছুর জন্য।', 'Find the perfect gift by occasion and loved one with Rizqara Shop\'s Gift Generator. For birthdays, Eid, love - everything.')}
+                url="https://rizqarashop.vercel.app/gift-generator"
+            />
             <div className="max-w-4xl mx-auto">
                 {step > 0 && step < 5 && (
                     <button

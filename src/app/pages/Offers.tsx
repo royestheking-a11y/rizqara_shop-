@@ -4,6 +4,8 @@ import { Link } from 'react-router';
 import { Tag } from 'lucide-react';
 import { ProductCard } from '@/app/components/ProductCard';
 
+import SEO from '@/app/components/SEO';
+
 export const Offers = () => {
     const { products, t } = useStore();
 
@@ -15,6 +17,11 @@ export const Offers = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen">
+            <SEO
+                title={t('অফার ও ডিসকাউন্ট | হ্যান্ডমেড গিফট ও ক্রাফট | রিজকারা শপ', 'Offers & Discounts | Handmade Gifts & Crafts | Rizqara Shop')}
+                description={t('রিজকারা শপে চলমান অফার ও ডিসকাউন্ট দেখুন। হ্যান্ডমেড গিফট, মাটির পণ্য ও কাস্টম পণ্যে বিশেষ ছাড়।', 'Check out ongoing offers and discounts at Rizqara Shop. Special discounts on handmade gifts, clay products and custom items.')}
+                url="https://rizqarashop.vercel.app/offers"
+            />
             <div className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-[#D91976] to-[#E84A9C] rounded-2xl p-8 mb-8 shadow-lg text-white relative overflow-hidden">

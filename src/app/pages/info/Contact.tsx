@@ -4,10 +4,15 @@ import { useStore } from '@/app/context/StoreContext';
 import { Mail, Phone, MapPin, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 
+import SEO from '@/app/components/SEO';
+
 export const Contact = () => {
     const { t } = useStore();
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    // ... (rest of logic)
+    // Actually I should just import SEO and add it in JSX.
 
     const faqs = [
         {
@@ -32,6 +37,11 @@ export const Contact = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title={t('যোগাযোগ | রিজকারা শপ - হ্যান্ডমেড গিফট স্টোর ঠিকানা ও সাপোর্ট', 'Contact Us | Rizqara Shop - Handmade Gift Store Location & Support')}
+                description={t('যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন। আমাদের ঠিকানা, ফোন নম্বর ও সোশ্যাল মিডিয়া লিংক।', 'Contact us for any needs. Our address, phone number and social media links.')}
+                url="https://rizqarashop.vercel.app/contact"
+            />
             <PageHeader
                 title={t('যোগাযোগ', 'Contact Us')}
                 subtitle={t('যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন', 'Get in touch with us for any query')}

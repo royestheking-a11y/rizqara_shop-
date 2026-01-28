@@ -8,6 +8,8 @@ import { SearchBar } from '@/app/components/SearchBar';
 import { ProductCardSkeleton } from '@/app/components/Skeleton';
 import bdCustomCraftImg from '@/assets/bd_custom_craft.png';
 
+import SEO from '@/app/components/SEO';
+
 export const Home = () => {
   const { t, products, vouchers, isLoading } = useStore();
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
@@ -111,6 +113,11 @@ export const Home = () => {
 
   return (
     <div className="font-sans bg-gray-50">
+      <SEO
+        title={t('রিজকারা শপ | হ্যান্ডমেড উপহার ও কাস্টম স্কেচ শপ বাংলাদেশ', 'Rizqara Shop | Handmade Crafts, Clay Products & Custom Gifts in Bangladesh')}
+        description="রিজকারা শপ থেকে কিনুন হ্যান্ডমেড ক্রাফট, মাটির পণ্য, কাস্টম স্কেচ ও ব্যক্তিগতকৃত উপহার। বাংলাদেশের প্রিমিয়াম অনলাইন গিফট শপ।"
+        url="https://rizqarashop.vercel.app/"
+      />
       {/* Mobile Search Bar */}
       <div className="md:hidden bg-white px-4 py-3 border-b border-gray-100 sticky top-20 z-30 shadow-sm">
         <SearchBar />

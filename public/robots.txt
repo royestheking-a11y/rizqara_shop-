@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://rizqarashop.vercel.app/sitemap.xml

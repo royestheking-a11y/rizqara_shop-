@@ -3,11 +3,18 @@ import { useStore } from '@/app/context/StoreContext';
 import { motion } from 'motion/react';
 import { Star, Quote } from 'lucide-react';
 
+import SEO from '@/app/components/SEO';
+
 export const Reviews = () => {
   const { premiumReviews, t } = useStore();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      <SEO
+        title={t('গ্রাহক মতামত | রিজকারা শপ হ্যান্ডমেড গিফট স্টোর', 'Customer Reviews | Rizqara Shop Handmade & Gift Store')}
+        description={t('রিজকারা শপের গ্রাহকদের রিভিউ দেখুন। হ্যান্ডমেড পণ্য, কাস্টম স্কেচ ও গিফট সার্ভিস সম্পর্কে আসল অভিজ্ঞতা।', 'See customer reviews of Rizqara Shop. Real experiences about handmade products, custom sketches and gift services.')}
+        url="https://rizqarashop.vercel.app/reviews"
+      />
       {/* Hero Section */}
       <div className="bg-[#D91976] text-white py-20 px-4 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>

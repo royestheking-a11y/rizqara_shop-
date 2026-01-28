@@ -1,5 +1,6 @@
 import { PageHeader } from '@/app/components/PageHeader';
 import { useStore } from '@/app/context/StoreContext';
+import SEO from '@/app/components/SEO';
 
 interface PolicyPageProps {
     type: 'return' | 'privacy' | 'terms' | 'delivery';
@@ -206,8 +207,50 @@ export const PolicyPage = ({ type }: PolicyPageProps) => {
         }
     };
 
+    const getSeoData = (type: string) => {
+        switch (type) {
+            case 'return':
+                return {
+                    title: t('রিটার্ন ও রিফান্ড পলিসি | রিজকারা শপ', 'Return & Refund Policy | Rizqara Shop'),
+                    description: t('পণ্য ফেরত এবং রিফান্ড প্রক্রিয়া সম্পর্কে জানুন। ৭ দিনের সহজ রিটার্ন পলিসি।', 'Conditions for returning products and refund process. 7-day easy return policy.'),
+                    url: 'https://rizqarashop.vercel.app/return-policy'
+                };
+            case 'delivery':
+                return {
+                    title: t('ডেলিভারি তথ্য | শিপিং চার্জ ও সময় | রিজকারা শপ', 'Delivery Information | Shipping Charges & Time | Rizqara Shop'),
+                    description: t('শিপিং চার্জ এবং ডেলিভারি সময় সম্পর্কে বিস্তারিত জানুন। ঢাকা ও সারাদেশে দ্রুত ডেলিভারি।', 'View shipping charges and delivery time. Fast delivery in Dhaka and nationwide.'),
+                    url: 'https://rizqarashop.vercel.app/delivery-info'
+                };
+            case 'privacy':
+                return {
+                    title: t('প্রাইভেসি পলিসি | রিজকারা শপ', 'Privacy Policy | Rizqara Shop'),
+                    description: t('আপনার তথ্যের সুরক্ষা এবং গোপনীয়তা নিশ্চিত করি।', 'We ensure the security and privacy of your data.'),
+                    url: 'https://rizqarashop.vercel.app/privacy-policy'
+                };
+            case 'terms':
+                return {
+                    title: t('টার্মস ও কন্ডিশন | রিজকারা শপ', 'Terms & Conditions | Rizqara Shop'),
+                    description: t('রিজকারা শপ ব্যবহারের আইনি শর্তাবলী।', 'Legal terms of using Rizqara Shop.'),
+                    url: 'https://rizqarashop.vercel.app/terms'
+                };
+            default:
+                return {
+                    title: 'Rizqara Shop',
+                    description: 'Premium Handmade Gift Store',
+                    url: 'https://rizqarashop.vercel.app/'
+                };
+        }
+    };
+
+    const seoData = getSeoData(type);
+
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title={seoData.title}
+                description={seoData.description}
+                url={seoData.url}
+            />
             <PageHeader
                 title={data.title}
                 subtitle={data.subtitle}

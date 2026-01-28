@@ -6,6 +6,8 @@ import { motion } from 'motion/react';
 import { OtpInput } from '../components/OtpInput';
 import { useGoogleLogin } from '@react-oauth/google';
 
+import SEO from '@/app/components/SEO';
+
 export const Login = () => {
   const { login, loginWithGoogle, signup, sendOTP, verifyOTP, resetPassword, otpState, t } = useStore();
 
@@ -108,8 +110,20 @@ export const Login = () => {
     navigate(newView === 'login' ? '/login' : '/signup');
   };
 
+  // SEO Logic
+  const seoData = view === 'signup' ? {
+    title: t('অ্যাকাউন্ট তৈরি করুন | রিজকারা শপ হ্যান্ডমেড গিফট স্টোর', 'Create Account | Rizqara Shop Handmade Gift Store'),
+    description: t('রিজকারা শপে অ্যাকাউন্ট খুলুন এবং হ্যান্ডমেড পণ্য, কাস্টম স্কেচ ও গিফট অর্ডার করুন সহজে।', 'Create an account at Rizqara Shop and order handmade products, custom sketches and gifts easily.'),
+    url: 'https://rizqarashop.vercel.app/signup'
+  } : {
+    title: t('লগইন | রিজকারা শপ', 'Login | Rizqara Shop'),
+    description: t('আপনার অ্যাকাউন্টে লগইন করুন।', 'Login to your account.'),
+    url: 'https://rizqarashop.vercel.app/login'
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50 flex items-center justify-center py-12 px-4">
+      <SEO {...seoData} />
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-0 bg-white rounded-3xl shadow-2xl overflow-hidden">
 
         {/* Left Side - Form */}

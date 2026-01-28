@@ -4,6 +4,7 @@ import { useSearchParams, Link } from 'react-router';
 import { Filter, X, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ProductCard } from '@/app/components/ProductCard';
+import SEO from '@/app/components/SEO';
 
 export const Shop = () => {
   const { products, t, language } = useStore();
@@ -80,8 +81,30 @@ export const Shop = () => {
     return filtered;
   }, [products, selectedCategory, searchParam, priceRange, sortBy, allCategories]);
 
+  const getSeoData = () => {
+    if (selectedCategory.toLowerCase() === 'clay') {
+      return {
+        title: t('মাটির পণ্য | হ্যান্ডমেড মৃৎশিল্প ও ক্রাফট বাংলাদেশ', 'Clay Products | Handmade Pottery & Clay Crafts in Bangladesh'),
+        description: t('মাটির তৈরি ফুলদানি, কাপ, ডেকোর ও কিচেন আইটেম কিনুন রিজকারা শপ থেকে। খাঁটি হ্যান্ডমেড ক্লে প্রোডাক্ট।', 'Buy clay vases, cups, decor and kitchen items from Rizqara Shop. Authentic handmade clay products.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Clay`
+      };
+    }
+    return {
+      title: t('সব পণ্য | রিজকারা শপ', 'Shop All Products | Handmade & Custom Gifts | Rizqara Shop'),
+      description: t('আমাদের সম্পূর্ণ কালেকশন দেখুন। রিজকারা শপ - হ্যান্ডমেড ক্রাফট এবং গিফটের জন্য সেরা ঠিকানা।', 'Explore our complete collection. Rizqara Shop - The best destination for handmade crafts and gifts.'),
+      url: `https://rizqarashop.vercel.app/shop`
+    };
+  };
+
+  const seoData = getSeoData();
+
   return (
     <div className="bg-gray-50 min-h-screen">
+      <SEO
+        title={seoData.title}
+        description={seoData.description}
+        url={seoData.url}
+      />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="bg-white rounded-2xl p-6 mb-8 shadow-sm border border-gray-100">
