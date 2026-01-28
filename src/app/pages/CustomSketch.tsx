@@ -3,6 +3,7 @@ import { useStore } from '@/app/context/StoreContext';
 import { useNavigate } from 'react-router';
 import { Upload, PenTool, Image as ImageIcon, Frame, Maximize, FileText, ArrowRight, Minus, Gift } from 'lucide-react';
 import { toast } from 'sonner';
+import SEO from '@/app/components/SEO';
 
 export const CustomSketch = () => {
   const { t, addCustomItemToCart, sketchPricing, uploadFile } = useStore();
@@ -165,6 +166,11 @@ export const CustomSketch = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
+      <SEO
+        title={t('Custom Sketch Order | Pencil, Digital & Framed Sketch | Rizqara Shop', 'Custom Sketch Order | Pencil, Digital & Framed Sketch | Rizqara Shop')}
+        description={t('নিজের বা প্রিয়জনের ছবি দিয়ে কাস্টম স্কেচ অর্ডার করুন—পেন্সিল স্কেচ, ডিজিটাল স্কেচ, ফ্রেমসহ/ফ্রেম ছাড়া, বিভিন্ন সাইজে। অনন্য উপহার—রিজকারা শপ।', 'Order custom sketches with photos of yourself or loved ones - Pencil Sketch, Digital Sketch, With/Without Frame, in various sizes. Unique Gift - Rizqara Shop.')}
+        url="https://rizqarashop.vercel.app/custom-sketch"
+      />
       {/* Header */}
       <div className="bg-[#D91976] text-white py-16">
         <div className="container mx-auto px-4 text-center">

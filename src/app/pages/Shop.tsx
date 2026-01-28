@@ -82,7 +82,44 @@ export const Shop = () => {
   }, [products, selectedCategory, searchParam, priceRange, sortBy, allCategories]);
 
   const getSeoData = () => {
-    if (selectedCategory.toLowerCase() === 'clay') {
+    const category = selectedCategory.toLowerCase();
+
+    if (category === 'women') {
+      return {
+        title: t('Women’s Items | Saree, Jewelry & Accessories in Bangladesh | Rizqara Shop', 'Women’s Items | Saree, Jewelry & Accessories in Bangladesh | Rizqara Shop'),
+        description: t('নারীদের শাড়ি, গহনা ও ফ্যাশন অ্যাক্সেসরিজ কিনুন রিজকারা শপ থেকে। প্রিমিয়াম ও ট্রেন্ডি কালেকশন—গিফট বা নিজের জন্য সেরা পছন্দ।', 'Buy women\'s sarees, jewelry, and fashion accessories from Rizqara Shop. Premium and trendy collection - best choice for gifts or yourself.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Women`
+      };
+    }
+    if (category === 'gifts') {
+      return {
+        title: t('Gift Collection | Custom Gift Boxes & Surprise Gifts | Rizqara Shop', 'Gift Collection | Custom Gift Boxes & Surprise Gifts | Rizqara Shop'),
+        description: t('জন্মদিন, ঈদ, পূজা, ভালোবাসা দিবস—সব উপলক্ষের জন্য গিফট বক্স, কাস্টম গিফট ও সারপ্রাইজ গিফট কিনুন রিজকারা শপ থেকে।', 'Buy gift boxes, custom gifts, and surprise gifts for birthdays, Eid, Puja, Valentine\'s Day - for all occasions from Rizqara Shop.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Gifts`
+      };
+    }
+    if (category === 'art') {
+      return {
+        title: t('Art & Sketch | Wall Art, Portrait & Creative Gifts | Rizqara Shop', 'Art & Sketch | Wall Art, Portrait & Creative Gifts | Rizqara Shop'),
+        description: t('আর্ট, স্কেচ ও ওয়াল আর্ট কালেকশন দেখুন রিজকারা শপে। কাস্টম পোর্ট্রেট, ফ্রেম আর্ট ও ইউনিক গিফট—সব একসাথে।', 'Explore art, sketch, and wall art collections at Rizqara Shop. Custom portraits, framed art, and unique gifts - all in one place.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Art`
+      };
+    }
+    if (category === 'custom') {
+      return {
+        title: t('Custom Products | Personalized Gifts & Handmade Orders | Rizqara Shop', 'Custom Products | Personalized Gifts & Handmade Orders | Rizqara Shop'),
+        description: t('আপনার পছন্দমতো কাস্টম পণ্য অর্ডার করুন—নাম লেখা গিফট, কাস্টম ফ্রেম, কাস্টম বক্স ও আরও অনেক কিছু। রিজকারা শপ—আপনার আইডিয়া, আমাদের সৃষ্টি।', 'Order custom products as you like - personalized gifts, custom frames, custom boxes, and more. Rizqara Shop - Your Idea, Our Creation.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Custom`
+      };
+    }
+    if (category === 'plants') {
+      return {
+        title: t('Plants & Home Greenery | Pots, Decor & Gifts | Rizqara Shop', 'Plants & Home Greenery | Pots, Decor & Gifts | Rizqara Shop'),
+        description: t('গাছপালা, টব, প্ল্যান্ট ডেকোর ও হোম গ্রীনারি কালেকশন কিনুন রিজকারা শপ থেকে। ঘর সাজাতে বা গিফট দিতে পারফেক্ট।', 'Buy plants, pots, plant decor, and home greenery collections from Rizqara Shop. Perfect for home decoration or gifting.'),
+        url: `https://rizqarashop.vercel.app/shop?cat=Plants`
+      };
+    }
+    if (category === 'clay') {
       return {
         title: t('মাটির পণ্য | হ্যান্ডমেড মৃৎশিল্প ও ক্রাফট বাংলাদেশ', 'Clay Products | Handmade Pottery & Clay Crafts in Bangladesh'),
         description: t('মাটির তৈরি ফুলদানি, কাপ, ডেকোর ও কিচেন আইটেম কিনুন রিজকারা শপ থেকে। খাঁটি হ্যান্ডমেড ক্লে প্রোডাক্ট।', 'Buy clay vases, cups, decor and kitchen items from Rizqara Shop. Authentic handmade clay products.'),

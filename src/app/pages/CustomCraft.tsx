@@ -3,6 +3,7 @@ import { useStore } from '@/app/context/StoreContext';
 import { useNavigate } from 'react-router';
 import { Upload, Minus, Palette, Package, Gift, Ruler, Gem, Frame, Home, PenTool, Hash, Sparkles, Paintbrush, Square, X } from 'lucide-react';
 import { toast } from 'sonner';
+import SEO from '@/app/components/SEO';
 
 export const CustomCraft = () => {
     const { t, addCustomItemToCart, uploadFile } = useStore();
@@ -323,6 +324,11 @@ export const CustomCraft = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
+            <SEO
+                title={t('Custom Craft Order | Handmade Personalized Craft in Bangladesh | Rizqara Shop', 'Custom Craft Order | Handmade Personalized Craft in Bangladesh | Rizqara Shop')}
+                description={t('আপনার ছবি বা আইডিয়া আপলোড করুন—আমরা বানাবো হ্যান্ডমেড কাস্টম ক্রাফট। কাস্টম সাইজ, ফিনিশিং, নাম/মেসেজ যোগ করে অর্ডার করুন।', 'Upload your photo or idea - we will make handmade custom crafts. Order with custom size, finishing, name/message.')}
+                url="https://rizqarashop.vercel.app/custom-craft"
+            />
             {/* Hero */}
             <div className="bg-[#D91976] text-white py-16">
                 <div className="container mx-auto px-4 text-center">

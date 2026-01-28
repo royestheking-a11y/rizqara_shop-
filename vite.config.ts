@@ -13,7 +13,7 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'service-worker.js',
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'pwa-icon-192.png', 'pwa-icon-512.png', 'categories/*.png'],
+      includeAssets: ['favicon/favicon.ico', 'favicon/apple-touch-icon.png', 'favicon/favicon.svg', 'favicon/web-app-manifest-192x192.png', 'favicon/web-app-manifest-512x512.png'],
       manifest: {
         name: 'RizQara Shop',
         short_name: 'RizQara',
@@ -23,17 +23,17 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-icon-192.png',
+            src: '/favicon/web-app-manifest-192x192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-icon-512.png',
+            src: '/favicon/web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'maskable-icon.png',
+            src: '/favicon/web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'

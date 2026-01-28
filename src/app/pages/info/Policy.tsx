@@ -221,17 +221,16 @@ export const PolicyPage = ({ type }: PolicyPageProps) => {
                     description: t('শিপিং চার্জ এবং ডেলিভারি সময় সম্পর্কে বিস্তারিত জানুন। ঢাকা ও সারাদেশে দ্রুত ডেলিভারি।', 'View shipping charges and delivery time. Fast delivery in Dhaka and nationwide.'),
                     url: 'https://rizqarashop.vercel.app/delivery-info'
                 };
+                return {
+                    title: t('Terms & Conditions | Rizqara Shop', 'Terms & Conditions | Rizqara Shop'),
+                    description: t('রিজকারা শপের শর্তাবলী (Terms & Conditions) পড়ুন। অর্ডার, পেমেন্ট, ডেলিভারি ও সার্ভিস সংক্রান্ত নিয়মাবলি এখানে দেওয়া আছে।', 'Read the Terms & Conditions of Rizqara Shop. Rules regarding orders, payment, delivery, and services are provided here.'),
+                    url: 'https://rizqarashop.vercel.app/terms'
+                };
             case 'privacy':
                 return {
-                    title: t('প্রাইভেসি পলিসি | রিজকারা শপ', 'Privacy Policy | Rizqara Shop'),
-                    description: t('আপনার তথ্যের সুরক্ষা এবং গোপনীয়তা নিশ্চিত করি।', 'We ensure the security and privacy of your data.'),
+                    title: t('Privacy Policy | Rizqara Shop', 'Privacy Policy | Rizqara Shop'),
+                    description: t('আপনার তথ্য কীভাবে সংগ্রহ ও সুরক্ষিত রাখা হয়—রিজকারা শপের প্রাইভেসি পলিসি দেখুন। নিরাপদ শপিং আমাদের অগ্রাধিকার।', 'See how your information is collected and protected - view Rizqara Shop\'s Privacy Policy. Safe shopping is our priority.'),
                     url: 'https://rizqarashop.vercel.app/privacy-policy'
-                };
-            case 'terms':
-                return {
-                    title: t('টার্মস ও কন্ডিশন | রিজকারা শপ', 'Terms & Conditions | Rizqara Shop'),
-                    description: t('রিজকারা শপ ব্যবহারের আইনি শর্তাবলী।', 'Legal terms of using Rizqara Shop.'),
-                    url: 'https://rizqarashop.vercel.app/terms'
                 };
             default:
                 return {

@@ -373,6 +373,11 @@ export const Login = () => {
                       {t('গুগল', 'Google')}
                     </button>
 
+                    {/* 
+                      IMPORTANT: 
+                      1. In developers.facebook.com -> Facebook Login -> Settings, toggle 'Login with the JavaScript SDK' to YES.
+                      2. Add your domain (e.g. http://localhost:5173, https://rizqarashop.vercel.app) to 'Allowed Domains for the JavaScript SDK'.
+                    */}
                     <FacebookLogin
                       appId={import.meta.env.VITE_FACEBOOK_APP_ID}
                       onSuccess={(response) => {

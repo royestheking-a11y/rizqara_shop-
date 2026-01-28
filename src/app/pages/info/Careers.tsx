@@ -2,6 +2,7 @@
 import { PageHeader } from '@/app/components/PageHeader';
 import { useStore } from '@/app/context/StoreContext';
 import { Briefcase, MapPin, Clock, Coffee, Laptop, Heart, Zap } from 'lucide-react';
+import SEO from '@/app/components/SEO';
 
 export const Careers = () => {
     const { t } = useStore();
@@ -39,6 +40,11 @@ export const Careers = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title={t('Careers at Rizqara Shop | Join Our Handmade Craft Team', 'Careers at Rizqara Shop | Join Our Handmade Craft Team')}
+                description={t('রিজকারা শপে ক্যারিয়ার—ক্রাফট, ডিজাইন, কাস্টমার সাপোর্ট ও অপারেশনস টিমে কাজের সুযোগ। আমাদের টিমে জয়েন করুন।', 'Careers at Rizqara Shop - Opportunities in crafts, design, customer support, and operations teams. Join our team.')}
+                url="https://rizqarashop.vercel.app/careers"
+            />
             <PageHeader
                 title={t('ক্যারিয়ার', 'Careers')}
                 subtitle={t('রিজকারা টিমে জয়েন করুন এবং নিজের ক্যারিয়ার গড়ুন', 'Join RizQara team and build your career')}

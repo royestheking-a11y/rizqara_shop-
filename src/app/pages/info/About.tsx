@@ -2,6 +2,7 @@
 import { PageHeader } from '@/app/components/PageHeader';
 import { useStore } from '@/app/context/StoreContext';
 import { Target, Shield, Heart, Sparkles, TrendingUp } from 'lucide-react';
+import SEO from '@/app/components/SEO';
 
 export const About = () => {
     const { t } = useStore();
@@ -33,6 +34,11 @@ export const About = () => {
 
     return (
         <div className="min-h-screen bg-white">
+            <SEO
+                title={t('About Rizqara Shop | Handmade Crafts & Custom Gift Brand in Bangladesh', 'About Rizqara Shop | Handmade Crafts & Custom Gift Brand in Bangladesh')}
+                description={t('রিজকারা শপ সম্পর্কে জানুন—হ্যান্ডমেড ক্রাফট, মাটির পণ্য, কাস্টম স্কেচ ও গিফট নিয়ে বাংলাদেশের প্রিমিয়াম অনলাইন শপ।', 'Learn about Rizqara Shop - Bangladesh\'s premium online shop for handmade crafts, clay products, custom sketches, and gifts.')}
+                url="https://rizqarashop.vercel.app/about"
+            />
             <PageHeader
                 title={t('আমাদের সম্পর্কে', 'About Us')}
                 subtitle={t('রিজকারা শপ - আপনার লাইফস্টাইলের বিশ্বস্ত সঙ্গী', 'RizQara Shop - Trusted partner of your lifestyle')}
