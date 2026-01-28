@@ -43,6 +43,7 @@ import { Blog } from '@/app/pages/info/Blog';
 import { Careers } from '@/app/pages/info/Careers';
 import { PolicyPage } from '@/app/pages/info/Policy';
 import { GiftGenerator } from '@/app/pages/GiftGenerator';
+import { Sitemap } from '@/app/pages/info/Sitemap';
 
 const PublicLayout = () => (
   <Layout>
@@ -110,6 +111,7 @@ const App = () => {
                 <Route path="/privacy-policy" element={<PolicyPage type="privacy" />} />
                 <Route path="/terms" element={<PolicyPage type="terms" />} />
                 <Route path="/delivery-info" element={<PolicyPage type="delivery" />} />
+                <Route path="/sitemap" element={<Sitemap />} />
               </Route>
 
               {/* Account Routes */}
