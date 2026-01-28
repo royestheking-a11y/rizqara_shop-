@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Link } from 'react-router';
 import { useStore } from '@/app/context/StoreContext';
 import SEO from '@/app/components/SEO';
