@@ -179,9 +179,65 @@ const googleLogin = async (req, res) => {
     }
 };
 
+const facebookLogin = async (req, res) => {
+    try {
+        const { userID, accessToken } = req.body;
+
+        // Verify token with Facebook Graph API
+        const url = `https://graph.facebook.com/v19.0/${userID}?fields=id,name,email,picture&access_token=${accessToken}`;
+        const { data } = await axios.get(url);
+
+        const { email, name, picture, id } = data;
+
+        // If no email from Facebook, we might need to handle it. For now, assume email exists or use ID.
+        // If email is missing, we can use a generated email like `fb_${id}@facebook.com` or fail.
+        const userEmail = email || `fb_${id}@facebook.com`;
+
+        let user = await User.findOne({ email: userEmail });
+
+        let profileImageUrl = picture?.data?.url;
+
+        // Auto-upload if needed (similar to Google) or just use the URL
+        if (profileImageUrl) {
+            // Optional: Upload to Cloudinary to persist
+        }
+
+        if (!user) {
+            const newId = `u_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            user = await User.create({
+                id: newId,
+                name,
+                email: userEmail,
+                password: `fb_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+                profileImage: profileImageUrl,
+                role: 'customer'
+            });
+        } else if (profileImageUrl && (!user.profileImage || user.profileImage !== profileImageUrl)) {
+            user.profileImage = profileImageUrl;
+            await user.save();
+        }
+
+        res.json({
+            _id: user._id,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            profileImage: user.profileImage,
+            addresses: user.addresses,
+            token: 'dummy_token_for_facebook' // In production use JWT
+        });
+
+    } catch (error) {
+        console.error('Facebook Auth Error:', error.response?.data || error.message);
+        res.status(500).json({ message: 'Facebook login failed' });
+    }
+};
+
 module.exports = {
     signup,
     login,
     updateProfile,
-    googleLogin
+    googleLogin,
+    facebookLogin
 };

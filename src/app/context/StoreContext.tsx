@@ -368,6 +368,7 @@ interface StoreContextType {
   verifyOTP: (code: string) => boolean;
   resetPassword: (email: string, newPassword: string) => boolean;
   loginWithGoogle: (credential: string) => Promise<boolean>;
+  loginWithFacebook: (accessToken: string, userID: string) => Promise<boolean>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -677,6 +678,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return true;
     } catch (error: any) {
       toast.error(error.message || t('গুগল লগইন ব্যর্থ হয়েছে', 'Google Login failed'));
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithFacebook = async (accessToken: string, userID: string) => {
+    try {
+      setIsLoading(true);
+      const data = await apiCall('/auth/facebook', 'POST', { accessToken, userID });
+
+      localStorage.setItem('rizqara_token', data.token);
+      localStorage.setItem('rizqara_user', JSON.stringify(data));
+      setUser(data);
+
+      toast.success(t('ফেসবুক লগইন সফল!', 'Facebook Login Successful!'));
+      return true;
+    } catch (error: any) {
+      toast.error(error.message || t('ফেসবুক লগইন ব্যর্থ হয়েছে', 'Facebook Login failed'));
       return false;
     } finally {
       setIsLoading(false);
@@ -1546,7 +1566,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const value: StoreContextType = {
     language, setLanguage,
-    user, users, login, loginWithGoogle, signup, logout, banUser, unbanUser, deleteUser,
+    user, users, login, loginWithGoogle, loginWithFacebook, signup, logout, banUser, unbanUser, deleteUser,
     products, addProduct, updateProduct, deleteProduct, isLoading,
     cart, addToCart, addCustomItemToCart, removeFromCart, updateCartQuantity, clearCart,
     orders, placeOrder, updateOrderStatus, updateOrderConsigneeInfo, updateOrderTotal, verifyPayment, deleteOrder, confirmOrder, requestRefund, processRefund, updateUserAddress, updateUser,
