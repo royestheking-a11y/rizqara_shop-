@@ -79,7 +79,38 @@ const getMessages = async (req, res) => {
     }
 };
 
+// @desc    Delete a message
+// @route   DELETE /api/messages/:id
+// @access  Private (Admin)
+const deleteMessage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Message.findByIdAndDelete(id);
+        res.json({ message: 'Message deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete a conversation thread
+// @route   DELETE /api/messages/thread/:userId
+// @access  Private (Admin)
+const deleteThread = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        // Delete where user is sender OR receiver
+        await Message.deleteMany({
+            $or: [{ senderId: userId }, { receiverId: userId }]
+        });
+        res.json({ message: 'Conversation thread deleted' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     sendMessage,
-    getMessages
+    getMessages,
+    deleteMessage,
+    deleteThread
 };

@@ -329,6 +329,7 @@ interface StoreContextType {
   getMessagesForUser: (userId: string) => Message[];
   markMessagesAsRead: (userId: string) => void;
   deleteMessage: (messageId: string) => void;
+  deleteThread: (userId: string) => void;
   uploadFile: (file: File | Blob, folder?: string) => Promise<string>;
   bookSteadfast: (orderId: string, data: any) => Promise<any>;
   cancelOrder: (orderId: string, reason: string) => Promise<void>;
@@ -1349,9 +1350,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }));
   };
 
-  const deleteMessage = (messageId: string) => {
-    setMessages(messages.filter((m: Message) => m.id !== messageId));
-    toast.success('Message deleted');
+  const deleteMessage = async (messageId: string) => {
+    try {
+      await apiCall(`/messages/${messageId}`, 'DELETE');
+      setMessages((prev: Message[]) => prev.filter(m => m.id !== messageId && m._id !== messageId));
+      toast.success('Message deleted');
+    } catch (error) {
+      toast.error('Failed to delete message');
+    }
+  };
+
+  const deleteThread = async (userId: string) => {
+    try {
+      await apiCall(`/messages/thread/${userId}`, 'DELETE');
+      setMessages((prev: Message[]) => prev.filter(m => m.senderId !== userId && m.receiverId !== userId));
+      toast.success('Conversation deleted');
+    } catch (error) {
+      toast.error('Failed to delete conversation');
+    }
   };
 
   // Reviews
@@ -1604,7 +1620,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     cart, addToCart, addCustomItemToCart, removeFromCart, updateCartQuantity, clearCart,
     orders, placeOrder, updateOrderStatus, updateOrderConsigneeInfo, updateOrderTotal, verifyPayment, deleteOrder, confirmOrder, requestRefund, processRefund, updateUserAddress, updateUser,
     messages, sendMessage, getMessagesForUser, markMessagesAsRead,
-    deleteMessage,
+    deleteMessage, deleteThread,
     sketchPricing,
     updateSketchPricing,
     reviews, addReview, deleteUserReview,

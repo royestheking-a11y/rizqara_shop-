@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore, Message } from '@/app/context/StoreContext';
-import { Send, Search, MessageSquare, Package, LifeBuoy, FileText, CreditCard, CheckCircle, Truck, DollarSign, X, Info } from 'lucide-react';
+import { Send, Search, MessageSquare, Package, LifeBuoy, FileText, CreditCard, CheckCircle, Truck, DollarSign, X, Info, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const AdminMessages = () => {
@@ -75,9 +75,18 @@ export const AdminMessages = () => {
 
   // Group messages by User AND Context
   const threads = messages.reduce((acc: Record<string, { userId: string, context: string, messages: Message[], unreadCount: number, lastMessage: Message }>, msg) => {
-    if (msg.senderId === 'admin' || msg.senderId === 'admin_1') return acc;
+    // Determine the thread owner (the user being talked to)
+    let threadUserId = msg.senderId;
 
-    const userId = msg.senderId;
+    // If Admin sent it, the thread owner is the receiver
+    if (msg.senderId === 'admin' || msg.senderId === 'admin_1') {
+      threadUserId = msg.receiverId;
+    }
+
+    // Skip if threadUserId is 'admin' (shouldn't happen unless admin talks to admin)
+    if (threadUserId === 'admin' || threadUserId === 'admin_1') return acc;
+
+    const userId = threadUserId;
     const context = msg.type === 'order' && msg.orderId ? msg.orderId : 'support';
     const key = `${userId}-${context}`;
 
@@ -92,6 +101,7 @@ export const AdminMessages = () => {
     }
 
     acc[key].messages.push(msg);
+    // Only count unread if User sent it and it's not read
     if (!msg.read && msg.senderId !== 'admin' && msg.senderId !== 'admin_1') acc[key].unreadCount++;
 
     if (new Date(msg.timestamp) > new Date(acc[key].lastMessage.timestamp)) {
@@ -340,6 +350,21 @@ export const AdminMessages = () => {
                   {showContextDrawer ? t('লুকান', 'Hide') : t('তথ্য', 'Info')}
                 </span>
               </button>
+
+              <button
+                onClick={() => {
+                  if (confirm(t('আপনি কি নিশ্চিত যে আপনি এই কথোপকথনটি মুছে ফেলতে চান?', 'Are you sure you want to delete this conversation?'))) {
+                    // @ts-ignore
+                    useStore().deleteThread(selectedThread.userId);
+                    setSelectedThread(null);
+                  }
+                }}
+                className="p-2 ml-2 hover:bg-red-50 text-red-500 rounded-lg transition shrink-0"
+                title={t('মুছে ফেলুন', 'Delete')}
+              >
+                <Trash2 size={18} />
+              </button>
+
             </div>
 
             {/* Messages */}
@@ -533,6 +558,6 @@ export const AdminMessages = () => {
           </>
         )}
       </div>
-    </div>
+    </div >
   );
 };
