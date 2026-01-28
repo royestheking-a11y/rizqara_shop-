@@ -374,7 +374,7 @@ export const Login = () => {
                     </button>
 
                     <FacebookLogin
-                      appId={import.meta.env.VITE_FACEBOOK_APP_ID || "YOUR_FACEBOOK_APP_ID"}
+                      appId={import.meta.env.VITE_FACEBOOK_APP_ID}
                       onSuccess={(response) => {
                         console.log('Facebook Login Success:', response);
                         loginWithFacebook(response.accessToken, response.userID);
