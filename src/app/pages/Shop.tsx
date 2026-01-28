@@ -316,7 +316,7 @@ export const Shop = () => {
 
                 <div className="space-y-8">
                   <div>
-                    <h4 className="font-semibold mb-3">{t('ক্য��টাগরি', 'Category')}</h4>
+                    <h4 className="font-semibold mb-3">{t('ক্যাটাগরি', 'Category')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {allCategories.map(cat => (
                         <button

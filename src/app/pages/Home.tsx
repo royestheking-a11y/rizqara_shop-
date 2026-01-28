@@ -150,7 +150,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
-      {dealProducts.length > 0 && (
+      {(isLoading || dealProducts.length > 0) && (
         <section className="py-12 bg-gradient-to-br from-red-50 to-orange-50">
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
@@ -169,9 +169,12 @@ export const Home = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-              {dealProducts.slice(0, 12).map(product => (
-                <ProductCard key={product.id} product={product} disableHoverEffect={true} />
-              ))}
+              {isLoading
+                ? [...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)
+                : dealProducts.slice(0, 12).map(product => (
+                  <ProductCard key={product.id} product={product} disableHoverEffect={true} />
+                ))
+              }
             </div>
           </div>
         </section>

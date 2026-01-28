@@ -574,9 +574,10 @@ export const ProfileEnhanced = () => {
                         </div>
                         <button
                           onClick={() => deleteReminder(reminder.id)}
-                          className="text-gray-400 hover:text-red-500 transition opacity-0 group-hover:opacity-100"
+                          className="text-red-500 hover:text-red-700 transition p-2 hover:bg-red-50 rounded-full"
+                          title={t('মুছে ফেলুন', 'Delete')}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={18} />
                         </button>
                       </div>
 

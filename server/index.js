@@ -20,6 +20,9 @@ app.use(express.json({ limit: '50mb' })); // Body parser with higher limit
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 console.log('Registering routes...');
 app.use('/api/auth', require('./routes/auth'));
 console.log('Registered: /api/auth');

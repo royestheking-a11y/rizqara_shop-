@@ -68,7 +68,7 @@ export const Navbar = () => {
         </button>
 
         {/* Logo - Full Name */}
-        <Link to="/" className="text-xl sm:text-2xl md:text-3xl font-bold font-serif tracking-tight text-[#D91976] shrink-0">
+        <Link to="/" className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-[#D91976] shrink-0">
           {language === 'bn' ? 'রিজকারা শপ' : 'RizQara Shop'}
         </Link>
 
