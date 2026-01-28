@@ -4,7 +4,7 @@ import { Send, Search, MessageSquare, Package, LifeBuoy, FileText, CreditCard, C
 import { toast } from 'sonner';
 
 export const AdminMessages = () => {
-  const { messages, sendMessage, orders, language, t, updateOrderStatus, verifyPayment } = useStore();
+  const { messages, sendMessage, orders, language, t, updateOrderStatus, verifyPayment, deleteThread } = useStore();
   const [selectedThread, setSelectedThread] = useState<{ userId: string, context: 'support' | string } | null>(null);
   const [inputText, setInputText] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread' | 'order'>('all');
@@ -354,8 +354,7 @@ export const AdminMessages = () => {
               <button
                 onClick={() => {
                   if (confirm(t('আপনি কি নিশ্চিত যে আপনি এই কথোপকথনটি মুছে ফেলতে চান?', 'Are you sure you want to delete this conversation?'))) {
-                    // @ts-ignore
-                    useStore().deleteThread(selectedThread.userId);
+                    deleteThread(selectedThread.userId);
                     setSelectedThread(null);
                   }
                 }}
@@ -364,6 +363,7 @@ export const AdminMessages = () => {
               >
                 <Trash2 size={18} />
               </button>
+
 
             </div>
 
