@@ -25,9 +25,9 @@ export const About = () => {
     ];
 
     const stats = [
-        { label: t('সন্তুষ্ট গ্রাহক', 'Happy Customers'), value: '50k+' },
-        { label: t('প্রোডাক্ট কালেকশন', 'Products'), value: '2k+' },
-        { label: t('ডেলিভারি সম্পন্ন', 'Deliveries'), value: '100k+' },
+        { label: t('সন্তুষ্ট গ্রাহক', 'Happy Customers'), value: '5k+' },
+        { label: t('প্রোডাক্ট কালেকশন', 'Products'), value: '1k+' },
+        { label: t('ডেলিভারি সম্পন্ন', 'Deliveries'), value: '10k+' },
         { label: t('বছর অভিজ্ঞতা', 'Years Experience'), value: '5+' },
     ];
 
@@ -74,8 +74,8 @@ export const About = () => {
                         <div className="relative">
                             <div className="absolute inset-0 bg-[#D91976] transform rotate-3 rounded-2xl opacity-10"></div>
                             <img
-                                src="https://images.unsplash.com/photo-1556740758-90de2742e1e2?w=800&q=80"
-                                alt="Team"
+                                src="/bengali_culture_team.png"
+                                alt="Team - Bengali Culture & Heritage"
                                 className="relative rounded-2xl shadow-xl w-full hover:scale-[1.02] transition duration-500"
                             />
                         </div>

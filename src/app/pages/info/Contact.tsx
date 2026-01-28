@@ -49,7 +49,7 @@ export const Contact = () => {
                                     <Phone size={24} />
                                 </div>
                                 <h3 className="text-xl font-bold mb-2">{t('ফোন', 'Phone')}</h3>
-                                <p className="text-gray-600 mb-1">+880 1234 567 890</p>
+                                <p className="text-gray-600 mb-1">+880 1625691878</p>
                                 <p className="text-gray-400 text-sm">{t('সকাল ১০টা - রাত ১০টা', '10AM - 10PM')}</p>
                             </div>
                             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
@@ -57,15 +57,15 @@ export const Contact = () => {
                                     <Mail size={24} />
                                 </div>
                                 <h3 className="text-xl font-bold mb-2">{t('ইমেইল', 'Email')}</h3>
-                                <p className="text-gray-600">support@rizqara.com</p>
-                                <p className="text-gray-600">info@rizqara.com</p>
+                                <p className="text-gray-600">rizqarashops@gmail.com</p>
+                                <p className="text-gray-600">rizqarashop@gmail.com</p>
                             </div>
                             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                                 <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
                                     <MapPin size={24} />
                                 </div>
                                 <h3 className="text-xl font-bold mb-2">{t('ঠিকানা', 'Address')}</h3>
-                                <p className="text-gray-600">{t('বাড়ি-১২, রোড-৫, ধানমন্ডি, ঢাকা', 'House-12, Road-5, Dhanmondi, Dhaka')}</p>
+                                <p className="text-gray-600">{t('বাড়ি-34, রোড-16, Nikunja 2, Dhaka', 'House-34, Road-16, Nikunja 2, Dhaka')}</p>
                             </div>
                         </div>
 

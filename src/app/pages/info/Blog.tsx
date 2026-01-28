@@ -10,7 +10,7 @@ export const Blog = () => {
             id: 1,
             title: t('ঈদের স্পেশাল কালেকশন ২০২৬', 'Eid Special Collection 2026'),
             excerpt: t('এবারের ঈদে রিজকারা নিয়ে এসেছে এক্সক্লুসিভ ডিজাইনার পোশাক...', 'This Eid, RizQara brings exclusive designer wear...'),
-            image: 'https://images.unsplash.com/photo-1550614000-4b9519e09d96?w=800&q=80',
+            image: '/blog_eid_collection.png',
             date: 'Jan 25, 2026',
             author: 'Admin'
         },
@@ -18,7 +18,7 @@ export const Blog = () => {
             id: 2,
             title: t('শীতকালীন ফ্যাশন ট্রেন্ডস', 'Winter Fashion Trends'),
             excerpt: t('শীতের ফ্যাশনে আরাম এবং স্টাইলের পারফেক্ট কম্বিনেশন...', 'Perfect combination of comfort and style in winter fashion...'),
-            image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
+            image: '/blog_winter_fashion.png',
             date: 'Jan 20, 2026',
             author: 'Editor'
         },
@@ -26,7 +26,7 @@ export const Blog = () => {
             id: 3,
             title: t('কিভাবে সঠিক পারফিউম বেছে নেবেন?', 'How to choose the perfect perfume?'),
             excerpt: t('পারফিউম নোটস এবং সিজন অনুযায়ী পারফিউম গাইড...', 'Perfume guide according to notes and seasons...'),
-            image: 'https://images.unsplash.com/photo-1594035910387-fea4779426e9?w=800&q=80',
+            image: '/blog_perfume.png',
             date: 'Jan 15, 2026',
             author: 'Expert'
         },
@@ -34,7 +34,7 @@ export const Blog = () => {
             id: 4,
             title: t('স্কিনকেয়ার রুটিন গাইড', 'Skincare Routine Guide'),
             excerpt: t('স্বাস্থ্যোজ্জ্বল ত্বকের জন্য ৫টি সহজ ধাপ...', '5 simple steps for glowing skin...'),
-            image: 'https://images.unsplash.com/photo-1556228720-191739f0df14?w=800&q=80',
+            image: '/blog_skincare.png',
             date: 'Jan 10, 2026',
             author: 'Dermatologist'
         }

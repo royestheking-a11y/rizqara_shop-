@@ -470,9 +470,9 @@ export const Checkout = () => {
                     <div className="text-center mb-6">
                       <p className="text-sm text-gray-500 mb-1">{t('নিচের নম্বরে টাকা পাঠান', 'Send Money to the number below')}</p>
                       <h3 className="text-2xl font-bold text-gray-900 tracking-wider">
-                        {onlineMethod === 'bkash' && '01700000000'}
-                        {onlineMethod === 'nagad' && '01800000000'}
-                        {onlineMethod === 'rocket' && '01900000000'}
+                        {onlineMethod === 'bkash' && '01625691878'}
+                        {onlineMethod === 'nagad' && '01625691878'}
+                        {onlineMethod === 'rocket' && '01625691878'}
                       </h3>
                       <div className="inline-block mt-2 px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                         {t('পার্সোনাল নম্বর', 'Personal Number')}
