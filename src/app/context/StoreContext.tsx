@@ -516,7 +516,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         PUBLIC_KEY: import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       });
       if (user) {
-        socketRef.current.emit('join_room', user.id);
+        // If user is admin (or checking by email), join 'admin_1' room to listen for messages
+        if (user.role === 'admin' || user.email === 'admin@zrizqara.com') {
+          socketRef.current.emit('join_room', 'admin_1');
+          console.log('Joined room: admin_1');
+        } else {
+          socketRef.current.emit('join_room', user.id);
+          console.log('Joined room:', user.id);
+        }
       }
     });
 
@@ -1298,7 +1305,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     try {
       const payload = {
-        senderId: user.id,
+        senderId: (user.role === 'admin' || user.email === 'admin@zrizqara.com') ? 'admin_1' : user.id,
         receiverId: receiverId || 'admin_1', // Default to admin
         text,
         image,
