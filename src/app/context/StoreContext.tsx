@@ -1320,10 +1320,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Optimistic / Real-time Update
       setMessages((prev: Message[]) => [...prev, savedMessage]);
 
-      // Emit to Socket for real-time delivery to other online users
-      if (socketRef.current) {
-        socketRef.current.emit('send_message', savedMessage);
-      }
+
 
     } catch (error) {
       console.error('Failed to send message:', error);
