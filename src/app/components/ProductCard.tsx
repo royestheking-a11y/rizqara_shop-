@@ -143,11 +143,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, disableHoverE
               <p className="text-lg font-bold text-[#D91976]">৳{product.price}</p>
             )}
           </div>
-          {product.stock < 10 && product.stock > 0 && (
-            <span className="text-xs text-orange-600 font-medium">
-              {t('মাত্র', 'Only')} {product.stock} {t('টি বাকি', 'left')}
+          <div className="flex flex-col items-end gap-0.5">
+            {product.stock < 10 && product.stock > 0 && (
+              <span className="text-xs text-orange-600 font-medium">
+                {t('মাত্র', 'Only')} {product.stock} {t('টি বাকি', 'left')}
+              </span>
+            )}
+            <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+              {((product.fakeSales || 0) + (product.realSales || 0))}+ {t('বিক্রি হয়েছে', 'Sold')}
             </span>
-          )}
+          </div>
         </div>
 
         {/* Action Buttons */}

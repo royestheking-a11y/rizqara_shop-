@@ -43,6 +43,9 @@ const createProduct = async (req, res) => {
             price,
             category,
             images: imageUrls,
+            fakeSales: Math.floor(Math.random() * (200 - 60 + 1)) + 60, // Random 60-200
+            rating: 5,
+            reviews: 5, // Initial fake review count
             ...rest
         });
 

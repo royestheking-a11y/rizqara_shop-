@@ -36,6 +36,17 @@ const createOrder = async (req, res) => {
 
         const createdOrder = await order.save();
 
+        // Update Real Sales Count for Products
+        for (const item of items) {
+            // Find by custom 'id' (string) or _id if needed. Try custom id first matching schema.
+            // But schema uses `id: String`.
+            const product = await require('../models/Product').findOne({ id: item.id });
+            if (product) {
+                product.realSales = (product.realSales || 0) + item.quantity;
+                await product.save();
+            }
+        }
+
         // TODO: Trigger Email here if server-side email sending is desired?
         // For now, frontend handles it via EmailJS as per previous tasks.
 
@@ -140,5 +151,6 @@ module.exports = {
     getMyOrders,
     getOrders,
     updateOrderStatus,
-    updateOrderPrice
+    updateOrderPrice,
+    deleteOrder
 };

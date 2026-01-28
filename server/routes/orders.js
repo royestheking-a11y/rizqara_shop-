@@ -10,5 +10,6 @@ router.put('/:id/price', async (req, res) => {
     const { updateOrderPrice } = require('../controllers/orderController');
     return updateOrderPrice(req, res);
 });
+router.delete('/:id', require('../controllers/orderController').deleteOrder);
 
 module.exports = router;

@@ -21,6 +21,8 @@ const productSchema = new mongoose.Schema({
     isNewArrival: { type: Boolean, default: false },
     isBestSeller: { type: Boolean, default: false },
     isFeatured: { type: Boolean, default: false },
+    fakeSales: { type: Number, default: 0 },
+    realSales: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 

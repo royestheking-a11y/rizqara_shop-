@@ -35,6 +35,7 @@ app.use('/api/vouchers', require('./routes/vouchers'));
 app.use('/api/steadfast', require('./routes/steadfast'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/push', require('./routes/push'));
+app.use('/api/messages', require('./routes/messages'));
 console.log('All routes registered.');
 
 const server = http.createServer(app);
@@ -45,6 +46,9 @@ const io = new Server(server, {
     }
 });
 
+// Share io instance with controllers
+app.set('io', io);
+
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
@@ -54,24 +58,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('send_message', (data) => {
-        // ... (Keep existing socket logic for now)
         socket.to(data.receiverId).emit('receive_message', data);
-
-        // Simulating Admin Auto-Reply
-        if (data.receiverId === 'admin_1') {
-            setTimeout(() => {
-                const reply = {
-                    id: Date.now().toString(),
-                    senderId: 'admin_1',
-                    receiverId: data.senderId,
-                    text: 'Thank you for your message. We will get back to you shortly.',
-                    timestamp: new Date().toISOString(),
-                    type: 'support',
-                    read: false
-                };
-                io.to(data.senderId).emit('receive_message', reply);
-            }, 1000);
-        }
     });
 
     socket.on('disconnect', () => {

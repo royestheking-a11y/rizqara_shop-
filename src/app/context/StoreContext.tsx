@@ -58,6 +58,8 @@ export interface Product {
   images: string[];
   stock: number;
   isCustomizable?: boolean;
+  fakeSales?: number;
+  realSales?: number;
   rating?: number;
   reviews?: number;
   isNew?: boolean;
@@ -429,6 +431,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             // Also fetch all orders for admin
             const orderData = await apiCall('/orders', 'GET', undefined, u.token);
             setOrders(orderData);
+
+            // Fetch admin messages
+            const msgData = await apiCall(`/messages/${u.id}`, 'GET', undefined, u.token);
+            setMessages(msgData);
+          } else {
+            // Fetch customer messages
+            const msgData = await apiCall(`/messages/${u.id}`, 'GET', undefined, u.token);
+            setMessages(msgData);
           }
         }
 
@@ -1209,9 +1219,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toast.success(verified ? 'Payment verified' : 'Payment rejected');
   };
 
-  const deleteOrder = (orderId: string) => {
-    setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== orderId));
-    toast.success('Order deleted');
+  const deleteOrder = async (orderId: string) => {
+    try {
+      if (confirm(t('আপনি কি নিশ্চিত যে আপনি এই অর্ডারটি মুছে ফেলতে চান?', 'Are you sure you want to delete this order?'))) {
+        // Use user token for auth
+        const storedUser = localStorage.getItem('rizqara_user');
+        const token = storedUser ? JSON.parse(storedUser).token : null;
+
+        await apiCall(`/orders/${orderId}`, 'DELETE', undefined, token);
+        setOrders((prev: Order[]) => prev.filter((o: Order) => o.id !== orderId));
+        toast.success(t('অর্ডার মুছে ফেলা হয়েছে', 'Order deleted successfully'));
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error(t('অর্ডার মুছতে ব্যর্থ হয়েছে', 'Failed to delete order'));
+    }
   };
 
   const confirmOrder = (orderId: string) => {
@@ -1270,31 +1292,35 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Messages
-  const sendMessage = (text: string, image?: string, orderId?: string, receiverId?: string, type: Message['type'] = 'support') => {
+  // Messages
+  const sendMessage = async (text: string, image?: string, orderId?: string, receiverId?: string, type: Message['type'] = 'support') => {
     if (!user) return;
 
-    const newMessage: Message = {
-      id: `msg_${Date.now()}`,
-      senderId: user.id,
-      receiverId: receiverId || 'admin_1', // Default to admin
-      text,
-      image,
-      timestamp: new Date().toISOString(),
-      orderId,
-      type,
-      read: false,
-    };
+    try {
+      const payload = {
+        senderId: user.id,
+        receiverId: receiverId || 'admin_1', // Default to admin
+        text,
+        image,
+        metadata: { orderId, type: type || 'support' }, // Align with backend schema
+        type: type || 'support'
+      };
 
-    // Optimistic UI Update
-    setMessages([...messages, newMessage]);
+      // Call API
+      const savedMessage = await apiCall('/messages', 'POST', payload);
 
-    // Send to Socket Server
-    if (socketRef.current) {
-      socketRef.current.emit('send_message', newMessage);
+      // Optimistic / Real-time Update
+      setMessages((prev: Message[]) => [...prev, savedMessage]);
+
+      // Emit to Socket for real-time delivery to other online users
+      if (socketRef.current) {
+        socketRef.current.emit('send_message', savedMessage);
+      }
+
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      toast.error('Failed to send message');
     }
-
-    // Notify receiver (Local notification logic kept as fallback/local mock)
-    // addNotification(newMessage.receiverId, 'message', 'New Message', 'নতুন বার্তা', `New message from ${user.name}`, `${user.name} থেকে নতুন বর্তা`, user.role === 'admin' ? '/account/messages' : '/admin/messages');
   };
 
   const updateSketchPricing = (pricing: SketchPricing) => {
