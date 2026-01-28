@@ -25,12 +25,21 @@ const seedData = async () => {
         // Only checking if empty to initialize.
 
         // Create Admin User if not exists
-        const adminExists = await User.findOne({ email: 'admin@rizqara.com' });
-        if (!adminExists) {
+        // Create or Update Admin User
+        const adminEmail = 'admin@rizqara.com';
+        const adminPassword = 'rizqara88';
+
+        const adminUser = await User.findOne({ email: adminEmail });
+
+        if (adminUser) {
+            adminUser.password = adminPassword;
+            await adminUser.save();
+            console.log('Admin User Password Updated');
+        } else {
             await User.create({
                 name: 'Admin User',
-                email: 'admin@rizqara.com',
-                password: 'adminpassword123',
+                email: adminEmail,
+                password: adminPassword,
                 role: 'admin',
                 phone: '01700000000'
             });
