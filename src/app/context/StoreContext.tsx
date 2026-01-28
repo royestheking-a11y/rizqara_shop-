@@ -1350,7 +1350,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Optimistic Update
     setMessages(prev => prev.map((m: Message) => {
       // Logic: Mark messages sent BY senderId TO me as read
-      if ((m.senderId === senderId || (senderId === 'admin' && m.senderId === 'admin_1') || (senderId === 'admin_1' && m.senderId === 'admin')) && m.receiverId === user.id && !m.read) {
+      // Handle Admin Aliases for Receiver (Me)
+      const isMe = m.receiverId === user.id ||
+        (user.role === 'admin' && (m.receiverId === 'admin_1' || m.receiverId === 'admin'));
+
+      if ((m.senderId === senderId || (senderId === 'admin' && m.senderId === 'admin_1') || (senderId === 'admin_1' && m.senderId === 'admin')) && isMe && !m.read) {
         return { ...m, read: true };
       }
       return m;
