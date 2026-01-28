@@ -16,7 +16,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Body parser
+app.use(express.json({ limit: '50mb' })); // Body parser with higher limit
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
 console.log('Registering routes...');
