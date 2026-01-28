@@ -20,33 +20,13 @@ const sendMessage = async (req, res) => {
 
         const savedMessage = await newMessage.save();
 
-        // Check for Auto-Reply (if sent to Admin)
-        if (receiverId === 'admin_1') {
-            // setTimeout Logic handled by returning a flag or handled in background?
-            // Since we need to save the reply to DB, we can do it here.
-            // But to avoid blocking the response delay, we can just save it immediately with a slight timestamp offset
-            // OR we can just return the user message and letting client know.
-            // Better UX: Save reply now but return both? Or just let the client poll/socket receive it.
-            // Let's create the reply record asynchronously.
+        // Real-time Socket Emission
+        const io = req.app.get('io');
+        if (io) {
+            io.to(receiverId).emit('receive_message', savedMessage);
 
-            setTimeout(async () => {
-                try {
-                    const reply = new Message({
-                        senderId: 'admin_1',
-                        receiverId: senderId,
-                        text: 'Thank you for your message. We will get back to you shortly.',
-                        type: 'support',
-                        read: false,
-                        timestamp: new Date()
-                    });
-                    await reply.save();
-                    // Note: Ideally we would emit a socket event here too if we had access to IO instance.
-                    // For now, reliance is on polling or client-side socket emission which might result in duplicates if not careful.
-                    // But since we are moving towards DB persistence, the polling/fetching on load will catch it.
-                } catch (err) {
-                    console.error('Auto-reply error:', err);
-                }
-            }, 1000);
+            // Also emit to sender for multi-device sync
+            // io.to(senderId).emit('receive_message', savedMessage);
         }
 
         res.status(201).json(savedMessage);
