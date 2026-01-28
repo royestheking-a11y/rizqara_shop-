@@ -432,8 +432,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             const orderData = await apiCall('/orders', 'GET', undefined, u.token);
             setOrders(orderData);
 
-            // Fetch admin messages
-            const msgData = await apiCall(`/messages/${u.id}`, 'GET', undefined, u.token);
+            // Fetch admin messages - Force 'admin_1' ID to retrieve ALL messages
+            const msgData = await apiCall(`/messages/admin_1`, 'GET', undefined, u.token);
             setMessages(msgData);
           } else {
             // Fetch customer messages
