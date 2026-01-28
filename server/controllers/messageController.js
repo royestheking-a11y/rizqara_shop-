@@ -61,10 +61,17 @@ const sendMessage = async (req, res) => {
 const getMessages = async (req, res) => {
     try {
         const { userId } = req.params;
-        // Find messages where user is sender OR receiver
-        const messages = await Message.find({
-            $or: [{ senderId: userId }, { receiverId: userId }]
-        }).sort({ timestamp: 1 });
+
+        let messages;
+        // If Admin, fetch ALL messages (sorted by timestamp)
+        if (userId === 'admin_1' || userId === 'admin') {
+            messages = await Message.find({}).sort({ timestamp: 1 });
+        } else {
+            // Find messages where user is sender OR receiver
+            messages = await Message.find({
+                $or: [{ senderId: userId }, { receiverId: userId }]
+            }).sort({ timestamp: 1 });
+        }
 
         res.json(messages);
     } catch (error) {
