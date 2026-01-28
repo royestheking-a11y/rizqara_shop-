@@ -1353,7 +1353,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteMessage = async (messageId: string) => {
     try {
       await apiCall(`/messages/${messageId}`, 'DELETE');
-      setMessages((prev: Message[]) => prev.filter(m => m.id !== messageId && m._id !== messageId));
+      setMessages((prev: Message[]) => prev.filter(m => m.id !== messageId));
       toast.success('Message deleted');
     } catch (error) {
       toast.error('Failed to delete message');
