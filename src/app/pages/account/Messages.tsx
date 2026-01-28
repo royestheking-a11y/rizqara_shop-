@@ -4,9 +4,10 @@ import { Send, Image as ImageIcon, MessageSquare, Package, LifeBuoy, X, CheckChe
 import { toast } from 'sonner';
 
 export const Messages = () => {
-  const { user, messages, sendMessage, markMessagesAsRead, t } = useStore();
+  const { user, messages, sendMessage, markMessagesAsRead, t, uploadFile } = useStore();
   const [inputText, setInputText] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const hasMarkedRead = useRef(false);
@@ -20,7 +21,7 @@ export const Messages = () => {
   // Mark all unread messages as read on mount
   useEffect(() => {
     if (user && !hasMarkedRead.current) {
-      markMessagesAsRead(user.id);
+      markMessagesAsRead('admin_1');
       hasMarkedRead.current = true;
     }
   }, [user, allMessages.length]);
@@ -35,16 +36,29 @@ export const Messages = () => {
     }
   }, [allMessages.length]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputText.trim() && !selectedImage) return;
 
-    const messageText = selectedImage ? (inputText || 'Image') : inputText;
-    // We treat all user-sent messages as 'support' type in this unified view
-    // unless we want to infer order context from previous messages, but simpler is 'support'.
-    sendMessage(messageText, selectedImage || undefined, undefined, undefined, 'support');
+    let imageUrl = selectedImage;
+
+    if (selectedFile) {
+      const toastId = toast.loading('Uploading image...');
+      try {
+        imageUrl = await uploadFile(selectedFile, 'chats');
+        toast.dismiss(toastId);
+      } catch (err) {
+        toast.dismiss(toastId);
+        return; // Stop if upload fails
+      }
+    }
+
+    const messageText = selectedFile ? 'Image Sent' : (imageUrl ? (inputText || 'Image') : inputText);
+
+    sendMessage(messageText, imageUrl || undefined, undefined, undefined, 'support');
 
     setInputText('');
     setSelectedImage(null);
+    setSelectedFile(null);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,6 +68,7 @@ export const Messages = () => {
         toast.error('Image size should be less than 5MB');
         return;
       }
+      setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setSelectedImage(reader.result as string);
       reader.readAsDataURL(file);
@@ -137,7 +152,10 @@ export const Messages = () => {
           <div className="mb-3 relative inline-block">
             <img src={selectedImage} alt="Preview" className="h-20 rounded-lg border-2 border-[#D91976]" />
             <button
-              onClick={() => setSelectedImage(null)}
+              onClick={() => {
+                setSelectedImage(null);
+                setSelectedFile(null);
+              }}
               className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition"
             >
               <X size={14} />

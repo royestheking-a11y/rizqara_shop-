@@ -533,6 +533,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       toast.info('New message received');
     });
 
+    socketRef.current.on('messages_read', ({ by }: { by: string }) => {
+      setMessages((prev: Message[]) => prev.map(m =>
+        m.receiverId === by ? { ...m, read: true } : m
+      ));
+    });
+
     return () => {
       socketRef.current?.disconnect();
     };
@@ -1338,13 +1344,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       .sort((a: Message, b: Message) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   };
 
-  const markMessagesAsRead = (userId: string) => {
-    setMessages(messages.map((m: Message) => {
-      if (m.receiverId === userId && !m.read) {
+  const markMessagesAsRead = async (senderId: string) => {
+    if (!user) return;
+
+    // Optimistic Update
+    setMessages(prev => prev.map((m: Message) => {
+      // Logic: Mark messages sent BY senderId TO me as read
+      if ((m.senderId === senderId || (senderId === 'admin' && m.senderId === 'admin_1') || (senderId === 'admin_1' && m.senderId === 'admin')) && m.receiverId === user.id && !m.read) {
         return { ...m, read: true };
       }
       return m;
     }));
+
+    // API Call
+    try {
+      await apiCall(`/messages/read/${senderId}`, 'PUT', { receiverId: user.id });
+    } catch (error) {
+      console.error('Failed to mark messages as read', error);
+    }
   };
 
   const deleteMessage = async (messageId: string) => {
@@ -1616,7 +1633,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     products, addProduct, updateProduct, deleteProduct, isLoading,
     cart, addToCart, addCustomItemToCart, removeFromCart, updateCartQuantity, clearCart,
     orders, placeOrder, updateOrderStatus, updateOrderConsigneeInfo, updateOrderTotal, verifyPayment, deleteOrder, confirmOrder, requestRefund, processRefund, updateUserAddress, updateUser,
-    messages, sendMessage, getMessagesForUser, markMessagesAsRead,
+    messages, sendMessage, getMessagesForUser, markMessagesAsRead, uploadFile,
     deleteMessage, deleteThread,
     sketchPricing,
     updateSketchPricing,
@@ -1631,7 +1648,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     sendOTP,
     verifyOTP,
     resetPassword,
-    uploadFile,
+
     bookSteadfast, // Exported
     cancelOrder,   // Exported
     t,

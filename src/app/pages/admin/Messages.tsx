@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useStore, Message } from '@/app/context/StoreContext';
-import { Send, Search, MessageSquare, Package, LifeBuoy, FileText, CreditCard, CheckCircle, Truck, DollarSign, X, Info, Trash2 } from 'lucide-react';
+import { Send, Search, MessageSquare, Package, LifeBuoy, FileText, CreditCard, CheckCircle, Truck, DollarSign, X, Info, Trash2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const AdminMessages = () => {
-  const { messages, sendMessage, orders, language, t, updateOrderStatus, verifyPayment, deleteThread } = useStore();
+  const { messages, sendMessage, orders, language, t, updateOrderStatus, verifyPayment, deleteThread, uploadFile, markMessagesAsRead } = useStore();
   const [selectedThread, setSelectedThread] = useState<{ userId: string, context: 'support' | string } | null>(null);
   const [inputText, setInputText] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread' | 'order'>('all');
   const [search, setSearch] = useState('');
+
   const [showContextDrawer, setShowContextDrawer] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Saved reply templates (Bangla & English)
   const savedReplies = [
@@ -135,6 +137,15 @@ export const AdminMessages = () => {
     }).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
     : [];
 
+  useEffect(() => {
+    if (selectedThread && activeMessages.length > 0) {
+      const hasUnread = activeMessages.some(m => !m.read && m.senderId === selectedThread.userId);
+      if (hasUnread) {
+        markMessagesAsRead(selectedThread.userId);
+      }
+    }
+  }, [selectedThread, activeMessages, markMessagesAsRead]);
+
   const userOrders = selectedThread
     ? orders.filter(o => o.userId === selectedThread.userId)
     : [];
@@ -151,6 +162,28 @@ export const AdminMessages = () => {
       selectedThread.context === 'support' ? 'support' : 'order'
     );
     setInputText('');
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedThread) {
+      const toastId = toast.loading('Uploading image...');
+      try {
+        const url = await uploadFile(file, 'chats');
+        sendMessage(
+          'Image Sent', // Fallback text
+          url,
+          selectedThread.context === 'support' ? undefined : selectedThread.context,
+          selectedThread.userId,
+          selectedThread.context === 'support' ? 'support' : 'order'
+        );
+        toast.dismiss(toastId);
+        toast.success('Image sent');
+      } catch (err) {
+        toast.dismiss(toastId);
+        toast.error('Failed to send image');
+      }
+    }
   };
 
   const handleQuickReply = (template: typeof savedReplies[0]) => {
@@ -400,7 +433,21 @@ export const AdminMessages = () => {
 
             {/* Input */}
             <div className="p-4 border-t border-gray-100 bg-white relative z-20">
-              <div className="flex gap-2 mb-3">
+              <div className="flex gap-2 mb-3 items-center">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition"
+                  title="Upload Image"
+                >
+                  <ImageIcon size={20} />
+                </button>
                 <input
                   className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[#D91976] focus:ring-1 focus:ring-[#D91976] transition"
                   placeholder={t('উত্তর লিখুন...', 'Type a reply...')}

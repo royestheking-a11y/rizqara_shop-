@@ -88,9 +88,37 @@ const deleteThread = async (req, res) => {
     }
 };
 
+// @desc    Mark messages as read
+// @route   PUT /api/messages/read/:senderId
+// @access  Private
+const markAsRead = async (req, res) => {
+    try {
+        const { senderId } = req.params; // The user whose messages we just read
+        const receiverId = req.body.receiverId; // ME (The one reading) - passed from body or middleware
+
+        // Update DB
+        await Message.updateMany(
+            { senderId, receiverId, read: false },
+            { $set: { read: true } }
+        );
+
+        // Notify the Sender (so they see double check)
+        const io = req.app.get('io');
+        if (io) {
+            // Emitting to the SENDER that their messages were read
+            io.to(senderId).emit('messages_read', { by: receiverId });
+        }
+
+        res.json({ message: 'Marked as read' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     sendMessage,
     getMessages,
     deleteMessage,
-    deleteThread
+    deleteThread,
+    markAsRead
 };
