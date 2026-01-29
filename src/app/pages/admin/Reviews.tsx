@@ -7,7 +7,7 @@ import Cropper from 'react-easy-crop';
 import getCroppedImg from '@/app/utils/cropImage';
 
 export const AdminReviews = () => {
-  const { reviews, premiumReviews, addPremiumReview, deletePremiumReview, deleteUserReview } = useStore();
+  const { reviews, premiumReviews, addPremiumReview, deletePremiumReview, deleteUserReview, uploadFile } = useStore();
   const [activeTab, setActiveTab] = useState<'premium' | 'user'>('premium');
 
   // Form State
@@ -51,9 +51,13 @@ export const AdminReviews = () => {
         rotation
       );
 
+      const res = await fetch(croppedImage);
+      const blob = await res.blob();
+      const uploadedUrl = await uploadFile(blob, 'premium_reviews');
+
       addPremiumReview({
         title: newTitle,
-        imageUrl: croppedImage
+        imageUrl: uploadedUrl
       });
 
       setNewTitle('');

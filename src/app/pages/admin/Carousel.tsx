@@ -5,7 +5,7 @@ import { Plus, Trash2, Eye, EyeOff, Image as ImageIcon, Link as LinkIcon, ArrowU
 import { toast } from 'sonner';
 
 export const AdminCarousel = () => {
-  const { carouselSlides, addCarouselSlide, updateCarouselSlide, deleteCarouselSlide, toggleCarouselSlide } = useStore();
+  const { carouselSlides, addCarouselSlide, updateCarouselSlide, deleteCarouselSlide, toggleCarouselSlide, uploadFile } = useStore();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingSlide, setEditingSlide] = useState<CarouselSlide | null>(null);
   const [formData, setFormData] = useState({
@@ -25,20 +25,45 @@ export const AdminCarousel = () => {
       return;
     }
 
-    if (editingSlide) {
-      updateCarouselSlide({
-        ...editingSlide,
-        image: formData.image,
-        link: formData.link,
-        isActive: formData.isActive,
-        order: formData.order
-      });
-      setEditingSlide(null);
-    } else {
-      addCarouselSlide(formData);
-    }
+    const processSlide = async () => {
+      let imageUrl = formData.image;
+      if (imageUrl.startsWith('data:image')) {
+        try {
+          const res = await fetch(imageUrl);
+          const blob = await res.blob();
+          imageUrl = await uploadFile(blob, 'carousels');
+        } catch (e) {
+          console.error("Carousel upload failed", e);
+          toast.error('Image upload failed');
+          return;
+        }
+      }
 
-    setShowAddModal(false);
+      if (editingSlide) {
+        updateCarouselSlide({
+          ...editingSlide,
+          image: imageUrl,
+          link: formData.link,
+          isActive: formData.isActive,
+          order: formData.order
+        });
+        setEditingSlide(null);
+      } else {
+        addCarouselSlide({
+          ...formData,
+          image: imageUrl
+        });
+      }
+
+      setShowAddModal(false);
+      setFormData({
+        image: '',
+        link: '',
+        isActive: true,
+        order: carouselSlides.length + 1
+      });
+    };
+    processSlide();
     setFormData({
       image: '',
       link: '',

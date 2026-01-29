@@ -4,7 +4,7 @@ import { MapPin, Phone, Mail, Save, Edit2 } from 'lucide-react';
 import { ImageUploader } from '@/app/components/ImageUploader';
 
 export const Profile = () => {
-    const { user, updateUser, t } = useStore();
+    const { user, updateUser, t, uploadFile } = useStore();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -24,11 +24,24 @@ export const Profile = () => {
 
     if (!user) return null;
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        let avatarUrl = formData.avatar;
+
+        if (avatarUrl && avatarUrl.startsWith('data:image')) {
+            try {
+                const res = await fetch(avatarUrl);
+                const blob = await res.blob();
+                avatarUrl = await uploadFile(blob, 'profile_images');
+            } catch (error) {
+                console.error("Failed to upload avatar", error);
+                // Optionally handle error
+            }
+        }
+
         updateUser({
             name: formData.name,
             phone: formData.phone,
-            avatar: formData.avatar,
+            avatar: avatarUrl,
         });
         setIsEditing(false);
     };

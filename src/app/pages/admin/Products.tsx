@@ -7,7 +7,7 @@ import { OCCASIONS, PERSON_TYPES, MOODS } from '@/app/utils/giftConstants';
 import { PRODUCT_CATEGORIES } from '@/app/constants/categories';
 
 export const AdminProducts = () => {
-    const { products, addProduct, updateProduct, deleteProduct, t } = useStore();
+    const { products, addProduct, updateProduct, deleteProduct, t, uploadFile } = useStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -123,13 +123,35 @@ export const AdminProducts = () => {
             tags: formData.tags,
         };
 
-        if (editingProduct) {
-            updateProduct({ ...editingProduct, ...productData });
-        } else {
-            addProduct({ ...productData, id: `p_${Date.now()}`, rating: 0, reviews: 0 });
-        }
+        const processImages = async () => {
+            const processedImages = await Promise.all(formData.images.map(async (img) => {
+                if (img.startsWith('data:image')) {
+                    try {
+                        const res = await fetch(img);
+                        const blob = await res.blob();
+                        return await uploadFile(blob, 'products');
+                    } catch (e) {
+                        console.error("Image upload failed", e);
+                        return img; // Fallback? Or fail?
+                    }
+                }
+                return img;
+            }));
 
-        handleCloseModal();
+            const finalProductData = {
+                ...productData,
+                images: processedImages.filter(img => img.trim() !== ''),
+            };
+
+            if (editingProduct) {
+                updateProduct({ ...editingProduct, ...finalProductData });
+            } else {
+                addProduct({ ...finalProductData, id: `p_${Date.now()}`, rating: 0, reviews: 0 });
+            }
+            handleCloseModal();
+        };
+
+        processImages();
     };
 
     const handleDelete = (id: string) => {
