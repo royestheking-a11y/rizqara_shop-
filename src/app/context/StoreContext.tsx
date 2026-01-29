@@ -898,7 +898,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Pass data directly. If profileImage is a File, component should have uploaded it first via /api/upload
       // and passed the URL here.
 
-      const updatedData = await apiCall('/auth/profile', 'PUT', data, token || undefined);
+      const updatedData = await apiCall('/users/profile', 'PUT', data, token || undefined);
 
       setUser(updatedData);
       setUsers(users.map((u: User) => u.id === user.id ? updatedData : u));
@@ -1286,23 +1286,25 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toast.success(approved ? 'Refund approved' : 'Refund rejected');
   };
 
-  const updateUserAddress = (address: Address) => {
+  const updateUserAddress = async (address: Address) => {
     if (!user) return;
-    setUser((prev: User | null) => {
-      if (!prev) return prev;
-      const existingIndex = prev.addresses.findIndex((a: Address) => a.id === address.id);
-      let newAddresses;
-      if (existingIndex >= 0) {
-        newAddresses = prev.addresses.map((a: Address) => a.id === address.id ? address : a);
-      } else {
-        newAddresses = [...prev.addresses, address];
-      }
-      // If this is set as default, unset others
-      if (address.isDefault) {
-        newAddresses = newAddresses.map((a: Address) => ({ ...a, isDefault: a.id === address.id }));
-      }
-      return { ...prev, addresses: newAddresses };
-    });
+
+    // Calculate new addresses state locally first
+    const existingIndex = user.addresses.findIndex((a: Address) => a.id === address.id);
+    let newAddresses;
+    if (existingIndex >= 0) {
+      newAddresses = user.addresses.map((a: Address) => a.id === address.id ? address : a);
+    } else {
+      newAddresses = [...user.addresses, address];
+    }
+
+    // Handle default address
+    if (address.isDefault) {
+      newAddresses = newAddresses.map((a: Address) => ({ ...a, isDefault: a.id === address.id }));
+    }
+
+    // Persist via updateUser
+    await updateUser({ addresses: newAddresses });
   };
 
   // Messages
@@ -1556,27 +1558,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const isInWishlist = (productId: string) => wishlist.includes(productId);
 
-  const addReminder = (reminderData: Omit<Reminder, 'id'>) => {
+  const addReminder = async (reminderData: Omit<Reminder, 'id'>) => {
     if (!user) return;
     const newReminder: Reminder = {
       id: Math.random().toString(36).substr(2, 9),
       ...reminderData
     };
-    const updatedUser = {
-      ...user,
-      reminders: [...(user.reminders || []), newReminder]
-    };
-    setUser(updatedUser);
+
+    const newReminders = [...(user.reminders || []), newReminder];
+    await updateUser({ reminders: newReminders });
     toast.success(t('রিমাইন্ডার যোগ করা হয়েছে', 'Reminder added successfully'));
   };
 
-  const deleteReminder = (id: string) => {
+  const deleteReminder = async (id: string) => {
     if (!user) return;
-    const updatedUser = {
-      ...user,
-      reminders: (user.reminders || []).filter(r => r.id !== id)
-    };
-    setUser(updatedUser);
+    const newReminders = (user.reminders || []).filter(r => r.id !== id);
+    await updateUser({ reminders: newReminders });
     toast.success(t('রিমাইন্ডার মুছে ফেলা হয়েছে', 'Reminder deleted'));
   };
 
