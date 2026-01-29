@@ -48,7 +48,8 @@ const updateUserProfile = async (req, res) => {
             }
 
             if (req.body.reminders) {
-                user.reminders = req.body.reminders;
+                // Ensure reminders is an array and not a string
+                user.reminders = Array.isArray(req.body.reminders) ? req.body.reminders : [];
             }
 
             // Handle avatar -> profileImage mapping
