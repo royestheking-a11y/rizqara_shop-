@@ -320,6 +320,7 @@ interface StoreContextType {
   requestRefund: (orderId: string, reason: string, paymentNumber?: string) => void;
   processRefund: (orderId: string, approved: boolean, refundPaymentNumber?: string) => void;
   updateUserAddress: (address: Address) => void;
+  deleteAddress: (addressId: string) => void;
   updateUser: (data: Partial<User>) => void; // Added updateUser
   updateOrderTotal: (orderId: string, total: number) => void;
   addReminder: (reminder: Omit<Reminder, 'id'>) => void;
