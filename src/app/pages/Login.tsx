@@ -71,7 +71,7 @@ export const Login = () => {
           sessionStorage.removeItem('returnPath');
           navigate(returnPath);
         } else {
-          navigate(email === 'admin@rizqara.com' ? '/admin/dashboard' : '/');
+          navigate(email === 'admin@rizqara.com' ? '/admin' : '/');
         }
       }
     } else if (view === 'signup') {
