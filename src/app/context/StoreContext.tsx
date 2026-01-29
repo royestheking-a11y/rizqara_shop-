@@ -1306,6 +1306,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await updateUser({ addresses: newAddresses });
   };
 
+  const deleteAddress = async (addressId: string) => {
+    if (!user) return;
+
+    const newAddresses = user.addresses.filter((a: Address) => a.id !== addressId);
+
+    // If deleted address was default and there are remaining addresses, make the first one default
+    if (newAddresses.length > 0 && !newAddresses.some(a => a.isDefault)) {
+      newAddresses[0].isDefault = true;
+    }
+
+    await updateUser({ addresses: newAddresses });
+  };
+
   // Messages
   // Messages
   const sendMessage = async (text: string, image?: string, orderId?: string, receiverId?: string, type: Message['type'] = 'support') => {
@@ -1637,7 +1650,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     user, users, login, loginWithGoogle, loginWithFacebook, signup, logout, banUser, unbanUser, deleteUser,
     products, addProduct, updateProduct, deleteProduct, isLoading,
     cart, addToCart, addCustomItemToCart, removeFromCart, updateCartQuantity, clearCart,
-    orders, placeOrder, updateOrderStatus, updateOrderConsigneeInfo, updateOrderTotal, verifyPayment, deleteOrder, confirmOrder, requestRefund, processRefund, updateUserAddress, updateUser,
+    orders, placeOrder, updateOrderStatus, updateOrderConsigneeInfo, updateOrderTotal, verifyPayment, deleteOrder, confirmOrder, requestRefund, processRefund, updateUserAddress, deleteAddress, updateUser,
     messages, sendMessage, getMessagesForUser, markMessagesAsRead, uploadFile,
     deleteMessage, deleteThread,
     sketchPricing,

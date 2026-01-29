@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { ImageUploader } from '@/app/components/ImageUploader';
 
 export const ProfileEnhanced = () => {
-  const { user, updateUserAddress, updateUser, addReminder, deleteReminder, uploadFile, t } = useStore();
+  const { user, updateUserAddress, deleteAddress, updateUser, addReminder, deleteReminder, uploadFile, t } = useStore();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'info' | 'addresses' | 'reminders'>('info');
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -448,6 +448,18 @@ export const ProfileEnhanced = () => {
                           title={t('সম্পাদনা', 'Edit')}
                         >
                           <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm(t('এই ঠিকানাটি মুছে ফেলতে চান?', 'Delete this address?'))) {
+                              deleteAddress(address.id);
+                              toast.success(t('ঠিকানা মুছে ফেলা হয়েছে', 'Address deleted'));
+                            }
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                          title={t('মুছে ফেলুন', 'Delete')}
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
