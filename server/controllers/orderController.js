@@ -120,6 +120,41 @@ const updateOrderStatus = async (req, res) => {
             }
 
             const updatedOrder = await order.save();
+
+            // Create notification for user based on status
+            const statusMessages = {
+                confirmed: {
+                    title_en: `Order Confirmed #${order.invoiceNo}`,
+                    title_bn: `অর্ডার নিশ্চিত #${order.invoiceNo}`,
+                    body_en: 'Your order has been confirmed and will be shipped soon.',
+                    body_bn: 'আপনার অর্ডার নিশ্চিত করা হয়েছে এবং শীঘ্রই পাঠানো হবে।'
+                },
+                shipped: {
+                    title_en: `Order Shipped #${order.invoiceNo}`,
+                    title_bn: `অর্ডার পাঠানো হয়েছে #${order.invoiceNo}`,
+                    body_en: 'Your order is on its way!',
+                    body_bn: 'আপনার অর্ডার পথে আছে!'
+                },
+                delivered: {
+                    title_en: `Order Delivered #${order.invoiceNo}`,
+                    title_bn: `অর্ডার ডেলিভার হয়েছে #${order.invoiceNo}`,
+                    body_en: 'Your order has been delivered. Thank you!',
+                    body_bn: 'আপনার অর্ডার ডেলিভার করা হয়েছে। ধন্যবাদ!'
+                }
+            };
+
+            if (statusMessages[status]) {
+                await createNotification(
+                    order.userId,
+                    'delivery',
+                    statusMessages[status].title_en,
+                    statusMessages[status].title_bn,
+                    statusMessages[status].body_en,
+                    statusMessages[status].body_bn,
+                    '/account/orders'
+                );
+            }
+
             res.json(updatedOrder);
         } else {
             res.status(404).json({ message: 'Order not found' });
