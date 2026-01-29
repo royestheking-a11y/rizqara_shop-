@@ -48,6 +48,7 @@ const updateUserProfile = async (req, res) => {
             }
 
             if (req.body.reminders) {
+                console.log('Reminders received:', typeof req.body.reminders, JSON.stringify(req.body.reminders));
                 // Ensure reminders is an array and not a string
                 user.reminders = Array.isArray(req.body.reminders) ? req.body.reminders : [];
             }
