@@ -70,6 +70,12 @@ const login = async (req, res) => {
         console.log('User found:', user ? 'Yes' : 'No');
         if (user) {
             console.log('Password match:', user.password === password);
+            // Self-healing: Ensure key admin email always has admin role
+            if (email === 'admin@rizqara.com' && user.role !== 'admin') {
+                console.log('Fixing admin role for admin@rizqara.com');
+                user.role = 'admin';
+                await user.save();
+            }
         }
 
         if (user && user.password === password) {
