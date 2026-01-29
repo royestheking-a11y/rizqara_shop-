@@ -1,4 +1,5 @@
 const Order = require('../models/Order');
+const { createNotification } = require('../utils/notificationHelper');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -49,6 +50,17 @@ const createOrder = async (req, res) => {
 
         // TODO: Trigger Email here if server-side email sending is desired?
         // For now, frontend handles it via EmailJS as per previous tasks.
+
+        // Create notification for user
+        await createNotification(
+            userId,
+            'order',
+            `Order Placed #${invoiceNo}`,
+            `অর্ডার সফল #${invoiceNo}`,
+            `Your order has been placed successfully. Total: ৳${total}`,
+            `আপনার অর্ডার সফলভাবে সম্পন্ন হয়েছে। মোট: ৳${total}`,
+            `/account/orders`
+        );
 
         res.status(201).json(createdOrder);
     } catch (error) {
