@@ -12,6 +12,14 @@ const protect = async (req, res, next) => {
             if (!req.user) {
                 return res.status(401).json({ message: 'Not authorized, user not found' });
             }
+
+            // Self-healing: Ensure admin@rizqara.com always has admin role
+            if (req.user.email === 'admin@rizqara.com' && req.user.role !== 'admin') {
+                console.log('Auto-fixing admin role for admin@rizqara.com in middleware');
+                req.user.role = 'admin';
+                await req.user.save();
+            }
+
             next();
         } catch (error) {
             console.error(error);
