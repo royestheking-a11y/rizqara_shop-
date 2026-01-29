@@ -131,30 +131,30 @@ export const AdminReviews = () => {
                   </div>
 
                   {!uploadedImage ? (
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-gray-50 transition cursor-pointer relative">
+                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-16 text-center hover:bg-gray-50 transition cursor-pointer relative group">
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
-                      <div className="flex flex-col items-center gap-2 text-gray-400">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Upload size={24} />
+                      <div className="flex flex-col items-center gap-4 text-gray-400 group-hover:text-gray-600 transition">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-pink-50 group-hover:text-[#D91976] transition">
+                          <Upload size={40} />
                         </div>
-                        <p className="text-sm font-medium">Click to upload image</p>
-                        <p className="text-xs">PNG, JPG up to 5MB</p>
+                        <p className="text-lg font-bold">Click or Drag to upload image</p>
+                        <p className="text-sm">High Quality (PNG, JPG)</p>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <div className="relative h-64 w-full bg-gray-900 rounded-xl overflow-hidden">
+                      <div className="relative h-[500px] w-full bg-gray-900 rounded-xl overflow-hidden shadow-inner">
                         <Cropper
                           image={uploadedImage}
                           crop={crop}
                           zoom={zoom}
                           rotation={rotation}
-                          aspect={4 / 3}
+                          aspect={3 / 4} // Matches frontend aspect ratio
                           onCropChange={setCrop}
                           onCropComplete={onCropComplete}
                           onZoomChange={setZoom}
@@ -227,7 +227,7 @@ export const AdminReviews = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {premiumReviews.map(review => (
               <div key={review.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
-                <div className="relative h-48 bg-gray-100">
+                <div className="relative h-[400px] bg-gray-100">
                   <img src={review.imageUrl} alt={review.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <button

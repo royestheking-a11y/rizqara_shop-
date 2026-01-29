@@ -47,7 +47,7 @@ export const Reviews = () => {
                 className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 group flex flex-col h-full"
               >
                 {/* Image Container */}
-                <div className="relative overflow-hidden aspect-video">
+                <div className="relative overflow-hidden aspect-[3/4] md:aspect-[4/5]">
                   <img
                     src={review.imageUrl}
                     alt={review.title}
