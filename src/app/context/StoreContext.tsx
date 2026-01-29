@@ -909,6 +909,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       toast.success('Profile updated successfully');
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');
+      throw error; // Re-throw so calling functions know it failed
     } finally {
       setIsLoading(false);
     }
@@ -1586,8 +1587,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const newReminders = [...(user.reminders || []), newReminder];
-    await updateUser({ reminders: newReminders });
-    toast.success(t('রিমাইন্ডার যোগ করা হয়েছে', 'Reminder added successfully'));
+    try {
+      await updateUser({ reminders: newReminders });
+      toast.success(t('রিমাইন্ডার যোগ করা হয়েছে', 'Reminder added successfully'));
+    } catch (error) {
+      console.error('Failed to add reminder:', error);
+      // updateUser already shows error toast, no need to show another
+    }
   };
 
   const deleteReminder = async (id: string) => {
