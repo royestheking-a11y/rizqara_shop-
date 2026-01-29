@@ -409,17 +409,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [prodData, carouselData, voucherData, reviewData] = await Promise.all([
+        const [prodData, carouselData, voucherData, reviewData, premiumReviewData] = await Promise.all([
           apiCall('/products'),
           apiCall('/carousels'),
           apiCall('/vouchers'),
-          apiCall('/reviews')
+          apiCall('/reviews'),
+          apiCall('/reviews/premium')
         ]);
 
         setProducts(prodData);
         setCarouselSlides(carouselData);
         setVouchers(voucherData);
         setReviews(reviewData);
+        setPremiumReviews(premiumReviewData);
 
         // Fetch users only if admin
         const storedUser = localStorage.getItem('rizqara_user');
@@ -481,10 +483,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const stored = localStorage.getItem('rizqara_reviews');
     return stored ? JSON.parse(stored) : [];
   });
-  const [premiumReviews, setPremiumReviews] = useState<PremiumReview[]>(() => {
-    const stored = localStorage.getItem('rizqara_premium_reviews');
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [premiumReviews, setPremiumReviews] = useState<PremiumReview[]>([]);
   const [carouselSlides, setCarouselSlides] = useState<CarouselSlide[]>(() => {
     const stored = localStorage.getItem('rizqara_carousel_slides');
     return stored ? JSON.parse(stored) : [];
@@ -1415,19 +1414,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const addPremiumReview = (reviewData: Omit<PremiumReview, 'id' | 'date'>) => {
-    const newReview: PremiumReview = {
-      ...reviewData,
-      id: `prev_${Date.now()}`,
-      date: new Date().toISOString(),
-    };
-    setPremiumReviews((prev: PremiumReview[]) => [newReview, ...prev]);
-    toast.success('Premium review added');
+  const addPremiumReview = async (reviewData: Omit<PremiumReview, 'id' | 'date'>) => {
+    try {
+      const newReview = await apiCall('/reviews/premium', 'POST', reviewData);
+      setPremiumReviews((prev: PremiumReview[]) => [newReview, ...prev]);
+      toast.success('Premium review added');
+    } catch (error) {
+      toast.error('Failed to add premium review');
+    }
   };
 
-  const deletePremiumReview = (id: string) => {
-    setPremiumReviews((prev: PremiumReview[]) => prev.filter((r: PremiumReview) => r.id !== id));
-    toast.success('Premium review deleted');
+  const deletePremiumReview = async (id: string) => {
+    try {
+      await apiCall(`/reviews/premium/${id}`, 'DELETE');
+      setPremiumReviews((prev: PremiumReview[]) => prev.filter((r: PremiumReview) => r.id !== id));
+      toast.success('Premium review deleted');
+    } catch (error) {
+      toast.error('Failed to delete premium review');
+    }
   };
 
   // Notifications
