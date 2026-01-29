@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const { getReviews, createReview, deleteReview } = require('../controllers/reviewController');
 const { getPremiumReviews, addPremiumReview, deletePremiumReview } = require('../controllers/premiumReviewController');
 const { protect, admin } = require('../middleware/authMiddleware');
