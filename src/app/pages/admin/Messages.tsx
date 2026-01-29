@@ -421,7 +421,21 @@ export const AdminMessages = () => {
                       ? 'bg-[#D91976] text-white rounded-br-none'
                       : 'bg-white border border-gray-100 text-gray-800 rounded-bl-none'
                       }`}>
-                      <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                      {(msg.image || msg.text.startsWith('data:image')) ? (
+                        <div className="mb-1">
+                          <img
+                            src={msg.image || msg.text}
+                            alt="Attachment"
+                            className="rounded-lg max-w-full h-auto max-h-64 object-cover border border-black/10"
+                            loading="lazy"
+                          />
+                          {msg.text && msg.text !== 'Image Sent' && !msg.text.startsWith('data:image') && (
+                            <p className="text-xs mt-1 whitespace-pre-wrap break-words">{msg.text}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                      )}
                       <p className={`text-[10px] mt-1 text-right ${msg.senderId === 'admin' || msg.senderId === 'admin_1' ? 'text-pink-200' : 'text-gray-400'}`}>
                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
