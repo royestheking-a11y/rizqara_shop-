@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { motion } from 'motion/react';
 
 export const Notifications = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const { notifications, markNotificationAsRead, language, user } = useStore();
+  const { notifications, markNotificationAsRead, language } = useStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Backend returns only this user's notifications, just sort them
