@@ -51,15 +51,22 @@ const updateUserProfile = async (req, res) => {
                 user.reminders = req.body.reminders;
             }
 
+            // Handle avatar -> profileImage mapping
+            if (req.body.avatar) {
+                user.profileImage = req.body.avatar;
+            }
+
             // Handle other fields if necessary (e.g. avatar)
 
             const updatedUser = await user.save();
             res.json({
                 _id: updatedUser._id,
+                id: updatedUser.id,
                 name: updatedUser.name,
                 email: updatedUser.email,
                 role: updatedUser.role,
                 phone: updatedUser.phone,
+                avatar: updatedUser.profileImage,
                 addresses: updatedUser.addresses,
                 reminders: updatedUser.reminders,
                 // token: generateToken(updatedUser._id), // Removed: Token refresh not needed for profile update
