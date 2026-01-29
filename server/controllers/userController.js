@@ -62,7 +62,7 @@ const updateUserProfile = async (req, res) => {
                 phone: updatedUser.phone,
                 addresses: updatedUser.addresses,
                 reminders: updatedUser.reminders,
-                token: generateToken(updatedUser._id), // Optional: Refresh token if needed
+                // token: generateToken(updatedUser._id), // Removed: Token refresh not needed for profile update
             });
         } else {
             res.status(404).json({ message: 'User not found' });
