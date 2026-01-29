@@ -1586,7 +1586,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ...reminderData
     };
 
-    const newReminders = [...(user.reminders || []), newReminder];
+    // Ensure user.reminders is a proper array, not a string
+    let existingReminders = user.reminders || [];
+    if (typeof existingReminders === 'string') {
+      try {
+        existingReminders = JSON.parse(existingReminders);
+      } catch {
+        existingReminders = [];
+      }
+    }
+    if (!Array.isArray(existingReminders)) {
+      existingReminders = [];
+    }
+
+    const newReminders = [...existingReminders, newReminder];
     try {
       await updateUser({ reminders: newReminders });
       toast.success(t('রিমাইন্ডার যোগ করা হয়েছে', 'Reminder added successfully'));

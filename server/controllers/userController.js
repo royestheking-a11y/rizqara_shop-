@@ -49,8 +49,21 @@ const updateUserProfile = async (req, res) => {
 
             if (req.body.reminders) {
                 console.log('Reminders received:', typeof req.body.reminders, JSON.stringify(req.body.reminders));
-                // Ensure reminders is an array and not a string
-                user.reminders = Array.isArray(req.body.reminders) ? req.body.reminders : [];
+
+                let remindersData = req.body.reminders;
+
+                // If it's a string, try to parse it
+                if (typeof remindersData === 'string') {
+                    try {
+                        remindersData = JSON.parse(remindersData);
+                    } catch (e) {
+                        console.error('Failed to parse reminders string:', e);
+                        remindersData = [];
+                    }
+                }
+
+                // Ensure it's an array
+                user.reminders = Array.isArray(remindersData) ? remindersData : [];
             }
 
             // Handle avatar -> profileImage mapping
