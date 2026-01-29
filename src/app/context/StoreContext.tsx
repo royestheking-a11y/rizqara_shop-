@@ -1430,7 +1430,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const addPremiumReview = async (reviewData: Omit<PremiumReview, 'id' | 'date'>) => {
     try {
-      const newReview = await apiCall('/reviews/premium', 'POST', reviewData);
+      const token = localStorage.getItem('rizqara_token') || sessionStorage.getItem('rizqara_token');
+      const newReview = await apiCall('/reviews/premium', 'POST', reviewData, token || undefined);
       setPremiumReviews((prev: PremiumReview[]) => [newReview, ...prev]);
       toast.success('Premium review added');
     } catch (error) {
@@ -1440,7 +1441,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const deletePremiumReview = async (id: string) => {
     try {
-      await apiCall(`/reviews/premium/${id}`, 'DELETE');
+      const token = localStorage.getItem('rizqara_token') || sessionStorage.getItem('rizqara_token');
+      await apiCall(`/reviews/premium/${id}`, 'DELETE', undefined, token || undefined);
       setPremiumReviews((prev: PremiumReview[]) => prev.filter((r: PremiumReview) => r.id !== id));
       toast.success('Premium review deleted');
     } catch (error) {
