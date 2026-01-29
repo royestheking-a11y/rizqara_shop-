@@ -23,7 +23,8 @@ router.post('/subscribe', async (req, res) => {
 
     try {
         if (userId) {
-            const user = await User.findById(userId);
+            // Use findOne with 'id' field, not findById which uses '_id'
+            const user = await User.findOne({ id: userId });
             if (user) {
                 // Check if subscription already exists to avoid duplicates
                 const exists = user.pushSubscriptions.some(
@@ -47,7 +48,7 @@ router.post('/send', async (req, res) => {
     const { userId, title, body, icon, url } = req.body;
 
     try {
-        const user = await User.findById(userId);
+        const user = await User.findOne({ id: userId });
         if (!user || !user.pushSubscriptions.length) {
             return res.status(404).json({ error: 'User not found or not subscribed' });
         }
