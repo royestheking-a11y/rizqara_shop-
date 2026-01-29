@@ -1159,6 +1159,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setCart([]);
       localStorage.removeItem('rizqara_cart'); // or just rely on state sync
 
+      // Refresh notifications to show the new order notification
+      if (token) {
+        await fetchNotifications(token);
+      }
+
       toast.success(t('অর্ডার সফল হয়েছে!', 'Order placed successfully!'));
       return response.invoiceNo;
     } catch (error: any) {

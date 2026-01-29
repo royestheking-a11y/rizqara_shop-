@@ -8,7 +8,8 @@ export const Notifications = ({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const { notifications, markNotificationAsRead, language, user } = useStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const myNotifications = notifications.filter(n => n.userId === user?.id).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  // Backend returns only this user's notifications, just sort them
+  const myNotifications = notifications.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   const unreadCount = myNotifications.filter(n => !n.read).length;
 
   useEffect(() => {
