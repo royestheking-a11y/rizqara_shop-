@@ -79,15 +79,18 @@ const login = async (req, res) => {
         }
 
         if (user && user.password === password) {
+            // Re-fetch user to get the updated data after auto-fix
+            const freshUser = await User.findById(user._id);
             res.json({
-                _id: user._id,
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
+                _id: freshUser._id,
+                id: freshUser.id,
+                name: freshUser.name,
+                email: freshUser.email,
+                role: freshUser.role,
                 cart: [], // Add cart logic if needed
-                addresses: user.addresses,
-                token: generateToken(user._id)
+                addresses: freshUser.addresses,
+                avatar: freshUser.profileImage,
+                token: generateToken(freshUser._id)
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
