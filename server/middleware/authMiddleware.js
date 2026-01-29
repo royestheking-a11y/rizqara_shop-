@@ -20,6 +20,13 @@ const protect = async (req, res, next) => {
                 await req.user.save();
             }
 
+            // Self-healing: Generate id field if missing (for legacy users)
+            if (!req.user.id) {
+                console.log('Auto-generating id field for user:', req.user.email);
+                req.user.id = `u_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                await req.user.save();
+            }
+
             next();
         } catch (error) {
             console.error(error);
