@@ -36,6 +36,7 @@ app.use('/api/steadfast', require('./routes/steadfast'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/push', require('./routes/push'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/utils', require('./routes/utils')); // Temporary migration endpoint
 console.log('All routes registered.');
 
 const server = http.createServer(app);
