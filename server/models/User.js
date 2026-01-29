@@ -11,6 +11,13 @@ const addressSchema = new mongoose.Schema({
     isDefault: Boolean,
 });
 
+const reminderSchema = new mongoose.Schema({
+    id: String,
+    title: String,
+    date: String, // Changed from Date to String to avoid casting issues
+    type: String
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
     id: String, // Custom ID for frontend compatibility
     name: { type: String, required: true },
@@ -38,12 +45,7 @@ const userSchema = new mongoose.Schema({
         customImage: String,
         customNote: String
     }],
-    reminders: [{
-        id: String,
-        title: String,
-        date: Date,
-        type: String
-    }],
+    reminders: [reminderSchema],
     pushSubscriptions: [mongoose.Schema.Types.Mixed],
     createdAt: { type: Date, default: Date.now }
 }, {
