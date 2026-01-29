@@ -1,6 +1,13 @@
 const User = require('../models/User');
 const axios = require('axios');
 const cloudinary = require('cloudinary').v2;
+const jwt = require('jsonwebtoken');
+
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '30d'
+    });
+};
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -40,7 +47,7 @@ const signup = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                token: 'dummy_token_for_now' // Implement JWT later or now?
+                token: generateToken(user._id)
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -74,7 +81,7 @@ const login = async (req, res) => {
                 role: user.role,
                 cart: [], // Add cart logic if needed
                 addresses: user.addresses,
-                token: 'dummy_token_for_now'
+                token: generateToken(user._id)
             });
         } else {
             res.status(401).json({ message: 'Invalid email or password' });
@@ -114,7 +121,7 @@ const updateProfile = async (req, res) => {
                 email: updatedUser.email,
                 role: updatedUser.role,
                 addresses: updatedUser.addresses,
-                token: 'dummy_token_for_now'
+                token: generateToken(updatedUser._id)
             });
         } else {
             res.status(404).json({ message: 'User not found' });
@@ -171,7 +178,7 @@ const googleLogin = async (req, res) => {
             role: user.role,
             profileImage: user.profileImage,
             addresses: user.addresses,
-            token: 'dummy_token_for_google'
+            token: generateToken(user._id)
         });
     } catch (error) {
         console.error('Google Auth Error:', error.response?.data || error.message);
@@ -225,7 +232,7 @@ const facebookLogin = async (req, res) => {
             role: user.role,
             profileImage: user.profileImage,
             addresses: user.addresses,
-            token: 'dummy_token_for_facebook' // In production use JWT
+            token: generateToken(user._id)
         });
 
     } catch (error) {
