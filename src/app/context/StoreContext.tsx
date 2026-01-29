@@ -669,6 +669,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const t = (bn: string, en: string) => (language === 'bn' ? bn : en);
 
   // Auth
+  // Fetch notifications from backend
+  const fetchNotifications = async (token: string) => {
+    try {
+      const data = await apiCall('/notifications', 'GET', undefined, token);
+      const transformed = data.map((n: any) => ({
+        id: n._id,
+        userId: n.userId,
+        title_bn: n.title_bn,
+        title_en: n.title_en,
+        body_bn: n.body_bn,
+        body_en: n.body_en,
+        type: n.type,
+        link: n.link,
+        read: n.read,
+        timestamp: n.timestamp
+      }));
+      setNotifications(transformed);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
+
   const login = async (email: string, password?: string, rememberMe: boolean = true) => {
     try {
       setIsLoading(true);
@@ -678,6 +700,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       storage.setItem('rizqara_token', data.token);
       storage.setItem('rizqara_user', JSON.stringify(data));
       setUser(data);
+
+      // Fetch notifications after login
+      await fetchNotifications(data.token);
 
       toast.success(t('স্বাগতম!', 'Welcome back!'));
       return true;
