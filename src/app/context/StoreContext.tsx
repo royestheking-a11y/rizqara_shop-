@@ -518,7 +518,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
       if (user) {
         // If user is admin (or checking by email), join 'admin_1' room to listen for messages
-        if (user.role === 'admin' || user.email === 'admin@zrizqara.com') {
+        if (user.role === 'admin' || user.email === 'admin@rizqara.com') {
           socketRef.current.emit('join_room', 'admin_1');
           console.log('Joined room: admin_1');
         } else {
@@ -1327,7 +1327,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     try {
       const payload = {
-        senderId: (user.role === 'admin' || user.email === 'admin@zrizqara.com') ? 'admin_1' : user.id,
+        senderId: (user.role === 'admin' || user.email === 'admin@rizqara.com') ? 'admin_1' : user.id,
         receiverId: receiverId || 'admin_1', // Default to admin
         text,
         image,
