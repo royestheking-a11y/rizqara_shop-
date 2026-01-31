@@ -1023,10 +1023,29 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Cart
   const addToCart = (product: Product, quantity = 1, variant?: string, customText?: string, customImage?: string, customNote?: string) => {
-    const cartId = `${product.id}_${Date.now()}_${Math.random()}`;
-    const item: CartItem = { ...product, cartId, quantity, selectedVariant: variant, customText, customImage, customNote };
-    setCart([...cart, item]);
-    toast.success(t('কার্টে যোগ হয়েছে', 'Added to cart'));
+    // Check if same product with same variant and no customization already exists
+    const existingItem = cart.find((item: CartItem) =>
+      item.id === product.id &&
+      item.selectedVariant === variant &&
+      !customText && !customImage && !customNote && // Only merge non-customized items
+      !item.customText && !item.customImage && !item.customNote
+    );
+
+    if (existingItem) {
+      // Update quantity of existing item
+      setCart(cart.map((item: CartItem) =>
+        item.cartId === existingItem.cartId
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      ));
+      toast.success(t('কার্টে পরিমাণ বাড়ানো হয়েছে', 'Updated cart quantity'));
+    } else {
+      // Add as new item
+      const cartId = `${product.id}_${Date.now()}_${Math.random()}`;
+      const item: CartItem = { ...product, cartId, quantity, selectedVariant: variant, customText, customImage, customNote };
+      setCart([...cart, item]);
+      toast.success(t('কার্টে যোগ হয়েছে', 'Added to cart'));
+    }
   };
 
   const addCustomItemToCart = (product: Product, quantity: number, customOptions: Partial<CartItem>) => {
