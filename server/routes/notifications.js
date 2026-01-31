@@ -16,6 +16,31 @@ router.get('/', protect, async (req, res) => {
     }
 });
 
+// Create a new notification
+router.post('/', async (req, res) => {
+    try {
+        const { userId, title_bn, title_en, body_bn, body_en, type, link, read } = req.body;
+
+        const notification = new Notification({
+            userId,
+            title_bn,
+            title_en,
+            body_bn,
+            body_en,
+            type: type || 'general',
+            link,
+            read: read || false,
+            timestamp: new Date()
+        });
+
+        await notification.save();
+        res.status(201).json(notification);
+    } catch (error) {
+        console.error('Create notification error:', error);
+        res.status(500).json({ error: 'Failed to create notification' });
+    }
+});
+
 // Mark notification as read
 router.put('/:id/read', protect, async (req, res) => {
     try {

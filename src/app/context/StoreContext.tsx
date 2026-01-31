@@ -1077,8 +1077,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCart([]);
   };
 
-  // Helper to generate notifications
-  const addNotification = (userId: string, type: Notification['type'], titleEn: string, titleBn: string, bodyEn: string, bodyBn: string, link?: string) => {
+  // Helper to generate notifications - saves to backend for persistence
+  const addNotification = async (userId: string, type: Notification['type'], titleEn: string, titleBn: string, bodyEn: string, bodyBn: string, link?: string) => {
     const notif: Notification = {
       id: `notif_${Date.now()}_${Math.random()}`,
       userId,
@@ -1092,6 +1092,29 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       timestamp: new Date().toISOString(),
     };
     setNotifications((prev: Notification[]) => [notif, ...prev]);
+
+    // Also save to backend for persistence
+    try {
+      const savedNotif = await apiCall('/notifications', 'POST', {
+        userId,
+        title_bn: titleBn,
+        title_en: titleEn,
+        body_bn: bodyBn,
+        body_en: bodyEn,
+        type,
+        link,
+        read: false,
+      });
+      // Update the local notification with the backend ID
+      if (savedNotif && savedNotif._id) {
+        setNotifications((prev: Notification[]) =>
+          prev.map(n => n.id === notif.id ? { ...n, id: savedNotif._id } : n)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to save notification to backend:', error);
+      // Notification is still saved locally, so user won't lose it during this session
+    }
   };
 
   // Send Order Email
@@ -1504,8 +1527,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Notifications
-  const markNotificationAsRead = (id: string) => {
+  const markNotificationAsRead = async (id: string) => {
     setNotifications(notifications.map((n: Notification) => (n.id === id ? { ...n, read: true } : n)));
+    // Sync with backend
+    try {
+      await apiCall(`/notifications/${id}/read`, 'PUT');
+    } catch (error) {
+      console.error('Failed to sync notification read status:', error);
+    }
   };
 
   // --- Vouchers ---
