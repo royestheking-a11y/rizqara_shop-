@@ -1,9 +1,9 @@
 import { NavLink, Outlet, Navigate, useNavigate } from 'react-router';
 import { useStore } from '@/app/context/StoreContext';
-import { ShoppingBag, MessageSquare, User, LogOut } from 'lucide-react';
+import { ShoppingBag, MessageSquare, User, LogOut, Heart } from 'lucide-react';
 
 export const DashboardLayout = () => {
-  const { user, logout, t } = useStore();
+  const { user, logout, t, wishlist } = useStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,6 +16,7 @@ export const DashboardLayout = () => {
 
   const links = [
     { name: t('আমার অর্ডার', 'My Orders'), path: '/account/orders', icon: <ShoppingBag size={20} /> },
+    { name: t('উইশলিস্ট', 'Wishlist'), path: '/wishlist', icon: <Heart size={20} />, badge: wishlist.length },
     { name: t('বার্তা', 'Messages'), path: '/account/messages', icon: <MessageSquare size={20} /> },
     { name: t('প্রোফাইল', 'Profile'), path: '/account/profile', icon: <User size={20} /> },
   ];
@@ -41,7 +42,12 @@ export const DashboardLayout = () => {
                   className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${isActive ? 'bg-[#D91976] text-white' : 'text-gray-600 hover:bg-gray-50'}`}
                 >
                   {link.icon}
-                  {link.name}
+                  <span className="flex-1">{link.name}</span>
+                  {link.badge && link.badge > 0 && (
+                    <span className="min-w-[20px] h-5 rounded-full bg-pink-100 text-[#D91976] text-xs font-bold flex items-center justify-center">
+                      {link.badge}
+                    </span>
+                  )}
                 </NavLink>
               ))}
               <button
