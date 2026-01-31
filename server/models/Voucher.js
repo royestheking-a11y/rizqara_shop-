@@ -10,7 +10,8 @@ const voucherSchema = new mongoose.Schema({
     validUntil: Date,
     isActive: { type: Boolean, default: true },
     usageLimit: Number,
-    usedCount: { type: Number, default: 0 }
+    usedCount: { type: Number, default: 0 },
+    usedByUsers: [{ type: String }] // Track user IDs who have used this voucher
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }

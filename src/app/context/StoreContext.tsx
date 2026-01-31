@@ -158,6 +158,7 @@ export interface Voucher {
   isActive: boolean;
   usageLimit?: number;
   usedCount: number;
+  usedByUsers?: string[]; // Track which users have used this voucher
 }
 
 export interface Review {
@@ -1535,8 +1536,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return { discount: 0, error: t('ভাউচার মেয়াদ শেষ', 'Voucher expired') };
     }
 
+    // Check if user already used this voucher
+    if (user && voucher.usedByUsers?.includes(user.id)) {
+      return { discount: 0, error: t('আপনি ইতিমধ্যে এই ভাউচার ব্যবহার করেছেন', 'You have already used this voucher') };
+    }
+
     if (cartTotal < voucher.minPurchase) {
-      return { discount: 0, error: t(`নযূনতম ৳${voucher.minPurchase} কেনাকাটা প্রয়োজন`, `Minimum purchase ৳${voucher.minPurchase} required`) };
+      return { discount: 0, error: t(`ন্যূনতম ৳${voucher.minPurchase} কেনাকাটা প্রয়োজন`, `Minimum purchase ৳${voucher.minPurchase} required`) };
     }
 
     if (voucher.usageLimit && voucher.usedCount >= voucher.usageLimit) {
@@ -1545,8 +1551,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const discountAmount = Math.min((cartTotal * voucher.discount) / 100, voucher.maxDiscount);
 
-    // Increment usage count
-    setVouchers(vouchers.map((v: Voucher) => v.id === voucher.id ? { ...v, usedCount: v.usedCount + 1 } : v));
+    // Increment usage count and add user to usedByUsers list
+    const updatedUsedByUsers = user
+      ? [...(voucher.usedByUsers || []), user.id]
+      : voucher.usedByUsers || [];
+
+    setVouchers(vouchers.map((v: Voucher) => v.id === voucher.id
+      ? { ...v, usedCount: v.usedCount + 1, usedByUsers: updatedUsedByUsers }
+      : v
+    ));
 
     return { discount: discountAmount };
   };
