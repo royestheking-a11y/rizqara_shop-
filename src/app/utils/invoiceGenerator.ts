@@ -207,8 +207,17 @@ export const generateInvoice = async ({ order, type }: Omit<InvoiceOptions, 'lan
   const discountedSubtotal = order.items.reduce((sum, item) => sum + ((item.discount_price || item.price) * item.quantity), 0);
   // Product discount = difference between original and discounted
   const productDiscount = originalTotal - discountedSubtotal;
-  // Voucher discount (if applied)
-  const voucherDiscount = order.voucherDiscount || 0;
+
+  // Voucher discount - use stored value OR calculate from the difference
+  // For legacy orders: if (subtotal + delivery - total) > 0, that's the voucher
+  let voucherDiscount = order.voucherDiscount || 0;
+  if (voucherDiscount === 0) {
+    const expectedTotal = discountedSubtotal + order.deliveryFee;
+    const actualVoucherDiscount = expectedTotal - order.total;
+    if (actualVoucherDiscount > 0) {
+      voucherDiscount = actualVoucherDiscount;
+    }
+  }
 
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
@@ -319,16 +328,10 @@ export const generateInvoice = async ({ order, type }: Omit<InvoiceOptions, 'lan
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('SCAN & SHOP MORE', 105, yPos + 3, { align: 'center' });
+      doc.text('SCAN & SHOP', 105, yPos + 3, { align: 'center' });
 
       // QR code image
       doc.addImage(qrDataUrl, 'PNG', 85, yPos + 6, 30, 30);
-
-      // Website URL below QR
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(100, 100, 100);
-      doc.text('rizqarashop.vercel.app', 105, yPos + 42, { align: 'center' });
 
     } catch (error) {
       console.error('Failed to generate QR code:', error);
