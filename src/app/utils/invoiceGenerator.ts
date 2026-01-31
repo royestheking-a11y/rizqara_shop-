@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Order } from '@/app/context/StoreContext';
+import QRCode from 'qrcode';
 
 interface InvoiceOptions {
   order: Order;
@@ -8,13 +9,13 @@ interface InvoiceOptions {
   type: 'customer' | 'admin'; // Customer PDF or Admin Print Slip
 }
 
-export const generateInvoice = ({ order, type }: Omit<InvoiceOptions, 'language'>) => {
+export const generateInvoice = async ({ order, type }: Omit<InvoiceOptions, 'language'>) => {
   const doc = new jsPDF();
 
   // Store Info
   const storeName = 'RizQara Shop';
   const storeAddress = 'Dhaka, Bangladesh';
-  const storePhone = '+880 1700-000000';
+  const storePhone = '+880 343042761';
   const storeEmail = 'support@rizqara.shop';
 
   // Branding Color (Pink - #D91976)
@@ -294,6 +295,46 @@ export const generateInvoice = ({ order, type }: Omit<InvoiceOptions, 'language'
     doc.text(order.id, 45, yPos);
   }
 
+  // QR Code Section - For customer invoices only
+  if (type === 'customer') {
+    yPos += 20;
+
+    try {
+      // Generate QR code as data URL
+      const qrDataUrl = await QRCode.toDataURL('https://rizqarashop.vercel.app/', {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: '#D91976', // Pink QR code to match branding
+          light: '#FFFFFF'
+        }
+      });
+
+      // Decorative box around QR section
+      doc.setDrawColor(230, 230, 230);
+      doc.setFillColor(255, 252, 254); // Very light pink
+      doc.roundedRect(57, yPos - 5, 96, 55, 3, 3, 'FD');
+
+      // "Scan & Shop" header
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text('SCAN & SHOP MORE', 105, yPos + 3, { align: 'center' });
+
+      // QR code image
+      doc.addImage(qrDataUrl, 'PNG', 85, yPos + 6, 30, 30);
+
+      // Website URL below QR
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.text('rizqarashop.vercel.app', 105, yPos + 42, { align: 'center' });
+
+    } catch (error) {
+      console.error('Failed to generate QR code:', error);
+    }
+  }
+
   // Save PDF
   const fileName = type === 'admin'
     ? `Packing_Slip_${order.invoiceNo}.pdf`
@@ -303,10 +344,10 @@ export const generateInvoice = ({ order, type }: Omit<InvoiceOptions, 'language'
 };
 
 // Helper function to generate invoice for a specific order
-export const downloadCustomerInvoice = (order: Order) => {
-  generateInvoice({ order, type: 'customer' });
+export const downloadCustomerInvoice = async (order: Order) => {
+  await generateInvoice({ order, type: 'customer' });
 };
 
-export const downloadAdminPackingSlip = (order: Order) => {
-  generateInvoice({ order, type: 'admin' });
+export const downloadAdminPackingSlip = async (order: Order) => {
+  await generateInvoice({ order, type: 'admin' });
 };
