@@ -482,9 +482,57 @@ export const AdminOrders = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between items-center pt-4 border-t">
-                                <span className="font-bold text-lg">Total Amount</span>
-                                <span className="font-bold text-xl text-[#D91976]">৳{selectedOrder.total}</span>
+                            {/* Price Breakdown */}
+                            <div className="pt-4 border-t space-y-2">
+                                {(() => {
+                                    // Calculate price breakdown
+                                    const originalTotal = selectedOrder.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                                    const discountedSubtotal = selectedOrder.items.reduce((sum, item) => sum + ((item.discount_price || item.price) * item.quantity), 0);
+                                    const productDiscount = originalTotal - discountedSubtotal;
+
+                                    // Calculate voucher discount from difference if not stored
+                                    let voucherDiscount = selectedOrder.voucherDiscount || 0;
+                                    if (voucherDiscount === 0) {
+                                        const expectedTotal = discountedSubtotal + selectedOrder.deliveryFee;
+                                        const actualVoucherDiscount = expectedTotal - selectedOrder.total;
+                                        if (actualVoucherDiscount > 0) {
+                                            voucherDiscount = actualVoucherDiscount;
+                                        }
+                                    }
+
+                                    return (
+                                        <>
+                                            <div className="flex justify-between text-sm text-gray-600">
+                                                <span>Original Price:</span>
+                                                <span className={productDiscount > 0 ? 'line-through text-gray-400' : ''}>৳{originalTotal.toLocaleString()}</span>
+                                            </div>
+                                            {productDiscount > 0 && (
+                                                <div className="flex justify-between text-sm text-green-600">
+                                                    <span>Product Discount:</span>
+                                                    <span>-৳{productDiscount.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-sm text-gray-600">
+                                                <span>Subtotal:</span>
+                                                <span>৳{discountedSubtotal.toLocaleString()}</span>
+                                            </div>
+                                            {voucherDiscount > 0 && (
+                                                <div className="flex justify-between text-sm text-pink-600">
+                                                    <span>Voucher Discount{selectedOrder.voucherCode ? ` (${selectedOrder.voucherCode})` : ''}:</span>
+                                                    <span>-৳{voucherDiscount.toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-sm text-gray-600">
+                                                <span>Delivery Fee:</span>
+                                                <span>৳{selectedOrder.deliveryFee.toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center pt-2 border-t mt-2">
+                                                <span className="font-bold text-lg">Grand Total:</span>
+                                                <span className="font-bold text-xl text-[#D91976]">৳{selectedOrder.total.toLocaleString()}</span>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
                         <div className="p-6 border-t bg-gray-50 flex justify-end gap-3">
