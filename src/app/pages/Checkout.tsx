@@ -127,6 +127,8 @@ export const Checkout = () => {
         paymentMethod: paymentType === 'cod' ? 'cod' : onlineMethod,
         paymentTrxId: trxId,
         deliveryFee: deliveryFee,
+        voucherCode: appliedVoucher?.code,
+        voucherDiscount: voucherDiscount,
         shippingAddress: {
           id: 'addr_' + Date.now(),
           division: data.division,

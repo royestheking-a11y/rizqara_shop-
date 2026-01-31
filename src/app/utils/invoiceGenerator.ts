@@ -200,23 +200,62 @@ export const generateInvoice = ({ order, type }: Omit<InvoiceOptions, 'language'
   const totalsX = 135;
   doc.setFontSize(10);
 
-  const subtotalValue = order.items.reduce((sum, item) => sum + ((item.discount_price || item.price) * item.quantity), 0);
+  // Calculate original total (sum of original prices)
   const originalTotal = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const discountValue = originalTotal - subtotalValue;
+  // Calculate discounted subtotal (sum of discount_price or price)
+  const discountedSubtotal = order.items.reduce((sum, item) => sum + ((item.discount_price || item.price) * item.quantity), 0);
+  // Product discount = difference between original and discounted
+  const productDiscount = originalTotal - discountedSubtotal;
+  // Voucher discount (if applied)
+  const voucherDiscount = order.voucherDiscount || 0;
 
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  doc.text(labels.subtotal, totalsX, yPos);
-  doc.text(`BDT ${subtotalValue.toLocaleString()}`, 195, yPos, { align: 'right' });
 
-  yPos += 6;
-
-  if (discountValue > 0) {
-    doc.text(labels.discount, totalsX, yPos);
-    doc.text(`-BDT ${discountValue.toLocaleString()}`, 195, yPos, { align: 'right' });
+  // Show original subtotal (before any discounts)
+  doc.text('Original Price:', totalsX, yPos);
+  if (productDiscount > 0) {
+    // Strike through if there's a product discount
+    doc.setTextColor(150, 150, 150);
+    const priceText = `BDT ${originalTotal.toLocaleString()}`;
+    const priceX = 195 - doc.getTextWidth(priceText);
+    doc.text(priceText, 195, yPos, { align: 'right' });
+    // Strikethrough line
+    doc.setDrawColor(150, 150, 150);
+    doc.setLineWidth(0.3);
+    doc.line(priceX, yPos - 1.5, 195, yPos - 1.5);
+    doc.setTextColor(80, 80, 80);
+    yPos += 6;
+  } else {
+    doc.text(`BDT ${originalTotal.toLocaleString()}`, 195, yPos, { align: 'right' });
     yPos += 6;
   }
 
+  // Product Discount (if any)
+  if (productDiscount > 0) {
+    doc.setTextColor(34, 139, 34); // Green for savings
+    doc.text('Product Discount:', totalsX, yPos);
+    doc.text(`-BDT ${productDiscount.toLocaleString()}`, 195, yPos, { align: 'right' });
+    doc.setTextColor(80, 80, 80);
+    yPos += 6;
+  }
+
+  // Subtotal after product discount
+  doc.text(labels.subtotal, totalsX, yPos);
+  doc.text(`BDT ${discountedSubtotal.toLocaleString()}`, 195, yPos, { align: 'right' });
+  yPos += 6;
+
+  // Voucher Discount (if applied)
+  if (voucherDiscount > 0) {
+    doc.setTextColor(217, 25, 118); // Pink for voucher savings
+    const voucherLabel = order.voucherCode ? `Voucher (${order.voucherCode}):` : 'Voucher Discount:';
+    doc.text(voucherLabel, totalsX, yPos);
+    doc.text(`-BDT ${voucherDiscount.toLocaleString()}`, 195, yPos, { align: 'right' });
+    doc.setTextColor(80, 80, 80);
+    yPos += 6;
+  }
+
+  // Delivery Fee
   doc.text(labels.deliveryFee, totalsX, yPos);
   doc.text(`BDT ${order.deliveryFee.toLocaleString()}`, 195, yPos, { align: 'right' });
 

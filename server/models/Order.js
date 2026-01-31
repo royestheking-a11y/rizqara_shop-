@@ -5,6 +5,7 @@ const orderItemSchema = new mongoose.Schema({
     title_en: String,
     title_bn: String,
     price: Number,
+    discount_price: Number, // Discounted price if any
     quantity: Number,
     images: [String],
     selectedVariant: String,
@@ -24,6 +25,8 @@ const orderSchema = new mongoose.Schema({
     total: Number,
     subtotal: Number,
     deliveryFee: Number,
+    voucherCode: String,
+    voucherDiscount: { type: Number, default: 0 },
     shippingAddress: {
         details: String,
         district: String,

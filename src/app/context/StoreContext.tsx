@@ -106,6 +106,8 @@ export interface Order {
   paymentScreenshot?: string;
   date: string;
   deliveryFee: number;
+  voucherCode?: string;
+  voucherDiscount?: number;
   trackingCode?: string;
   trackingHistory: { status: string; date: string; note?: string }[];
   invoiceNo: string;
