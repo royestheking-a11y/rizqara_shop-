@@ -6,6 +6,20 @@ import { Plus, Edit, Trash2, Search, X, Gift } from 'lucide-react';
 import { OCCASIONS, PERSON_TYPES, MOODS } from '@/app/utils/giftConstants';
 import { PRODUCT_CATEGORIES } from '@/app/constants/categories';
 
+// Predefined colors for products
+const PRODUCT_COLORS = [
+    { name: 'Red', value: '#EF4444', namebn: 'লাল' },
+    { name: 'Pink', value: '#EC4899', namebn: 'গোলাপী' },
+    { name: 'Orange', value: '#F97316', namebn: 'কমলা' },
+    { name: 'Yellow', value: '#EAB308', namebn: 'হলুদ' },
+    { name: 'Green', value: '#22C55E', namebn: 'সবুজ' },
+    { name: 'Blue', value: '#3B82F6', namebn: 'নীল' },
+    { name: 'Purple', value: '#A855F7', namebn: 'বেগুনী' },
+    { name: 'Brown', value: '#92400E', namebn: 'বাদামী' },
+    { name: 'Black', value: '#1F2937', namebn: 'কালো' },
+    { name: 'White', value: '#F9FAFB', namebn: 'সাদা' },
+];
+
 export const AdminProducts = () => {
     const { products, addProduct, updateProduct, deleteProduct, t, uploadFile } = useStore();
     const [searchTerm, setSearchTerm] = useState('');
@@ -24,7 +38,7 @@ export const AdminProducts = () => {
         itemType: '',
         stock: 0,
         images: [''],
-        colors: '',
+        colors: [] as string[],
         isCustomizable: false,
         isNew: false,
         isBestSeller: false,
@@ -52,7 +66,7 @@ export const AdminProducts = () => {
                 itemType: product.itemType || '',
                 stock: product.stock,
                 images: product.images.length > 0 ? product.images : [''],
-                colors: product.colors ? product.colors.join(', ') : '',
+                colors: product.colors || [],
                 isCustomizable: product.isCustomizable || false,
                 isNew: product.isNew || false,
                 isBestSeller: product.isBestSeller || false,
@@ -73,7 +87,7 @@ export const AdminProducts = () => {
                 itemType: '',
                 stock: 0,
                 images: [''],
-                colors: '',
+                colors: [],
                 isCustomizable: false,
                 isNew: false,
                 isBestSeller: false,
@@ -115,7 +129,7 @@ export const AdminProducts = () => {
             itemType: formData.itemType,
             stock: Number(formData.stock),
             images: formData.images.filter(img => img.trim() !== ''),
-            colors: formData.colors ? formData.colors.split(',').map(c => c.trim()).filter(c => c !== '') : [],
+            colors: formData.colors,
             isCustomizable: formData.isCustomizable,
             isNew: formData.isNew,
             isBestSeller: formData.isBestSeller,
@@ -465,14 +479,38 @@ export const AdminProducts = () => {
 
                                 {/* Colors */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t('রঙ (কমা দিয়ে আলাদা করুন)', 'Colors (Comma separated)')}</label>
-                                    <input
-                                        type="text"
-                                        value={formData.colors}
-                                        onChange={e => setFormData({ ...formData, colors: e.target.value })}
-                                        placeholder="Red, Blue, Green"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D91976] focus:border-transparent"
-                                    />
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">{t('রঙ নির্বাচন করুন', 'Select Colors')}</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {PRODUCT_COLORS.map(color => {
+                                            const isSelected = formData.colors.includes(color.name);
+                                            return (
+                                                <button
+                                                    key={color.name}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (isSelected) {
+                                                            setFormData({ ...formData, colors: formData.colors.filter(c => c !== color.name) });
+                                                        } else {
+                                                            setFormData({ ...formData, colors: [...formData.colors, color.name] });
+                                                        }
+                                                    }}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${isSelected ? 'border-[#D91976] bg-pink-50' : 'border-gray-200 hover:border-gray-300'}`}
+                                                >
+                                                    <span
+                                                        className="w-5 h-5 rounded-full border border-gray-300"
+                                                        style={{ backgroundColor: color.value }}
+                                                    />
+                                                    <span className="text-sm font-medium">{color.name}</span>
+                                                    {isSelected && <span className="text-[#D91976] text-xs">✓</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {formData.colors.length > 0 && (
+                                        <p className="mt-2 text-xs text-gray-500">
+                                            {t('নির্বাচিত', 'Selected')}: {formData.colors.join(', ')}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Checkboxes */}
