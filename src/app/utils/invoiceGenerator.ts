@@ -15,8 +15,8 @@ export const generateInvoice = async ({ order, type }: Omit<InvoiceOptions, 'lan
   // Store Info
   const storeName = 'RizQara Shop';
   const storeAddress = 'Dhaka, Bangladesh';
-  const storePhone = '+880 343042761';
-  const storeEmail = 'support@rizqara.shop';
+  const storePhone = '+8801343042761';
+  const storeEmail = 'rizqarashop@gmail.com';
 
   // Branding Color (Pink - #D91976)
   const primaryColor = [217, 25, 118];
