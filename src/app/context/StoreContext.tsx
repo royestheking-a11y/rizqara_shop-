@@ -547,6 +547,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   }, [user]);
 
+  // Initial data load (Notifications & Orders)
+  useEffect(() => {
+    const token = localStorage.getItem('rizqara_token');
+    const storedUser = localStorage.getItem('rizqara_user');
+    if (token && storedUser) {
+      fetchNotifications(token);
+      fetchOrders(token);
+    }
+  }, []);
+
   // Mount logic only for language and socket. Data loading handled in initial state.
   useEffect(() => {
     const storedLang = localStorage.getItem('rizqara_lang');
@@ -694,6 +704,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Fetch orders from backend
+  const fetchOrders = async (token: string) => {
+    try {
+      // If admin, fetch all? Or just my orders? usually fetching 'myorders' is enough for regular users.
+      // Admin page might have its own fetch logic or we might need to handle admin here.
+      // For now, let's assume 'myorders' is what the user profile needs.
+
+      const storedUser = localStorage.getItem('rizqara_user');
+      const role = storedUser ? JSON.parse(storedUser).role : 'user';
+
+      const endpointToUse = role === 'admin' ? '/orders' : '/orders/myorders';
+
+      const data = await apiCall(endpointToUse, 'GET', undefined, token);
+      if (Array.isArray(data)) {
+        setOrders(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+    }
+  };
+
   const login = async (email: string, password?: string, rememberMe: boolean = true) => {
     try {
       setIsLoading(true);
@@ -704,8 +735,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       storage.setItem('rizqara_user', JSON.stringify(data));
       setUser(data);
 
-      // Fetch notifications after login
+      // Fetch notifications and orders after login
       await fetchNotifications(data.token);
+      await fetchOrders(data.token);
 
       toast.success(t('স্বাগতম!', 'Welcome back!'));
       return true;
@@ -726,6 +758,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem('rizqara_user', JSON.stringify(data));
       setUser(data);
 
+      await fetchNotifications(data.token);
+      await fetchOrders(data.token);
+
       toast.success(t('গুগল লগইন সফল!', 'Google Login Successful!'));
       return true;
     } catch (error: any) {
@@ -744,6 +779,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       localStorage.setItem('rizqara_token', data.token);
       localStorage.setItem('rizqara_user', JSON.stringify(data));
       setUser(data);
+
+      await fetchNotifications(data.token);
+      await fetchOrders(data.token);
 
       toast.success(t('ফেসবুক লগইন সফল!', 'Facebook Login Successful!'));
       return true;

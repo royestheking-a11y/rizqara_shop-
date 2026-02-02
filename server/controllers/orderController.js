@@ -18,6 +18,18 @@ const createOrder = async (req, res) => {
             userId
         } = req.body;
 
+        // Prevent Duplicate Orders: Check if same user placed order with same total in last 30 seconds
+        const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+        const existingOrder = await Order.findOne({
+            userId,
+            total,
+            date: { $gte: thirtySecondsAgo }
+        });
+
+        if (existingOrder) {
+            return res.status(400).json({ message: 'Order already processing. Please wait.' });
+        }
+
         // Generate Invoice No
         const invoiceNo = `INV-${Date.now()}`;
 
