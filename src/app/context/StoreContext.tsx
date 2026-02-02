@@ -719,16 +719,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Fetch orders from backend
-  const fetchOrders = async (token: string) => {
+  const fetchOrders = async (token: string, role?: string) => {
     try {
-      // If admin, fetch all? Or just my orders? usually fetching 'myorders' is enough for regular users.
-      // Admin page might have its own fetch logic or we might need to handle admin here.
-      // For now, let's assume 'myorders' is what the user profile needs.
+      let userRole = role;
+      if (!userRole) {
+        const storedUser = localStorage.getItem('rizqara_user') || sessionStorage.getItem('rizqara_user');
+        userRole = storedUser ? JSON.parse(storedUser).role : 'user';
+      }
 
-      const storedUser = localStorage.getItem('rizqara_user');
-      const role = storedUser ? JSON.parse(storedUser).role : 'user';
-
-      const endpointToUse = role === 'admin' ? '/orders' : '/orders/myorders';
+      const endpointToUse = userRole === 'admin' ? '/orders' : '/orders/myorders';
 
       const data = await apiCall(endpointToUse, 'GET', undefined, token);
       if (Array.isArray(data)) {
@@ -766,7 +765,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       // Fetch notifications and orders after login
       await fetchNotifications(data.token);
-      await fetchOrders(data.token);
+      await fetchOrders(data.token, data.role);
       await fetchMessages(data.token, data.id, data.role);
 
       toast.success(t('স্বাগতম!', 'Welcome back!'));
@@ -789,7 +788,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setUser(data);
 
       await fetchNotifications(data.token);
-      await fetchOrders(data.token);
+      await fetchOrders(data.token, data.role);
       await fetchMessages(data.token, data.id, data.role);
 
       toast.success(t('গুগল লগইন সফল!', 'Google Login Successful!'));
@@ -812,7 +811,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setUser(data);
 
       await fetchNotifications(data.token);
-      await fetchOrders(data.token);
+      await fetchOrders(data.token, data.role);
       await fetchMessages(data.token, data.id, data.role);
 
       toast.success(t('ফেসবুক লগইন সফল!', 'Facebook Login Successful!'));

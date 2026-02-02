@@ -48,6 +48,7 @@ const signup = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 wishlist: user.wishlist,
+                reminders: user.reminders,
                 token: generateToken(user._id)
             });
         } else {
@@ -91,6 +92,7 @@ const login = async (req, res) => {
                 cart: [], // Add cart logic if needed
                 addresses: freshUser.addresses,
                 wishlist: freshUser.wishlist,
+                reminders: freshUser.reminders,
                 avatar: freshUser.profileImage,
                 token: generateToken(freshUser._id)
             });
@@ -133,6 +135,7 @@ const updateProfile = async (req, res) => {
                 role: updatedUser.role,
                 addresses: updatedUser.addresses,
                 wishlist: updatedUser.wishlist,
+                reminders: updatedUser.reminders,
                 token: generateToken(updatedUser._id)
             });
         } else {
@@ -191,6 +194,7 @@ const googleLogin = async (req, res) => {
             profileImage: user.profileImage,
             addresses: user.addresses,
             wishlist: user.wishlist,
+            reminders: user.reminders,
             token: generateToken(user._id)
         });
     } catch (error) {
@@ -246,6 +250,7 @@ const facebookLogin = async (req, res) => {
             profileImage: user.profileImage,
             addresses: user.addresses,
             wishlist: user.wishlist,
+            reminders: user.reminders,
             token: generateToken(user._id)
         });
 
