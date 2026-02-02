@@ -104,7 +104,11 @@ export const Checkout = () => {
     setVoucherError('');
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (data: CheckoutForm) => {
+    if (isSubmitting) return;
+
     if (!user) {
       toast.error(t('অর্ডার করতে লগইন বা রেজিস্ট্রেশন করুন', 'Please login or register to place order'));
       sessionStorage.setItem('returnPath', '/checkout');
@@ -116,6 +120,8 @@ export const Checkout = () => {
       toast.error(t('অনুগ্রহ করে ট্রানজেকশন আইডি প্রদান করুন', 'Please provide Transaction ID'));
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const orderId = await placeOrder({
@@ -150,6 +156,7 @@ export const Checkout = () => {
     } catch (e) {
       console.error('Order placement error:', e);
       toast.error(t('কিছু সমস্যা হয়েছে', 'Something went wrong. Please try again.'));
+      setIsSubmitting(false);
     }
   };
 
@@ -374,9 +381,13 @@ export const Checkout = () => {
             {/* Desktop Confirm Button */}
             <button
               type="submit"
-              className="hidden lg:block w-full mt-6 py-4 bg-[#D91976] text-white font-bold rounded-xl hover:bg-[#A8145A] transition shadow-lg shadow-pink-200 text-lg uppercase tracking-wide"
+              disabled={isSubmitting}
+              className={`hidden lg:block w-full mt-6 py-4 font-bold rounded-xl transition shadow-lg text-lg uppercase tracking-wide ${isSubmitting
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
+                }`}
             >
-              {isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order')}
+              {isSubmitting ? t('অপেক্ষা করুন...', 'Processing...') : (isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order'))}
             </button>
           </div>
         </div>
@@ -506,9 +517,13 @@ export const Checkout = () => {
           {/* Mobile Confirm Button (Shown at the very end of left column content which is 3rd in mobile order) */}
           <button
             type="submit"
-            className="lg:hidden w-full mt-6 py-4 bg-[#D91976] text-white font-bold rounded-xl hover:bg-[#A8145A] transition shadow-lg shadow-pink-200 text-lg uppercase tracking-wide"
+            disabled={isSubmitting}
+            className={`lg:hidden w-full mt-6 py-4 font-bold rounded-xl transition shadow-lg text-lg uppercase tracking-wide ${isSubmitting
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
+              }`}
           >
-            {isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order')}
+            {isSubmitting ? t('অপেক্ষা করুন...', 'Processing...') : (isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order'))}
           </button>
         </div>
       </form>
