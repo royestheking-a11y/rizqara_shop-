@@ -48,7 +48,40 @@ const createOrder = async (req, res) => {
             trackingHistory: [{ status: 'pending', date: new Date(), note: 'Order placed' }]
         });
 
+        // Voucher Validation & Usage Update
+        let appliedVoucher = null;
+        if (req.body.voucherCode) {
+            const Voucher = require('../models/Voucher');
+            const voucher = await Voucher.findOne({ code: req.body.voucherCode.toUpperCase() });
+
+            if (voucher) {
+                // Check if expired
+                if (voucher.validUntil && new Date() > voucher.validUntil) {
+                    return res.status(400).json({ message: 'Voucher has expired' });
+                }
+
+                // Check overall usage limit
+                if (voucher.usageLimit && voucher.usedCount >= voucher.usageLimit) {
+                    return res.status(400).json({ message: 'Voucher usage limit reached' });
+                }
+
+                // Strict Single Use Per User Check
+                if (voucher.usedByUsers && voucher.usedByUsers.includes(userId)) {
+                    return res.status(400).json({ message: 'You have already used this voucher. Vouchers are single-use only.' });
+                }
+
+                appliedVoucher = voucher;
+            }
+        }
+
         const createdOrder = await order.save();
+
+        // Update Voucher Usage (If applicable)
+        if (appliedVoucher) {
+            appliedVoucher.usedCount = (appliedVoucher.usedCount || 0) + 1;
+            appliedVoucher.usedByUsers = [...(appliedVoucher.usedByUsers || []), userId];
+            await appliedVoucher.save();
+        }
 
         // Update Real Sales Count for Products
         for (const item of items) {
