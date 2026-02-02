@@ -47,6 +47,10 @@ const updateUserProfile = async (req, res) => {
                 user.addresses = req.body.addresses;
             }
 
+            if (req.body.wishlist) {
+                user.wishlist = req.body.wishlist;
+            }
+
             if (req.body.reminders) {
                 console.log('Reminders received:', typeof req.body.reminders, JSON.stringify(req.body.reminders));
 
@@ -83,6 +87,7 @@ const updateUserProfile = async (req, res) => {
                 phone: updatedUser.phone,
                 avatar: updatedUser.profileImage,
                 addresses: updatedUser.addresses,
+                wishlist: updatedUser.wishlist,
                 reminders: updatedUser.reminders,
                 // token: generateToken(updatedUser._id), // Removed: Token refresh not needed for profile update
             });

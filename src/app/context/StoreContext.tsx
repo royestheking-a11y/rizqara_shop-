@@ -18,6 +18,7 @@ export interface User {
   phone?: string;
   avatar?: string;
   addresses: Address[];
+  wishlist?: string[]; // Added wishlist persistence
   isBanned?: boolean;
   bannedReason?: string;
   failedDeliveries?: number;
@@ -401,6 +402,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const stored = localStorage.getItem('rizqara_users');
     return stored ? JSON.parse(stored) : [];
   });
+
+  // Sync wishlist from user profile on login/load
+  useEffect(() => {
+    if (user && Array.isArray(user.wishlist)) {
+      // Merge logic could be here, but for now we replace to match profile
+      // Or we can merge unique items if we want to keep guest items.
+      // User requested: "when add product... saved on user profile... show with reload".
+      // Replacement is safer for persistence syncing.
+      setWishlist(user.wishlist);
+    }
+  }, [user]);
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const stored = localStorage.getItem('rizqara_cart');
@@ -1715,17 +1727,38 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Wishlist
-  const toggleWishlist = (productId: string) => {
-    setWishlist(prev => {
-      const exists = prev.includes(productId);
-      if (exists) {
-        toast.info(t('উইশলিস্ট থেকে সরানো হয়েছে', 'Removed from wishlist'));
-        return prev.filter(id => id !== productId);
-      } else {
-        toast.success(t('উইশলিস্টে যোগ হয়েছে', 'Added to wishlist'));
-        return [...prev, productId];
+  const toggleWishlist = async (productId: string) => {
+    const exists = wishlist.includes(productId);
+    let newWishlist: string[];
+
+    if (exists) {
+      toast.info(t('উইশলিস্ট থেকে সরানো হয়েছে', 'Removed from wishlist'));
+      newWishlist = wishlist.filter(id => id !== productId);
+    } else {
+      toast.success(t('উইশলিস্টে যোগ হয়েছে', 'Added to wishlist'));
+      newWishlist = [...wishlist, productId];
+    }
+
+    setWishlist(newWishlist);
+
+    // Sync with backend if logged in
+    const token = localStorage.getItem('rizqara_token');
+    if (token) {
+      try {
+        await apiCall('/users/profile', 'PUT', { wishlist: newWishlist }, token);
+        // Optimize: Update user state with new wishlist to prevent stale overwrites
+        setUser((prev) => prev ? { ...prev, wishlist: newWishlist } : prev);
+        // Also update localStorage user object
+        const storedUser = localStorage.getItem('rizqara_user');
+        if (storedUser) {
+          const u = JSON.parse(storedUser);
+          u.wishlist = newWishlist;
+          localStorage.setItem('rizqara_user', JSON.stringify(u));
+        }
+      } catch (error) {
+        console.error('Failed to sync wishlist:', error);
       }
-    });
+    }
   };
 
   const isInWishlist = (productId: string) => wishlist.includes(productId);
