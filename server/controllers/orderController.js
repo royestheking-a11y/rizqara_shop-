@@ -18,12 +18,13 @@ const createOrder = async (req, res) => {
             userId
         } = req.body;
 
-        // Prevent Duplicate Orders: Check if same user placed order with same total in last 30 seconds
-        const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+        // Prevent Duplicate Orders: Check if same user placed order with same total in last 5 seconds
+        // User requested to reduce this time window to handle only immediate double-clicks (3-4 seconds)
+        const fiveSecondsAgo = new Date(Date.now() - 5 * 1000);
         const existingOrder = await Order.findOne({
             userId,
             total,
-            date: { $gte: thirtySecondsAgo }
+            date: { $gte: fiveSecondsAgo }
         });
 
         if (existingOrder) {
