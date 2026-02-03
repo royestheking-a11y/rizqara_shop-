@@ -13,6 +13,10 @@ const getProducts = async (req, res) => {
     }
 };
 
+const { generateSeoData } = require('../services/seoService');
+
+// ...
+
 // @desc    Create a product
 // @route   POST /api/products
 // @access  Admin
@@ -37,6 +41,14 @@ const createProduct = async (req, res) => {
             imageUrls = [...imageUrls, ...newFiles];
         }
 
+        // AI SEO AUTOMATION
+        let seoData = null;
+        if (imageUrls.length > 0) {
+            console.log("Generating AI SEO Data...");
+            // Use the first image for analysis
+            seoData = await generateSeoData(imageUrls[0], title_en);
+        }
+
         const product = new Product({
             id: `prod_${Date.now()}`, // Generate ID
             title_en,
@@ -46,6 +58,12 @@ const createProduct = async (req, res) => {
             fakeSales: Math.floor(Math.random() * (200 - 60 + 1)) + 60, // Random 60-200
             rating: 5,
             reviews: 5, // Initial fake review count
+            seo: seoData ? {
+                altText: seoData.altText,
+                metaDescription: seoData.metaDescription,
+                generatedAt: new Date()
+            } : undefined,
+            tags: seoData?.tags || [], // Helper to auto-tag if schema supports it
             ...rest
         });
 

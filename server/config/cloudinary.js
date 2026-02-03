@@ -14,7 +14,9 @@ const storage = new CloudinaryStorage({
     params: async (req, file) => {
         return {
             folder: `rizqara_shop/${req.body.folder || 'products'}`,
-            allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
+            allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+            format: 'webp', // Force convert to WebP
+            transformation: [{ width: 1600, crop: "limit" }, { quality: "auto" }] // Resize & Optimize
         };
     },
 });

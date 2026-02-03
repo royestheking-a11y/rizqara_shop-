@@ -23,6 +23,12 @@ const productSchema = new mongoose.Schema({
     isFeatured: { type: Boolean, default: false },
     fakeSales: { type: Number, default: 0 },
     realSales: { type: Number, default: 0 },
+    seo: {
+        altText: String,
+        metaDescription: String,
+        generatedAt: Date
+    },
+    tags: [String],
     createdAt: { type: Date, default: Date.now }
 });
 
