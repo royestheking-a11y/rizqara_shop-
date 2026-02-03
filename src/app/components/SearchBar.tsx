@@ -315,3 +315,4 @@ export const SearchBar: React.FC = () => {
       </AnimatePresence>
     </div>
   );
+};
