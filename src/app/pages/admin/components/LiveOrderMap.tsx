@@ -51,7 +51,7 @@ export const LiveOrderMap = () => {
     const getCoordinatesForDistrict = (districtName: string, features: any[]) => {
         if (!districtName || !features) return { x: 150, y: 250 }; // Default to center
 
-        const targetNorm = districtName.toLowerCase();
+        const targetNorm = districtName.toLowerCase().replace(' district', '').trim();
         const feature = features.find(f => {
             const props = f.properties;
             return (
@@ -73,9 +73,17 @@ export const LiveOrderMap = () => {
     useEffect(() => {
         const socket = io(api_url);
 
-        socket.on('newOrder', (data) => {
-            const { order } = data;
-            const district = order?.shippingAddress?.city || 'Dhaka'; // Default if missing
+        console.log("Socket connecting to:", api_url);
+
+        socket.on('connect', () => {
+            console.log("Socket connected:", socket.id);
+        });
+
+        // Backend emits 'new_order' with flat structure { id, district, ... }
+        socket.on('new_order', (data) => {
+            console.log("New Order Received:", data);
+
+            const district = data.district || 'Dhaka';
 
             // Calculate position if map data is ready
             let coords = { x: 150, y: 250 };
@@ -92,7 +100,7 @@ export const LiveOrderMap = () => {
 
             // Add to active orders pipeline
             setActiveOrders(prev => [...prev.slice(-4), newOrder]);
-            setLastOrder(order);
+            setLastOrder(data); // data is the flattened order object
             setHighlightedDistrict(district);
 
             // Clear highlight after 5 seconds
@@ -102,13 +110,13 @@ export const LiveOrderMap = () => {
         return () => {
             socket.disconnect();
         };
-    }, [api_url, geoData, pathGenerator]); // Re-bind if geoData loads late
+    }, [api_url, geoData, pathGenerator]);
 
     // Helper to check if a feature matches the highlighted district
     const isProjectedDistrict = (feature: any, target: string | null) => {
         if (!target) return false;
         const props = feature.properties;
-        const targetNorm = target.toLowerCase();
+        const targetNorm = target.toLowerCase().replace(' district', '').trim();
         return (
             (props.NAME_2 && props.NAME_2.toLowerCase().includes(targetNorm)) ||
             (props.NAME_3 && props.NAME_3.toLowerCase().includes(targetNorm)) ||
@@ -151,9 +159,9 @@ export const LiveOrderMap = () => {
                                         initial={{ opacity: 0 }}
                                         animate={{
                                             opacity: 1,
-                                            fill: isHighlighted ? '#10b981' : '#e5e7eb',
+                                            fill: isHighlighted ? '#fce7f3' : '#e5e7eb', // Pink-100 highlight
                                             scale: isHighlighted ? 1.05 : 1,
-                                            stroke: isHighlighted ? '#059669' : '#ffffff',
+                                            stroke: isHighlighted ? '#ec4899' : '#ffffff', // Pink-500 stroke
                                             strokeWidth: isHighlighted ? 1 : 0.5
                                         }}
                                         transition={{ duration: 0.5 }}
@@ -181,20 +189,21 @@ export const LiveOrderMap = () => {
                                 exit={{ opacity: 0, scale: 0 }}
                                 className="absolute z-30 pointer-events-none"
                                 style={{
-                                    // Map coordinates (0-300, 0-500) need to be mapped to percent or pixel relative to container
-                                    // Since SVG viewbox is 300x500 and takes full width/height of container, we can use percentages
+                                    // Percent mapping based on 300x500 SVG viewbox
                                     left: `${(order.x / 300) * 100}%`,
                                     top: `${(order.y / 500) * 100}%`,
-                                    transform: 'translate(-50%, -50%)' // Center the dot
+                                    transform: 'translate(-50%, -50%)'
                                 }}
                             >
                                 <div className="relative">
-                                    <div className="absolute inset-0 bg-emerald-500/50 rounded-full animate-ping w-8 h-8 -ml-3 -mt-3"></div>
-                                    <div className="bg-white p-1 rounded-full shadow-lg border border-emerald-500 relative z-10 w-3 h-3 flex items-center justify-center">
-                                        <div className="bg-emerald-500 w-1.5 h-1.5 rounded-full"></div>
+                                    {/* PINK GLOW */}
+                                    <div className="absolute inset-0 bg-pink-500/50 rounded-full animate-ping w-8 h-8 -ml-3 -mt-3"></div>
+                                    {/* PINK DOT */}
+                                    <div className="bg-white p-1 rounded-full shadow-lg border border-pink-500 relative z-10 w-3 h-3 flex items-center justify-center">
+                                        <div className="bg-pink-500 w-1.5 h-1.5 rounded-full"></div>
                                     </div>
                                     {/* Tooltip */}
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur text-[10px] px-2 py-1 rounded shadow-lg border border-emerald-100 flex items-center gap-1 whitespace-nowrap z-40 transform hover:scale-105 transition-transform">
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur text-[10px] px-2 py-1 rounded shadow-lg border border-pink-100 flex items-center gap-1 whitespace-nowrap z-40 transform hover:scale-105 transition-transform">
                                         <Zap className="w-3 h-3 text-amber-500" />
                                         <span className="font-bold text-stone-800">{order.city}</span>
                                     </div>
@@ -211,7 +220,7 @@ export const LiveOrderMap = () => {
                     <div className="flex flex-col">
                         <span className="text-stone-400 font-medium">{t('সর্বশেষ সক্রিয়', 'Last Active')}</span>
                         <span className="text-stone-700 font-bold max-w-[100px] truncate">
-                            {lastOrder?.shippingAddress?.city || '...'}
+                            {lastOrder?.district || lastOrder?.shippingAddress?.city || '...'}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-stone-100"></div>
