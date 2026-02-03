@@ -21,6 +21,8 @@
         "multer": "^2.0.2",
         "multer-storage-cloudinary": "^4.0.0",
         "nodemon": "^3.1.11",
-        "socket.io": "^4.7.4"
+        "socket.io": "^4.7.4",
+        "@tensorflow/tfjs": "^4.17.0",
+        "@tensorflow/tfjs-node": "^4.17.0"
     }
 }
