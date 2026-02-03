@@ -18,12 +18,15 @@ interface ActiveOrder {
 }
 
 export const LiveOrderMap = () => {
-    const { t } = useStore();
+    const { t, orders } = useStore(); // Access cached orders from context
     const [geoData, setGeoData] = useState<GeoData | null>(null);
     const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
     const [lastOrder, setLastOrder] = useState<any>(null);
-    const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const [highlightedDistrict, setHighlightedDistrict] = useState<string | null>(null);
+
+    // Determine Socket URL safely
+    const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const socketUrl = api_url.replace(/\/api\/??$/, ''); // Strip /api suffix ensures connection to root
 
     // D3 Projection Logic
     const projection = useMemo(() => {
@@ -51,6 +54,7 @@ export const LiveOrderMap = () => {
     const getCoordinatesForDistrict = (districtName: string, features: any[]) => {
         if (!districtName || !features) return { x: 150, y: 250 }; // Default to center
 
+        // Some district names in GeoJSON might have suffix " District" or case differences
         const targetNorm = districtName.toLowerCase().replace(' district', '').trim();
         const feature = features.find(f => {
             const props = f.properties;
@@ -69,19 +73,40 @@ export const LiveOrderMap = () => {
         return { x: 150, y: 250 };
     };
 
-    // Socket Connection for Real-time Orders
+    // Initialize with Recent Orders from Context (Handles Reload by showing history)
     useEffect(() => {
-        const socket = io(api_url);
+        if (geoData && orders.length > 0) {
+            // Sort by date descending (newest first)
+            const sortedOrders = [...orders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            const recent = sortedOrders.slice(0, 5);
 
-        console.log("Socket connecting to:", api_url);
+            const mappedOrders = recent.map(o => {
+                const district = o.shippingAddress?.district || o.shippingAddress?.city || 'Dhaka';
+                const coords = getCoordinatesForDistrict(district, geoData.features);
+                return {
+                    id: new Date(o.date).getTime() + Math.random(), // ensure unique key
+                    city: district,
+                    x: coords.x,
+                    y: coords.y
+                };
+            });
 
-        socket.on('connect', () => {
-            console.log("Socket connected:", socket.id);
-        });
+            setActiveOrders(mappedOrders);
+            if (recent.length > 0) {
+                setLastOrder(recent[0]);
+            }
+        }
+    }, [geoData, orders]); // Runs when map data loads or orders fetched
+
+    // Socket Connection for New Real-time Orders
+    useEffect(() => {
+        const socket = io(socketUrl);
+
+        console.log("LiveMap Socket connecting to:", socketUrl);
 
         // Backend emits 'new_order' with flat structure { id, district, ... }
         socket.on('new_order', (data) => {
-            console.log("New Order Received:", data);
+            console.log("LiveMap New Order Received:", data);
 
             const district = data.district || 'Dhaka';
 
@@ -99,7 +124,7 @@ export const LiveOrderMap = () => {
             };
 
             // Add to active orders pipeline
-            setActiveOrders(prev => [...prev.slice(-4), newOrder]);
+            setActiveOrders(prev => [newOrder, ...prev.slice(0, 4)]); // Prepend new order, keep max 5
             setLastOrder(data); // data is the flattened order object
             setHighlightedDistrict(district);
 
@@ -110,7 +135,7 @@ export const LiveOrderMap = () => {
         return () => {
             socket.disconnect();
         };
-    }, [api_url, geoData, pathGenerator]);
+    }, [socketUrl, geoData, pathGenerator]);
 
     // Helper to check if a feature matches the highlighted district
     const isProjectedDistrict = (feature: any, target: string | null) => {
@@ -220,7 +245,7 @@ export const LiveOrderMap = () => {
                     <div className="flex flex-col">
                         <span className="text-stone-400 font-medium">{t('সর্বশেষ সক্রিয়', 'Last Active')}</span>
                         <span className="text-stone-700 font-bold max-w-[100px] truncate">
-                            {lastOrder?.district || lastOrder?.shippingAddress?.city || '...'}
+                            {lastOrder?.district || lastOrder?.shippingAddress?.district || lastOrder?.shippingAddress?.city || '...'}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-stone-100"></div>
