@@ -14,6 +14,7 @@ const getProducts = async (req, res) => {
 };
 
 const { generateSeoData } = require('../services/seoService');
+const { getVector, cosineSimilarity } = require('../services/visualSearchService');
 
 // ...
 
@@ -41,12 +42,24 @@ const createProduct = async (req, res) => {
             imageUrls = [...imageUrls, ...newFiles];
         }
 
-        // AI SEO AUTOMATION
+        // AUTOMATION: AI SEO & VISUAL SEARCH
         let seoData = null;
+        let imageVector = [];
+
         if (imageUrls.length > 0) {
-            console.log("Generating AI SEO Data...");
-            // Use the first image for analysis
-            seoData = await generateSeoData(imageUrls[0], title_en);
+            const mainImage = imageUrls[0];
+
+            console.log("Generating Automations for:", mainImage);
+
+            // Parallel execution for speed
+            const [seoResult, vectorResult] = await Promise.all([
+                generateSeoData(mainImage, title_en),
+                getVector(mainImage)
+            ]);
+
+            seoData = seoResult;
+            if (vectorResult) imageVector = vectorResult;
+            console.log("Vector Generated Size:", imageVector.length);
         }
 
         const product = new Product({
@@ -63,7 +76,8 @@ const createProduct = async (req, res) => {
                 metaDescription: seoData.metaDescription,
                 generatedAt: new Date()
             } : undefined,
-            tags: seoData?.tags || [], // Helper to auto-tag if schema supports it
+            tags: seoData?.tags || [],
+            imageVector, // Store the math vector!
             ...rest
         });
 
@@ -146,9 +160,64 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+// @desc    Search products by Image
+// @route   POST /api/products/search-image
+// @access  Public
+const searchByImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image uploaded' });
+        }
+
+        console.log("Visual Search Triggered:", req.file.path);
+
+        // 1. Generate Vector for the query image
+        // req.file.path is the Cloudinary URL (or local path if not using cloud for this)
+        // Since we are using Cloudinary for upload route, it should be a URL.
+        const queryVector = await getVector(req.file.path);
+
+        if (!queryVector) {
+            return res.status(500).json({ message: 'Failed to process image' });
+        }
+
+        // 2. Fetch all product vectors (Projection to minimize RAM usage)
+        // Only fetch products that HAVE a vector
+        const products = await Product.find({ imageVector: { $exists: true, $not: { $size: 0 } } })
+            .select('_id title_en price images imageVector category');
+
+        // 3. Calculate Similarity In-Memory
+        // Note: For <5000 products, this is instant. For millions, use Atlas Vector Search.
+        const results = products.map(p => {
+            const similarity = cosineSimilarity(queryVector, p.imageVector);
+            return {
+                product: p,
+                score: similarity
+            };
+        });
+
+        // 4. Sort & Filter
+        const topMatches = results
+            .sort((a, b) => b.score - a.score) // Highest score first
+            .filter(r => r.score > 0.5) // Minimum visual similarity threshold (50%)
+            .slice(0, 10) // Top 10 matches
+            .map(r => r.product); // Return just the products
+
+        // Cleanup: We don't need to keep the query image if it was just for search
+        // But since it's on Cloudinary, we might want to delete it or keep it as "search history".
+        // For now, let's just return results.
+
+        res.json(topMatches);
+
+    } catch (error) {
+        console.error("Visual Search Error:", error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getProducts,
     createProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    searchByImage
 };

@@ -29,6 +29,7 @@ const productSchema = new mongoose.Schema({
         generatedAt: Date
     },
     tags: [String],
+    imageVector: { type: [Number], select: false }, // Hidden by default, explicit select needed
     createdAt: { type: Date, default: Date.now }
 });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { Search, X } from 'lucide-react';
+import { Search, X, Camera, Loader2 } from 'lucide-react';
 import { useStore } from '@/app/context/StoreContext';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -28,8 +28,10 @@ export const SearchBar: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [results, setResults] = useState<typeof products>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (query.trim().length > 1) {
@@ -67,6 +69,41 @@ export const SearchBar: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setIsOpen(true); // Open dropdown to show loader
+    setResults([]); // Clear previous results
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      // Use vite env or fallback
+      const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      // Ensure no double slash if context url has it, though typically we handle strictly. 
+      // For now simple concat is fine if validation exists.
+      const response = await fetch(`${api_url}/products/search-image`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Search failed');
+
+      const data = await response.json();
+      setResults(data); // Set visual matches
+
+    } catch (error) {
+      console.error("Visual search error:", error);
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const handleProductClick = (productId: string) => {
     navigate(`/product/${productId}`);
     setQuery('');
@@ -80,30 +117,53 @@ export const SearchBar: React.FC = () => {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={t('পণ্য খুঁজুন...', 'Search products...')}
-          className="w-full px-5 py-2.5 pl-12 pr-12 rounded-full border border-gray-200 focus:border-[#D91976] focus:outline-none focus:ring-2 focus:ring-[#D91976]/20 transition bg-gray-50 focus:bg-white"
+          placeholder={t('পণ্য খুঁজুন বা ছবি আপলোড করুন...', 'Search or upload image...')}
+          className="w-full px-5 py-2.5 pl-12 pr-20 rounded-full border border-gray-200 focus:border-[#D91976] focus:outline-none focus:ring-2 focus:ring-[#D91976]/20 transition bg-gray-50 focus:bg-white"
         />
         <Search
           className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
           size={20}
         />
-        {query && (
+
+        {/* Right Action Buttons */}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setIsOpen(false);
+              }}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X size={18} />
+            </button>
+          )}
+
+          <div className="h-4 w-[1px] bg-gray-300 mx-1"></div>
+
           <button
             type="button"
-            onClick={() => {
-              setQuery('');
-              setIsOpen(false);
-            }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className={`text-gray-400 hover:text-[#D91976] transition-colors ${isUploading ? 'animate-pulse' : ''}`}
+            title="Search by Image"
           >
-            <X size={18} />
+            {isUploading ? <Loader2 size={20} className="animate-spin text-[#D91976]" /> : <Camera size={20} />}
           </button>
-        )}
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+        </div>
       </form>
 
       {/* Search Results Dropdown */}
       <AnimatePresence>
-        {isOpen && results.length > 0 && (
+        {isOpen && (results.length > 0 || isUploading) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -112,11 +172,31 @@ export const SearchBar: React.FC = () => {
             className="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 max-h-[500px] overflow-y-auto"
           >
             <div className="p-3">
-              <p className="text-xs text-gray-500 font-medium mb-2 px-3">
-                {t('খোঁজার ফলাফল', 'Search Results')} ({results.length})
+              <p className="text-xs text-gray-500 font-medium mb-2 px-3 flex items-center gap-2">
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    {t('বিশ্লেষণ করা হচ্ছে...', 'Analyzing Image...')}
+                  </>
+                ) : (
+                  <>
+                    {t('খোঁজার ফলাফল', 'Search Results')} ({results.length})
+                  </>
+                )}
               </p>
               <div className="space-y-1">
-                {results.slice(0, 8).map((product) => (
+                {/* Skeleton Loader during upload */}
+                {isUploading && Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-3 animate-pulse">
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))}
+
+                {!isUploading && results.slice(0, 8).map((product) => (
                   <button
                     key={product.id}
                     onClick={() => handleProductClick(product.id)}
@@ -156,7 +236,7 @@ export const SearchBar: React.FC = () => {
                   </button>
                 ))}
               </div>
-              {results.length > 8 && (
+              {!isUploading && results.length > 8 && (
                 <button
                   onClick={() => {
                     navigate(`/shop?q=${encodeURIComponent(query)}`);
@@ -171,7 +251,7 @@ export const SearchBar: React.FC = () => {
             </div>
           </motion.div>
         )}
-        {isOpen && query.trim().length > 1 && results.length === 0 && (
+        {isOpen && query.trim().length > 1 && results.length === 0 && !isUploading && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
