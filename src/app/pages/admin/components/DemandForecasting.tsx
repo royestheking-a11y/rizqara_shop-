@@ -31,7 +31,7 @@ export const DemandForecasting = () => {
             const now = new Date();
             const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-            // Sales Analysis
+            // Sales Analysis to map product IDs to quantity sold
             const salesCount: { [key: string]: number } = {};
             orders.forEach(o => {
                 if (new Date(o.date) > sevenDaysAgo) {
@@ -54,8 +54,8 @@ export const DemandForecasting = () => {
                     });
                 }
 
-                // 2. Best Sellers (Sold > 5 in last week)
-                else if (weeklySales > 5) {
+                // 2. Best Sellers (Sold > 3 in last week) - Lowered threshold
+                else if (weeklySales > 3) {
                     calculatedInsights.push({
                         id: `top-${p.id}`,
                         product: p,
@@ -67,7 +67,7 @@ export const DemandForecasting = () => {
                 }
 
                 // 3. Predictions (Stock is healthy, but demand is picking up)
-                else if (weeklySales > 2 && p.stock < 20) {
+                else if (weeklySales > 1 && p.stock < 20) {
                     calculatedInsights.push({
                         id: `pred-${p.id}`,
                         product: p,
@@ -79,13 +79,31 @@ export const DemandForecasting = () => {
                 }
             });
 
+            // FALLBACK: If list is empty or short, add Healthy Stock items
+            if (calculatedInsights.length < 3) {
+                const remainingProducts = products.filter(p => !calculatedInsights.find(i => i.product.id === p.id));
+                // Sort by stock high to low
+                remainingProducts.sort((a, b) => b.stock - a.stock);
+
+                remainingProducts.slice(0, 3 - calculatedInsights.length).forEach(p => {
+                    calculatedInsights.push({
+                        id: `info-${p.id}`,
+                        product: p,
+                        type: 'prediction', // reusing prediction style for general info
+                        message_en: "Stock Healthy. Ready for orders.",
+                        message_bn: "স্টক পর্যাপ্ত। অর্ডারের জন্য প্রস্তুত।",
+                        metric: `${p.stock} units`
+                    });
+                });
+            }
+
             // Prioritize Alerts > Best Sellers > Predictions
             calculatedInsights.sort((a, b) => {
                 const map = { alert: 3, bestseller: 2, prediction: 1 };
                 return map[b.type] - map[a.type];
             });
 
-            setInsights(calculatedInsights.slice(0, 4)); // Show top 4
+            setInsights(calculatedInsights.slice(0, 5)); // Show top 5
             setLoading(false);
         }, 1000);
     };
