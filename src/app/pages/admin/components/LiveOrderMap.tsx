@@ -55,7 +55,7 @@ export const LiveOrderMap = () => {
         return d3.geoMercator()
             .center([90.3563, 23.6850]) // Center of Bangladesh
             .scale(4500) // Scale for container
-            .translate([150, 180]); // Adjust based on container size
+            .translate([150, 250]); // Adjusted Y to fit full map within 600px height
     }, []);
 
     const pathGenerator = useMemo(() => {
@@ -67,6 +67,7 @@ export const LiveOrderMap = () => {
         if (!target) return false;
         const props = feature.properties;
         // Check levels: Name_2 (District), Name_3 (District/Upazila), Name_1 (Division)
+        // Normalize names for comparison
         const targetNorm = target.toLowerCase();
         return (
             (props.NAME_2 && props.NAME_2.toLowerCase().includes(targetNorm)) ||
@@ -77,7 +78,7 @@ export const LiveOrderMap = () => {
     };
 
     return (
-        <div className="bg-white p-0 rounded-2xl shadow-sm border border-stone-100 flex flex-col items-center relative overflow-hidden group h-[400px]">
+        <div className="bg-white p-0 rounded-2xl shadow-sm border border-stone-100 flex flex-col items-center relative overflow-hidden group h-[600px]">
             {/* Header */}
             <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-stone-100 shadow-sm">
                 <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2">
@@ -99,7 +100,7 @@ export const LiveOrderMap = () => {
             <div className="w-full h-full flex items-center justify-center bg-stone-50/50 relative">
                 {/* SVG MAP */}
                 {geoData ? (
-                    <svg viewBox="0 0 300 400" className="w-full h-full drop-shadow-xl" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.05))' }}>
+                    <svg viewBox="0 0 300 500" className="w-full h-full drop-shadow-xl" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.05))' }}>
                         <g className="transition-all duration-500">
                             {geoData.features.map((feature, i) => {
                                 const isHighlighted = isProjectedDistrict(feature, highlightedDistrict);
@@ -125,7 +126,7 @@ export const LiveOrderMap = () => {
                 ) : (
                     <div className="flex flex-col items-center gap-2 text-stone-300 animate-pulse">
                         <MapPin className="w-8 h-8" />
-                        <span className="text-xs">Loading Map...</span>
+                        <span className="text-xs">{t('Loading Map...', 'মানচিত্র লোড হচ্ছে...')}</span>
                     </div>
                 )}
 
@@ -166,17 +167,17 @@ export const LiveOrderMap = () => {
             <div className="w-full p-4 border-t border-stone-100 bg-white/50 backdrop-blur-sm z-20">
                 <div className="flex justify-between items-center text-xs">
                     <div className="flex flex-col">
-                        <span className="text-stone-400 font-medium">Last Active</span>
+                        <span className="text-stone-400 font-medium">{t('Last Active', 'সর্বশেষ সক্রিয়')}</span>
                         <span className="text-stone-700 font-bold max-w-[100px] truncate">
                             {lastOrder?.shippingAddress?.city || '...'}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-stone-100"></div>
                     <div className="flex flex-col items-end">
-                        <span className="text-stone-400 font-medium">Volume</span>
+                        <span className="text-stone-400 font-medium">{t('Volume', 'ভলিউম')}</span>
                         <div className="flex items-center gap-1 text-emerald-600 font-bold">
                             <Activity className="w-3 h-3" />
-                            <span>High</span>
+                            <span>{t('High', 'উচ্চ')}</span>
                         </div>
                     </div>
                 </div>

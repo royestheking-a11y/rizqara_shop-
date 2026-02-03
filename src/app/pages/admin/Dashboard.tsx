@@ -1,6 +1,6 @@
 import { useStore } from '@/app/context/StoreContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { ShoppingBag, DollarSign, Users, Package, TrendingUp, RotateCcw, MessageCircle, Box } from 'lucide-react';
+import { ShoppingBag, DollarSign, Users, Package, TrendingUp, RotateCcw, MessageCircle, Box, Zap } from 'lucide-react';
 import { Link } from 'react-router';
 import { LiveOrderMap } from './components/LiveOrderMap';
 import { DemandForecasting } from './components/DemandForecasting';
@@ -85,7 +85,9 @@ export const AdminDashboard = () => {
 
       <div className="mb-8">
         <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-          <span className="text-2xl">⚡</span>
+          <span className="p-2 bg-amber-50 rounded-lg border border-amber-100 shadow-sm">
+            <Zap className="text-amber-500 w-5 h-5" fill="currentColor" />
+          </span>
           Live Insights & Forecasting
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
