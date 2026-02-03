@@ -81,7 +81,7 @@ export const LiveOrderMap = () => {
             const recent = sortedOrders.slice(0, 5);
 
             const mappedOrders = recent.map(o => {
-                const district = o.shippingAddress?.district || o.shippingAddress?.city || 'Dhaka';
+                const district = o.shippingAddress?.district || 'Dhaka';
                 const coords = getCoordinatesForDistrict(district, geoData.features);
                 return {
                     id: new Date(o.date).getTime() + Math.random(), // ensure unique key
@@ -245,7 +245,7 @@ export const LiveOrderMap = () => {
                     <div className="flex flex-col">
                         <span className="text-stone-400 font-medium">{t('সর্বশেষ সক্রিয়', 'Last Active')}</span>
                         <span className="text-stone-700 font-bold max-w-[100px] truncate">
-                            {lastOrder?.district || lastOrder?.shippingAddress?.district || lastOrder?.shippingAddress?.city || '...'}
+                            {lastOrder?.district || lastOrder?.shippingAddress?.district || '...'}
                         </span>
                     </div>
                     <div className="h-8 w-[1px] bg-stone-100"></div>
