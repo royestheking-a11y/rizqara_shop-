@@ -37,6 +37,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/push', require('./routes/push'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/webhooks', require('./routes/webhooks')); // SMS Webhook
 app.use('/api/utils', require('./routes/utils')); // Temporary migration endpoint
 console.log('All routes registered.');
 

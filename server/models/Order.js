@@ -35,6 +35,7 @@ const orderSchema = new mongoose.Schema({
         recipientName: String // Added
     },
     paymentMethod: String,
+    trxId: String, // Store customer submitted TrxID
     paymentStatus: { type: String, default: 'pending' }, // pending, verified, failed
     status: {
         type: String,

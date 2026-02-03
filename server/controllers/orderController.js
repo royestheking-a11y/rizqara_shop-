@@ -15,7 +15,8 @@ const createOrder = async (req, res) => {
             paymentMethod,
             userName,
             userPhone,
-            userId
+            userId,
+            paymentTrxId // Added
         } = req.body;
 
         // Prevent Duplicate Orders: Check if same user placed order with same total in last 5 seconds
@@ -45,6 +46,7 @@ const createOrder = async (req, res) => {
             deliveryFee,
             shippingAddress,
             paymentMethod,
+            trxId: paymentTrxId, // Map frontend 'paymentTrxId' to schema 'trxId'
             trackingHistory: [{ status: 'pending', date: new Date(), note: 'Order placed' }]
         });
 
