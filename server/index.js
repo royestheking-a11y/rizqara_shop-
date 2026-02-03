@@ -70,8 +70,9 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 5000;
+console.log(`Attempting to start server on port ${PORT}...`);
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`SERVER RUNNING ON PORT ${PORT}`);
     console.log('Routes registered: /api/steadfast');
 });
