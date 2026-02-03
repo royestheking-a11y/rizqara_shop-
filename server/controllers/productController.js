@@ -183,7 +183,7 @@ const searchByImage = async (req, res) => {
         // 2. Fetch all product vectors (Projection to minimize RAM usage)
         // Only fetch products that HAVE a vector
         const products = await Product.find({ imageVector: { $exists: true, $not: { $size: 0 } } })
-            .select('_id title_en price images imageVector category');
+            .select('_id id title_en title_bn price discount_price images imageVector category');
 
         // 3. Calculate Similarity In-Memory
         // Note: For <5000 products, this is instant. For millions, use Atlas Vector Search.
