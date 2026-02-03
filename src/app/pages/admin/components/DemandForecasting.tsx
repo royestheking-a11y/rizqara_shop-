@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, TrendingUp, Package, ArrowRight, Activity, ShoppingBag, Zap } from 'lucide-react';
+import { AlertTriangle, TrendingUp, ArrowRight, Activity, ShoppingBag, Zap } from 'lucide-react';
 import { Link } from 'react-router';
 import { useStore } from '@/app/context/StoreContext';
 
@@ -121,8 +121,8 @@ export const DemandForecasting = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`p-4 rounded-xl border flex gap-4 ${item.type === 'alert' ? 'bg-red-50 border-red-100' :
-                                    item.type === 'bestseller' ? 'bg-emerald-50 border-emerald-100' :
-                                        'bg-blue-50 border-blue-100'
+                                item.type === 'bestseller' ? 'bg-emerald-50 border-emerald-100' :
+                                    'bg-blue-50 border-blue-100'
                                 }`}
                         >
                             <div className="w-12 h-12 rounded-lg bg-white overflow-hidden flex-shrink-0 border border-stone-100">
@@ -138,8 +138,8 @@ export const DemandForecasting = () => {
                                 </div>
 
                                 <p className={`text-xs mt-1 font-medium ${item.type === 'alert' ? 'text-red-600' :
-                                        item.type === 'bestseller' ? 'text-emerald-600' :
-                                            'text-blue-600'
+                                    item.type === 'bestseller' ? 'text-emerald-600' :
+                                        'text-blue-600'
                                     }`}>
                                     {t(item.message_en, item.message_bn)}
                                 </p>
