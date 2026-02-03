@@ -88,7 +88,7 @@ export const AdminDashboard = () => {
           <span className="p-2 bg-amber-50 rounded-lg border border-amber-100 shadow-sm">
             <Zap className="text-amber-500 w-5 h-5" fill="currentColor" />
           </span>
-          Live Insights & Forecasting
+          {t('লাইভ ইনসাইটস এবং পূর্বাভাস', 'Live Insights & Forecasting')}
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <LiveOrderMap />
