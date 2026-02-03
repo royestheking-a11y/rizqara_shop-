@@ -110,6 +110,20 @@ const createOrder = async (req, res) => {
             `/account/orders`
         );
 
+
+
+        // Real-time Order Map Event
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('new_order', {
+                id: createdOrder.id,
+                invoiceNo: createdOrder.invoiceNo,
+                total: createdOrder.total,
+                district: createdOrder.shippingAddress.district, // Critical for Pradip Tracker
+                items: createdOrder.items.map(i => ({ title: i.title_en, quantity: i.quantity }))
+            });
+        }
+
         res.status(201).json(createdOrder);
     } catch (error) {
         res.status(400).json({ message: error.message });
