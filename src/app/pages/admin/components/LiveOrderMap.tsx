@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as d3 from 'd3-geo';
 import { io } from 'socket.io-client';
 import { useStore } from '@/app/context/StoreContext';
-import { MapPin, Activity, Zap, Navigation } from 'lucide-react';
+import { MapPin, Activity, Zap, Navigation, X } from 'lucide-react';
 
 interface GeoData {
     type: string;
@@ -23,6 +23,7 @@ export const LiveOrderMap = () => {
     const [activeOrders, setActiveOrders] = useState<ActiveOrder[]>([]);
     const [lastOrder, setLastOrder] = useState<any>(null);
     const [highlightedDistrict, setHighlightedDistrict] = useState<string | null>(null);
+    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
     // Determine Socket URL safely
     const api_url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -33,7 +34,7 @@ export const LiveOrderMap = () => {
         return d3.geoMercator()
             .center([90.3563, 23.6850]) // Center of Bangladesh
             .scale(4500) // Scale for container
-            .translate([150, 250]); // Adjusted Y to fit full map within 600px height
+            .translate([150, 250]); // Adjusted Y
     }, []);
 
     const pathGenerator = useMemo(() => {
@@ -96,13 +97,17 @@ export const LiveOrderMap = () => {
                 setLastOrder(recent[0]);
             }
         }
-    }, [geoData, orders]); // Runs when map data loads or orders fetched
+    }, [geoData, orders]);
 
     // Socket Connection for New Real-time Orders
     useEffect(() => {
         const socket = io(socketUrl);
 
         console.log("LiveMap Socket connecting to:", socketUrl);
+
+        socket.on('connect', () => {
+            console.log("LiveMap Socket Connected");
+        });
 
         // Backend emits 'new_order' with flat structure { id, district, ... }
         socket.on('new_order', (data) => {
@@ -127,6 +132,10 @@ export const LiveOrderMap = () => {
             setActiveOrders(prev => [newOrder, ...prev.slice(0, 4)]); // Prepend new order, keep max 5
             setLastOrder(data); // data is the flattened order object
             setHighlightedDistrict(district);
+
+            // Auto-select the newest order to show pop-up briefly
+            setSelectedOrderId(newOrder.id);
+            setTimeout(() => setSelectedOrderId(null), 3000); // Auto-hide after 3s
 
             // Clear highlight after 5 seconds
             setTimeout(() => setHighlightedDistrict(null), 5000);
@@ -153,7 +162,7 @@ export const LiveOrderMap = () => {
     return (
         <div className="bg-white p-0 rounded-2xl shadow-sm border border-stone-100 flex flex-col items-center relative overflow-hidden group h-[600px]">
             {/* Header */}
-            <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-stone-100 shadow-sm">
+            <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-3 rounded-xl border border-stone-100 shadow-sm transition-all hover:shadow-md">
                 <h3 className="text-sm font-bold text-stone-800 flex items-center gap-2">
                     <Navigation className="w-4 h-4 text-emerald-500" />
                     {t('অর্ডার ট্র্যাকার', 'Order Tracker')}
@@ -170,7 +179,7 @@ export const LiveOrderMap = () => {
             </div>
 
             {/* Map Container */}
-            <div className="w-full h-full flex items-center justify-center bg-stone-50/50 relative">
+            <div className="w-full h-full flex items-center justify-center bg-stone-50/50 relative" onClick={() => setSelectedOrderId(null)}>
                 {/* SVG MAP */}
                 {geoData ? (
                     <svg viewBox="0 0 300 500" className="w-full h-full drop-shadow-xl" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.05))' }}>
@@ -206,32 +215,62 @@ export const LiveOrderMap = () => {
                 {/* Animated Order Dots - Absolute Position Overlaid on SVG */}
                 <AnimatePresence>
                     {activeOrders.map((order) => {
+                        const isSelected = selectedOrderId === order.id;
+
                         return (
                             <motion.div
                                 key={order.id}
                                 initial={{ opacity: 0, scale: 0, y: 10 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0 }}
-                                className="absolute z-30 pointer-events-none"
+                                className="absolute z-30"
                                 style={{
-                                    // Percent mapping based on 300x500 SVG viewbox
                                     left: `${(order.x / 300) * 100}%`,
                                     top: `${(order.y / 500) * 100}%`,
-                                    transform: 'translate(-50%, -50%)'
+                                    transform: 'translate(-50%, -50%)',
+                                    zIndex: isSelected ? 50 : 30 // Bring selected to front
                                 }}
                             >
-                                <div className="relative">
-                                    {/* PINK GLOW */}
-                                    <div className="absolute inset-0 bg-pink-500/50 rounded-full animate-ping w-8 h-8 -ml-3 -mt-3"></div>
-                                    {/* PINK DOT */}
-                                    <div className="bg-white p-1 rounded-full shadow-lg border border-pink-500 relative z-10 w-3 h-3 flex items-center justify-center">
-                                        <div className="bg-pink-500 w-1.5 h-1.5 rounded-full"></div>
+                                <div className="relative flex items-center justify-center group">
+                                    {/* Click Target */}
+                                    <div
+                                        className="cursor-pointer p-2 -m-2"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Prevent clearing selection
+                                            setSelectedOrderId(isSelected ? null : order.id);
+                                        }}
+                                    >
+                                        {/* Premium Pulse Effect */}
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-pink-500/40 rounded-full animate-ping w-full h-full"></div>
+                                            {/* Core Dot */}
+                                            <div className={`relative z-10 w-3 h-3 rounded-full border border-white shadow-sm transition-all duration-300 ${isSelected ? 'bg-pink-600 scale-125 ring-2 ring-pink-200' : 'bg-pink-500 hover:scale-110'}`}></div>
+                                        </div>
                                     </div>
-                                    {/* Tooltip */}
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur text-[10px] px-2 py-1 rounded shadow-lg border border-pink-100 flex items-center gap-1 whitespace-nowrap z-40 transform hover:scale-105 transition-transform">
-                                        <Zap className="w-3 h-3 text-amber-500" />
-                                        <span className="font-bold text-stone-800">{order.city}</span>
-                                    </div>
+
+                                    {/* Interactive Tooltip / Label - Only show if selected */}
+                                    <AnimatePresence>
+                                        {isSelected && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 5, scale: 0.9 }}
+                                                className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+                                            >
+                                                <div className="bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl shadow-xl border border-pink-100 flex items-center gap-2 min-w-max">
+                                                    <div className="bg-pink-50 p-1 rounded-full">
+                                                        <Zap className="w-3 h-3 text-pink-500" fill="currentColor" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] text-stone-400 font-medium leading-none mb-0.5">{t('নতুন অর্ডার', 'New Order')}</span>
+                                                        <span className="text-xs font-bold text-stone-800 leading-none">{order.city}</span>
+                                                    </div>
+                                                    {/* Little triangle arrow */}
+                                                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-b border-r border-pink-100 rotate-45 transform"></div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </motion.div>
                         );
