@@ -1,10 +1,8 @@
-
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, TrendingUp, Package, ArrowRight, RefreshCcw, TrendingDown, Activity, AlertCircle } from 'lucide-react';
+import { AlertTriangle, TrendingUp, Package, ArrowRight, TrendingDown, Activity, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router';
 import { useStore } from '@/app/context/StoreContext';
-import { Product } from '@/app/context/StoreContext';
 
 interface ForecastItem {
     id: string;
@@ -161,8 +159,8 @@ export const DemandForecasting = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`p-4 rounded-xl border relative bg-white hover:bg-stone-50 transition-colors group/card ${item.riskLevel === 'critical' ? 'border-red-200 shadow-sm shadow-red-100' :
-                                    item.riskLevel === 'high' ? 'border-orange-200 shadow-sm shadow-orange-100' :
-                                        item.riskLevel === 'overstock' ? 'border-blue-200' : 'border-stone-100'
+                                item.riskLevel === 'high' ? 'border-orange-200 shadow-sm shadow-orange-100' :
+                                    item.riskLevel === 'overstock' ? 'border-blue-200' : 'border-stone-100'
                                 }`}
                         >
                             <div className="flex gap-4">
