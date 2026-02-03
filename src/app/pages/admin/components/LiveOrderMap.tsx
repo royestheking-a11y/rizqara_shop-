@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as d3 from 'd3-geo';
 import { io } from 'socket.io-client';
 import { useStore } from '@/app/context/StoreContext';
-import { MapPin, Activity, Zap, Navigation, X } from 'lucide-react';
+import { MapPin, Activity, Zap, Navigation } from 'lucide-react';
 
 interface GeoData {
     type: string;
