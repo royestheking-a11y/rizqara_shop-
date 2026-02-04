@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
                     order.status = 'delivered';
                     order.deliveredAt = new Date();
                     await order.save();
-                    console.log(`✅ Order ${order.id} marked as delivered via SMS`);
+                    console.log(`✅ Order ${order.invoiceNo} marked as delivered via SMS`);
                 }
             }
         }
@@ -81,15 +81,14 @@ router.post('/', async (req, res) => {
 
 /**
  * Parse bKash Payment SMS
- * Example: "TrxID ABC123XYZ confirmed. Amount: Tk 1,250. Sender: 01712345678"
- * Example: "You have received Tk 1,250.00 from 01712345678. TrxID: ABC123XYZ"
+ * Example: "You have received Tk 70.00 from 01577180519. Fee Tk 0.00. Balance Tk 70.00. TrxID DB47RWOBOT"
  */
 async function handleBkashPayment(text) {
     try {
         // Extract Transaction ID
         const trxMatch = text.match(/TrxID[:\s]+(\w+)/i) || text.match(/Transaction\s*ID[:\s]+(\w+)/i);
 
-        // Extract Amount (handles formats: Tk 1,250 or Tk1250.00)
+        // Extract Amount (handles formats: Tk 1,250 or Tk70.00)
         const amountMatch = text.match(/(?:Tk|BDT)[:\s]*([\d,]+(?:\.\d{2})?)/i);
 
         // Extract Sender Number
@@ -114,29 +113,35 @@ async function handleBkashPayment(text) {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         `);
 
-        // Find matching pending payment
-        const payment = await Payment.findOne({
-            method: 'bkash',
-            status: 'pending',
-            amount: amount
-        }).sort({ date: -1 });
+        // Find matching pending ORDER (not Payment collection)
+        // Match by total amount and payment method
+        const order = await Order.findOne({
+            paymentMethod: /bkash/i, // Case insensitive
+            paymentStatus: 'pending',
+            total: amount
+        }).sort({ date: -1 }); // Get most recent matching order
 
-        if (payment) {
-            payment.status = 'verified';
-            payment.transactionId = transactionId;
-            payment.verifiedBy = 'SMS_AUTO';
-            await payment.save();
+        if (order) {
+            // Update order payment details
+            order.paymentStatus = 'verified';
+            order.trxId = transactionId;
+            order.status = 'processing'; // Move from pending to processing
 
-            // Update order status
-            const order = await Order.findOne({ id: payment.orderId });
-            if (order) {
-                order.paymentStatus = 'paid';
-                order.status = 'processing';
-                await order.save();
-                console.log(`✅ Order ${order.id} payment verified automatically`);
-            }
+            // Add to tracking history
+            if (!order.trackingHistory) order.trackingHistory = [];
+            order.trackingHistory.push({
+                status: 'verified',
+                date: new Date(),
+                note: `Payment verified via SMS - TrxID: ${transactionId}`
+            });
+
+            await order.save();
+
+            console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
+            console.log(`   TrxID: ${transactionId} | Amount: ৳${amount} | From: ${senderNumber || 'N/A'}`);
         } else {
-            console.log('⚠️ No matching pending bKash payment found');
+            console.log('⚠️ No matching pending bKash order found');
+            console.log(`   Searched for: amount=${amount}, method=bkash, status=pending`);
         }
 
     } catch (error) {
@@ -146,8 +151,7 @@ async function handleBkashPayment(text) {
 
 /**
  * Parse Nagad Payment SMS
- * Example: "Tk 1,250.00 received from 01712345678. Txn ID: NAG123XYZ"
- * Example: "Your Nagad account has received Tk1250 from 01712345678. Transaction ID: NAG123XYZ"
+ * Example: "Tk 2,100.00 received from 01812345678. Txn ID: NAG456GHI"
  */
 async function handleNagadPayment(text) {
     try {
@@ -179,29 +183,29 @@ async function handleNagadPayment(text) {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         `);
 
-        // Find matching pending payment
-        const payment = await Payment.findOne({
-            method: 'nagad',
-            status: 'pending',
-            amount: amount
+        // Find matching pending order
+        const order = await Order.findOne({
+            paymentMethod: /nagad/i,
+            paymentStatus: 'pending',
+            total: amount
         }).sort({ date: -1 });
 
-        if (payment) {
-            payment.status = 'verified';
-            payment.transactionId = transactionId;
-            payment.verifiedBy = 'SMS_AUTO';
-            await payment.save();
+        if (order) {
+            order.paymentStatus = 'verified';
+            order.trxId = transactionId;
+            order.status = 'processing';
 
-            // Update order status
-            const order = await Order.findOne({ id: payment.orderId });
-            if (order) {
-                order.paymentStatus = 'paid';
-                order.status = 'processing';
-                await order.save();
-                console.log(`✅ Order ${order.id} payment verified automatically`);
-            }
+            if (!order.trackingHistory) order.trackingHistory = [];
+            order.trackingHistory.push({
+                status: 'verified',
+                date: new Date(),
+                note: `Payment verified via SMS - TxnID: ${transactionId}`
+            });
+
+            await order.save();
+            console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
         } else {
-            console.log('⚠️ No matching pending Nagad payment found');
+            console.log('⚠️ No matching pending Nagad order found');
         }
 
     } catch (error) {
@@ -211,8 +215,7 @@ async function handleNagadPayment(text) {
 
 /**
  * Parse Rocket Payment SMS
- * Example: "Tk 1,250 received from 01712345678. Ref: RKT123XYZ"
- * Example: "Your Rocket wallet received Tk1250.00 from 01712345678-7. Reference: RKT123XYZ"
+ * Example: "Tk 1,750 received from 01612345678-7. Ref: RKT789MNO"
  */
 async function handleRocketPayment(text) {
     try {
@@ -244,29 +247,29 @@ async function handleRocketPayment(text) {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         `);
 
-        // Find matching pending payment
-        const payment = await Payment.findOne({
-            method: 'rocket',
-            status: 'pending',
-            amount: amount
+        // Find matching pending order
+        const order = await Order.findOne({
+            paymentMethod: /rocket/i,
+            paymentStatus: 'pending',
+            total: amount
         }).sort({ date: -1 });
 
-        if (payment) {
-            payment.status = 'verified';
-            payment.transactionId = transactionId;
-            payment.verifiedBy = 'SMS_AUTO';
-            await payment.save();
+        if (order) {
+            order.paymentStatus = 'verified';
+            order.trxId = transactionId;
+            order.status = 'processing';
 
-            // Update order status
-            const order = await Order.findOne({ id: payment.orderId });
-            if (order) {
-                order.paymentStatus = 'paid';
-                order.status = 'processing';
-                await order.save();
-                console.log(`✅ Order ${order.id} payment verified automatically`);
-            }
+            if (!order.trackingHistory) order.trackingHistory = [];
+            order.trackingHistory.push({
+                status: 'verified',
+                date: new Date(),
+                note: `Payment verified via SMS - Ref: ${transactionId}`
+            });
+
+            await order.save();
+            console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
         } else {
-            console.log('⚠️ No matching pending Rocket payment found');
+            console.log('⚠️ No matching pending Rocket order found');
         }
 
     } catch (error) {
