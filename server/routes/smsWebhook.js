@@ -113,35 +113,46 @@ async function handleBkashPayment(text) {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         `);
 
-        // Find matching pending ORDER (not Payment collection)
-        // Match by total amount and payment method
+        // STRICT MATCHING LOGIC (v5)
+        // The user manually inputs the TrxID during checkout (saved as paymentTrxId).
+        // We match strictly against that ID. No amount/phone guessing.
+
         const order = await Order.findOne({
-            paymentMethod: /bkash/i, // Case insensitive
-            paymentStatus: 'pending',
-            total: amount
-        }).sort({ date: -1 }); // Get most recent matching order
+            paymentTrxId: { $regex: new RegExp(`^${transactionId}$`, 'i') }, // Case-insensitive match
+            paymentStatus: { $ne: 'verified' } // Only verify if not already verified
+        });
 
         if (order) {
-            // Update order payment details
-            order.paymentStatus = 'verified';
-            order.trxId = transactionId;
-            order.status = 'processing'; // Move from pending to processing
+            // Check if amount matches (within small tolerance or exact)
+            if (Number(order.total) <= Number(amount)) {
 
-            // Add to tracking history
-            if (!order.trackingHistory) order.trackingHistory = [];
-            order.trackingHistory.push({
-                status: 'verified',
-                date: new Date(),
-                note: `Payment verified via SMS - TrxID: ${transactionId}`
-            });
+                // Update order payment details
+                order.paymentStatus = 'verified';
+                order.trxId = transactionId; // Confirm the verified ID
+                order.status = 'processing'; // Move from pending to processing
 
-            await order.save();
+                // Add to tracking history
+                if (!order.trackingHistory) order.trackingHistory = [];
+                order.trackingHistory.push({
+                    status: 'verified',
+                    date: new Date(),
+                    note: `Payment verified via SMS - TrxID: ${transactionId} (Matched User Input)`
+                });
 
-            console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
-            console.log(`   TrxID: ${transactionId} | Amount: ৳${amount} | From: ${senderNumber || 'N/A'}`);
+                await order.save();
+
+                console.log(`✅ Order ${order.invoiceNo} payment VERIFIED by TrxID match!`);
+                console.log(`   TrxID: ${transactionId} | Amount: ৳${amount}`);
+
+            } else {
+                console.log(`⚠️ TrxID matched order ${order.invoiceNo} but Amount Mismatch!`);
+                console.log(`   Order Total: ${order.total}, SMS Amount: ${amount}`);
+                // Optional: Flag partial payment? For now, do not verify.
+            }
+
         } else {
-            console.log('⚠️ No matching pending bKash order found');
-            console.log(`   Searched for: amount=${amount}, method=bkash, status=pending`);
+            console.log('⚠️ No pending order found with this TrxID:', transactionId);
+            // TODO: Store in UnclaimedPayments for later manual mapping?
         }
 
     } catch (error) {
