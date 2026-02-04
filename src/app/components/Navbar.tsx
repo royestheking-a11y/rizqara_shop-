@@ -58,6 +58,24 @@ export const Navbar = () => {
           >
             {language === 'bn' ? 'English' : 'বাংলা'}
           </button>
+          <a
+            href="https://m.me/107858308889263"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center text-white hover:bg-white/20 transition rounded-full p-1.5 ml-2"
+            title="Messenger"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="fill-current"
+            >
+              <path d="M12 2C6.48 2 2 6.19 2 11.35C2 14.34 3.73 17 6.36 18.67V22L9.81 20.12C10.52 20.31 11.25 20.41 12 20.41C17.52 20.41 22 16.22 22 11.06C22 5.9 17.52 2 12 2ZM12.98 14.28L10.42 11.52L5.87 14.1L10.95 8.72L13.51 11.48L18.06 8.9L12.98 14.28Z" />
+            </svg>
+          </a>
         </div>
       </div>
 
