@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Payment = require('../models/Payment'); // Import Payment model
 
 // @desc    Receive SMS forwarded from Android app
 // @route   POST /api/sms-webhook
@@ -151,8 +152,27 @@ async function handleBkashPayment(text) {
             }
 
         } else {
+        } else {
             console.log('⚠️ No pending order found with this TrxID:', transactionId);
-            // TODO: Store in UnclaimedPayments for later manual mapping?
+
+            // Store Unclaimed Payment
+            try {
+                const existingPayment = await Payment.findOne({ transactionId });
+                if (!existingPayment) {
+                    await Payment.create({
+                        userId: 'system', // Placeholder until claimed
+                        orderId: 'unclaimed',
+                        amount,
+                        method: 'bkash',
+                        transactionId,
+                        status: 'pending',
+                        date: new Date()
+                    });
+                    console.log('💾 Payment saved as UNCLAIMED for later matching.');
+                }
+            } catch (err) {
+                console.error('Failed to save unclaimed payment:', err);
+            }
         }
 
     } catch (error) {
@@ -216,7 +236,25 @@ async function handleNagadPayment(text) {
             await order.save();
             console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
         } else {
+        } else {
             console.log('⚠️ No matching pending Nagad order found');
+            try {
+                const existingPayment = await Payment.findOne({ transactionId });
+                if (!existingPayment) {
+                    await Payment.create({
+                        userId: 'system',
+                        orderId: 'unclaimed',
+                        amount,
+                        method: 'nagad',
+                        transactionId,
+                        status: 'pending',
+                        date: new Date()
+                    });
+                    console.log('💾 Nagad Payment saved as UNCLAIMED.');
+                }
+            } catch (err) {
+                console.error('Failed to save unclaimed payment:', err);
+            }
         }
 
     } catch (error) {
@@ -283,7 +321,25 @@ async function handleRocketPayment(text) {
                 console.log('⚠️ Rocket Amount Mismatch');
             }
         } else {
+        } else {
             console.log('⚠️ No pending Rocket order found with TrxID:', transactionId);
+            try {
+                const existingPayment = await Payment.findOne({ transactionId });
+                if (!existingPayment) {
+                    await Payment.create({
+                        userId: 'system',
+                        orderId: 'unclaimed',
+                        amount,
+                        method: 'rocket',
+                        transactionId,
+                        status: 'pending',
+                        date: new Date()
+                    });
+                    console.log('💾 Rocket Payment saved as UNCLAIMED.');
+                }
+            } catch (err) {
+                console.error('Failed to save unclaimed payment:', err);
+            }
         }
 
     } catch (error) {

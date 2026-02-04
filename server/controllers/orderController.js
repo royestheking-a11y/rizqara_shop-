@@ -80,6 +80,39 @@ const createOrder = async (req, res) => {
 
         const createdOrder = await order.save();
 
+        // CHECK FOR ORPHANED PAYMENTS (Race Condition Fix)
+        // If SMS arrived BEFORE order creation, it's saved in Payments collection as 'unclaimed'
+        if ((paymentMethod === 'bkash' || paymentMethod === 'nagad' || paymentMethod === 'rocket') && paymentTrxId) {
+            const Payment = require('../models/Payment');
+            const orphanedPayment = await Payment.findOne({
+                transactionId: { $regex: new RegExp(`^${paymentTrxId}$`, 'i') },
+                status: 'pending' // Only use fresh payments
+            });
+
+            if (orphanedPayment) {
+                console.log(`🔗 Found ORPHANED payment for new order ${invoiceNo}! Linking now...`);
+
+                // Verify Order
+                createdOrder.paymentStatus = 'verified';
+                createdOrder.trxId = paymentTrxId;
+                createdOrder.status = 'processing';
+                createdOrder.trackingHistory.push({
+                    status: 'verified',
+                    date: new Date(),
+                    note: `Payment verified from UNCLAIMED store - TrxID: ${paymentTrxId}`
+                });
+                await createdOrder.save();
+
+                // Update Payment Record
+                orphanedPayment.status = 'verified';
+                orphanedPayment.orderId = createdOrder.id;
+                orphanedPayment.userId = userId;
+                await orphanedPayment.save();
+
+                console.log(`✅ Order ${invoiceNo} instantly VERIFIED from orphaned payment!`);
+            }
+        }
+
         // Update Voucher Usage (If applicable)
         if (appliedVoucher) {
             appliedVoucher.usedCount = (appliedVoucher.usedCount || 0) + 1;
