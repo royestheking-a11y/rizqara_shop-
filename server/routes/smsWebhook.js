@@ -152,7 +152,6 @@ async function handleBkashPayment(text) {
             }
 
         } else {
-        } else {
             console.log('⚠️ No pending order found with this TrxID:', transactionId);
 
             // Store Unclaimed Payment
@@ -235,7 +234,6 @@ async function handleNagadPayment(text) {
 
             await order.save();
             console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
-        } else {
         } else {
             console.log('⚠️ No matching pending Nagad order found');
             try {
@@ -320,7 +318,6 @@ async function handleRocketPayment(text) {
             } else {
                 console.log('⚠️ Rocket Amount Mismatch');
             }
-        } else {
         } else {
             console.log('⚠️ No pending Rocket order found with TrxID:', transactionId);
             try {
