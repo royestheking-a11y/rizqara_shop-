@@ -103,6 +103,7 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refund-requested' | 'refunded';
   paymentStatus: 'pending' | 'verified' | 'failed';
   paymentMethod: 'cod' | 'bkash' | 'nagad' | 'rocket';
+  trxId?: string; // For automated SMS payments
   paymentTrxId?: string;
   paymentScreenshot?: string;
   date: string;

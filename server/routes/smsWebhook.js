@@ -7,7 +7,7 @@ const Order = require('../models/Order');
 // @access  Public (but should validate with a secret token)
 router.post('/', async (req, res) => {
     try {
-        console.log('📱 SMS Webhook Received:', req.body);
+        console.log('📱 SMS Webhook Received (v3-OrderFixed):', req.body);
 
         const { from, text, sentStamp, receivedStamp, sim } = req.body;
 
@@ -280,7 +280,7 @@ async function handleRocketPayment(text) {
 // Health check endpoint
 router.get('/health', (req, res) => {
     res.json({
-        status: 'SMS Webhook is running',
+        status: 'SMS Webhook is running (v3-OrderMode)',
         timestamp: new Date().toISOString(),
         supported: ['bKash', 'Nagad', 'Rocket', 'Steadfast']
     });

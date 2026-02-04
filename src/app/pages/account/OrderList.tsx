@@ -200,6 +200,12 @@ export const OrderList = () => {
                                     <span>{order.items.length} items</span>
                                     <span>•</span>
                                     <span className="font-bold text-gray-900">৳{order.total}</span>
+                                    {order.trxId && (
+                                        <>
+                                            <span>•</span>
+                                            <span className="font-mono text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">Trx: {order.trxId}</span>
+                                        </>
+                                    )}
                                     {order.total === 0 && (
                                         <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-bold animate-pulse">
                                             {t('মূল্য নির্ধারণ চলছে', 'Quote Pending')}
@@ -210,6 +216,8 @@ export const OrderList = () => {
                             <div className="flex items-center gap-3">
                                 {order.total > 0 &&
                                     order.paymentStatus === 'pending' &&
+                                    !order.trxId && // Hide if TrxID exists (already paid/attempted)
+                                    !['processing', 'confirmed', 'shipped', 'delivered'].includes(order.status) && // Hide if order is underway
                                     order.status !== 'cancelled' &&
                                     order.paymentMethod !== 'cod' && (
                                         <button
