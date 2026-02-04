@@ -258,29 +258,32 @@ async function handleRocketPayment(text) {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         `);
 
-        // Find matching pending order
+        // STRICT ROCKET MATCH
         const order = await Order.findOne({
-            paymentMethod: /rocket/i,
-            paymentStatus: 'pending',
-            total: amount
-        }).sort({ date: -1 });
+            paymentTrxId: { $regex: new RegExp(`^${transactionId}$`, 'i') }, // Match user input TrxID
+            paymentStatus: { $ne: 'verified' }
+        });
 
         if (order) {
-            order.paymentStatus = 'verified';
-            order.trxId = transactionId;
-            order.status = 'processing';
+            if (Number(order.total) <= Number(amount)) {
+                order.paymentStatus = 'verified';
+                order.trxId = transactionId;
+                order.status = 'processing';
 
-            if (!order.trackingHistory) order.trackingHistory = [];
-            order.trackingHistory.push({
-                status: 'verified',
-                date: new Date(),
-                note: `Payment verified via SMS - Ref: ${transactionId}`
-            });
+                if (!order.trackingHistory) order.trackingHistory = [];
+                order.trackingHistory.push({
+                    status: 'verified',
+                    date: new Date(),
+                    note: `Payment verified via SMS - TrxID: ${transactionId}`
+                });
 
-            await order.save();
-            console.log(`✅ Order ${order.invoiceNo} payment VERIFIED automatically!`);
+                await order.save();
+                console.log(`✅ Order ${order.invoiceNo} payment VERIFIED by TrxID (Rocket)!`);
+            } else {
+                console.log('⚠️ Rocket Amount Mismatch');
+            }
         } else {
-            console.log('⚠️ No matching pending Rocket order found');
+            console.log('⚠️ No pending Rocket order found with TrxID:', transactionId);
         }
 
     } catch (error) {
