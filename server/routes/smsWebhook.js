@@ -260,7 +260,7 @@ async function handleRocketPayment(text) {
 
         // STRICT ROCKET MATCH
         const order = await Order.findOne({
-            paymentTrxId: { $regex: new RegExp(`^${transactionId}$`, 'i') }, // Match user input TrxID
+            trxId: { $regex: new RegExp(`^${transactionId}$`, 'i') }, // Match user input TrxID
             paymentStatus: { $ne: 'verified' }
         });
 

@@ -19,6 +19,8 @@ const createOrder = async (req, res) => {
             paymentTrxId // Added
         } = req.body;
 
+        console.log('📦 Create Order Request:', { invoiceNo: 'INV-PENDING', userName, total, paymentMethod, paymentTrxId });
+
         // Prevent Duplicate Orders: Check if same user placed order with same total in last 5 seconds
         // User requested to reduce this time window to handle only immediate double-clicks (3-4 seconds)
         const fiveSecondsAgo = new Date(Date.now() - 5 * 1000);

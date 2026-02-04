@@ -311,7 +311,7 @@ export const AdminOrders = () => {
                                             <p className="uppercase font-medium">{order.paymentMethod}</p>
                                             {['bkash', 'nagad', 'rocket'].includes(order.paymentMethod) && (
                                                 <div className="text-xs text-gray-500 mt-1">
-                                                    Trx: {order.paymentTrxId || 'N/A'}
+                                                    Trx: {order.trxId || order.paymentTrxId || 'N/A'}
                                                     {order.paymentScreenshot && (
                                                         <div className="mt-1">
                                                             <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className="text-[#D91976] hover:underline">View Proof</a>
