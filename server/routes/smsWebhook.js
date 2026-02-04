@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
-const Payment = require('../models/Payment');
 
 // @desc    Receive SMS forwarded from Android app
 // @route   POST /api/sms-webhook
