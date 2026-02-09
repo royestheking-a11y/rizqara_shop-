@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '@/app/context/StoreContext';
-import { NavLink, Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 import { ShoppingCart, User as UserIcon, Heart, Menu, X, Bell, Home, Palette, Gift, Frame, PenTool, Tag, Star, ShoppingBag, Leaf } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -29,12 +29,30 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const unreadMessages = messages.filter(m => !m.read && m.receiverId === (user?.id || 'guest')).length;
   const unreadNotifs = notifications.filter(n => !n.read && n.userId === user?.id).length;
 
   const toggleLanguage = () => {
     setLanguage(language === 'bn' ? 'en' : 'bn');
+  };
+
+  const isLinkActive = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    if (path.includes('?')) {
+      const [basePath, search] = path.split('?');
+      const params = new URLSearchParams(search);
+      const currentParams = new URLSearchParams(location.search);
+
+      if (location.pathname !== basePath) return false;
+
+      for (const [key, value] of params.entries()) {
+        if (currentParams.get(key) !== value) return false;
+      }
+      return true;
+    }
+    return location.pathname === path;
   };
 
   const navLinks = [
@@ -81,7 +99,7 @@ export const Navbar = () => {
 
       <div className="container mx-auto px-4 h-20 flex items-center justify-between gap-4 relative">
         {/* Mobile Menu Button */}
-        <button className="md:hidden p-2 text-gray-700" onClick={() => setIsMenuOpen(true)}>
+        <button className="md:hidden p-2 text-gray-700 hover:text-[#D91976] transition" onClick={() => setIsMenuOpen(true)}>
           <Menu size={24} />
         </button>
 
@@ -96,17 +114,17 @@ export const Navbar = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 md:gap-5">
+        <div className="flex items-center gap-3 md:gap-5 shrink-0">
           {/* Wishlist - Desktop Only */}
           <Link to="/wishlist" className="hidden md:block text-gray-600 hover:text-[#D91976] transition p-1">
             <Heart size={22} />
           </Link>
 
-          {/* Cart */}
-          <Link to="/cart" className="text-gray-600 hover:text-[#D91976] transition relative p-1">
+          {/* Cart - Explicitly Visible on Mobile */}
+          <Link to="/cart" className="text-gray-600 hover:text-[#D91976] transition relative p-1 block">
             <ShoppingCart size={22} />
             {cart.length > 0 && (
-              <span className="absolute top-0 right-0 bg-[#D91976] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
+              <span className="absolute -top-1 -right-1 bg-[#D91976] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white font-bold">
                 {cart.length}
               </span>
             )}
@@ -160,30 +178,30 @@ export const Navbar = () => {
         <div className="container mx-auto px-4">
           <ul className="flex justify-center gap-10 py-3.5">
             <li>
-              <NavLink to="/" className={({ isActive }) => `text-sm font-semibold uppercase tracking-wide hover:text-[#D91976] transition flex items-center gap-1.5 ${isActive ? 'text-[#D91976]' : 'text-gray-600'}`}>
+              <Link to="/" className={`text-sm font-semibold uppercase tracking-wide hover:text-[#D91976] transition flex items-center gap-1.5 ${isLinkActive('/') ? 'text-[#D91976]' : 'text-gray-600'}`}>
                 <Home size={16} />
                 <span>{t('হোম', 'Home')}</span>
-              </NavLink>
+              </Link>
             </li>
             {navLinks.map((link, idx) => (
               <li key={idx}>
-                <NavLink to={link.path} className={({ isActive }) => `text-sm font-semibold uppercase tracking-wide hover:text-[#D91976] transition flex items-center gap-1.5 ${isActive ? 'text-[#D91976]' : 'text-gray-600'}`}>
+                <Link to={link.path} className={`text-sm font-semibold uppercase tracking-wide hover:text-[#D91976] transition flex items-center gap-1.5 ${isLinkActive(link.path) ? 'text-[#D91976]' : 'text-gray-600'}`}>
                   {link.icon}
                   <span>{language === 'bn' ? link.name_bn : link.name_en}</span>
-                </NavLink>
+                </Link>
               </li>
             ))}
             <li>
-              <NavLink to="/offers" className={({ isActive }) => `text-sm font-semibold uppercase tracking-wide hover:text-orange-500 transition flex items-center gap-1.5 ${isActive ? 'text-orange-500' : 'text-gray-600'}`}>
+              <Link to="/offers" className={`text-sm font-semibold uppercase tracking-wide hover:text-orange-500 transition flex items-center gap-1.5 ${isLinkActive('/offers') ? 'text-orange-500' : 'text-gray-600'}`}>
                 <Tag size={16} />
                 <span>{t('অফার', 'Offers')}</span>
-              </NavLink>
+              </Link>
             </li>
             <li>
-              <NavLink to="/reviews" className={({ isActive }) => `text-sm font-semibold uppercase tracking-wide hover:text-orange-500 transition flex items-center gap-1.5 ${isActive ? 'text-orange-500' : 'text-orange-500'}`}>
+              <Link to="/reviews" className={`text-sm font-semibold uppercase tracking-wide hover:text-orange-500 transition flex items-center gap-1.5 ${isLinkActive('/reviews') ? 'text-orange-500' : 'text-orange-500'}`}>
                 <Star size={16} />
                 <span>{t('রিভিউ', 'Reviews')}</span>
-              </NavLink>
+              </Link>
             </li>
           </ul>
         </div>
@@ -219,27 +237,27 @@ export const Navbar = () => {
 
               <ul className="space-y-4">
                 <li>
-                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-lg font-medium text-gray-800">
+                  <Link to="/" onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 text-lg font-medium ${isLinkActive('/') ? 'text-[#D91976]' : 'text-gray-800'}`}>
                     <Home size={20} />
                     <span>{t('হোম', 'Home')}</span>
                   </Link>
                 </li>
                 {navLinks.map((link, idx) => (
                   <li key={idx}>
-                    <Link to={link.path} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-lg font-medium text-gray-800">
+                    <Link to={link.path} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 text-lg font-medium ${isLinkActive(link.path) ? 'text-[#D91976]' : 'text-gray-800'}`}>
                       <span className="w-5 h-5 flex items-center justify-center">{link.icon}</span>
                       <span>{language === 'bn' ? link.name_bn : link.name_en}</span>
                     </Link>
                   </li>
                 ))}
                 <li className="pt-4 border-t border-gray-100">
-                  <Link to="/offers" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-lg font-medium text-[#D91976]">
+                  <Link to="/offers" onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 text-lg font-medium ${isLinkActive('/offers') ? 'text-[#D91976]' : 'text-[#D91976]'}`}>
                     <Tag size={20} />
                     <span>{t('অফার', 'Offers')}</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/reviews" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 text-lg font-medium text-orange-500">
+                  <Link to="/reviews" onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-3 text-lg font-medium ${isLinkActive('/reviews') ? 'text-orange-500' : 'text-orange-500'}`}>
                     <Star size={20} />
                     <span>{t('রিভিউ', 'Reviews')}</span>
                   </Link>
