@@ -5,12 +5,14 @@ import { Mail, Lock, Eye, EyeOff, ShoppingBag, Shield, Truck, CreditCard } from 
 import { motion } from 'motion/react';
 import { OtpInput } from '../components/OtpInput';
 import { useGoogleLogin } from '@react-oauth/google';
-import FacebookLogin from '@greatsumini/react-facebook-login';
+// import FacebookLogin from '@greatsumini/react-facebook-login';
+
 
 import SEO from '@/app/components/SEO';
 
 export const Login = () => {
-  const { login, loginWithGoogle, loginWithFacebook, signup, sendOTP, verifyOTP, resetPassword, otpState, t } = useStore();
+  const { login, loginWithGoogle, /* loginWithFacebook, */ signup, sendOTP, verifyOTP, resetPassword, otpState, t } = useStore();
+
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -358,11 +360,11 @@ export const Login = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 mt-6">
+                  <div className="grid grid-cols-1 gap-3 mt-6">
                     <button
                       type="button"
                       onClick={() => googleLogin()}
-                      className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition shadow-sm text-sm"
+                      className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition shadow-sm text-sm w-full"
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -374,36 +376,15 @@ export const Login = () => {
                     </button>
 
                     {/* 
-                      IMPORTANT: 
-                      1. In developers.facebook.com -> Facebook Login -> Settings, toggle 'Login with the JavaScript SDK' to YES.
-                      2. Add your domain (e.g. http://localhost:5173, https://rizqarashop.vercel.app) to 'Allowed Domains for the JavaScript SDK'.
+                      Note: Facebook Login currently hidden due to issues.
+                      Uncomment when fixed.
                     */}
+                    {/*
                     <FacebookLogin
                       appId={import.meta.env.VITE_FACEBOOK_APP_ID}
-                      onSuccess={(response) => {
-                        console.log('Facebook Login Success:', response);
-                        loginWithFacebook(response.accessToken, response.userID);
-                      }}
-                      onFail={(error) => {
-                        console.log('Facebook Login Failed:', error);
-                      }}
-                      onProfileSuccess={(response) => {
-                        console.log('Get Profile Success:', response);
-                      }}
-                      render={({ onClick }) => (
-                        <button
-                          type="button"
-                          onClick={onClick}
-                          className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition shadow-sm text-sm"
-                        >
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M23.9981 12C23.9981 5.37258 18.6255 0 11.9981 0C5.37067 0 0.0000213155 5.37258 0.0000213155 12C0.0000213155 17.9895 4.38822 22.954 10.1231 23.8542V15.4688H7.07812V12H10.1231V9.35625C10.1231 6.34875 11.9163 4.6875 14.6568 4.6875C15.9686 4.6875 17.3438 4.92188 17.3438 4.92188V7.875H15.8306C14.3398 7.875 13.8749 8.8 13.8749 9.75V12H17.2013L16.6698 15.4688H13.8749V23.8542C19.6101 22.954 23.9981 17.9895 23.9981 12Z" fill="#1877F2" />
-                            <path d="M16.6698 15.4688L17.2013 12H13.8749V9.75C13.8749 8.8 14.3398 7.875 15.8306 7.875H17.3438V4.92188C17.3438 4.92188 15.9686 4.6875 14.6568 4.6875C11.9163 4.6875 10.1231 6.34875 10.1231 9.35625V12H7.07812V15.4688H10.1231V23.8542C11.1627 24.0175 12.2272 24.0175 13.2668 23.8542V15.4688H16.6698Z" fill="white" />
-                          </svg>
-                          {t('ফেসবুক', 'Facebook')}
-                        </button>
-                      )}
+                      ...
                     />
+                    */}
                   </div>
                 </>
               )}
