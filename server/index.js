@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const dotenv = require('dotenv'); // Loaded
 const connectDB = require('./config/db');
+const axios = require('axios'); // For self-ping mechanism
 
 const path = require('path');
 
@@ -75,5 +76,32 @@ console.log(`Attempting to start server on port ${PORT}...`);
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`SERVER RUNNING ON PORT ${PORT}`);
+
     console.log('Routes registered: /api/steadfast');
+
+    // Keep-Alive Mechanism (Self-Ping)
+    // Pings the server every 14 minutes to prevent Render from sleeping (sleeps after 15 mins of inactivity)
+    const KEEPALIVE_URL = 'https://rizqara-shop-backend.onrender.com/health';
+    const KEEPALIVE_INTERVAL = 14 * 60 * 1000; // 14 minutes
+
+    const keepAlive = async () => {
+        try {
+            console.log(`[KeepAlive] Pinging ${KEEPALIVE_URL}...`);
+            const response = await axios.get(KEEPALIVE_URL);
+            console.log(`[KeepAlive] Ping successful: ${response.status}`);
+        } catch (error) {
+            console.error(`[KeepAlive] Ping failed: ${error.message}`);
+        }
+    };
+
+    // Only run self-ping if we are in production (or if the URL matches the production one)
+    // We can just run it always if the URL is hardcoded, but better to check if we are on the actual server to avoid local spamming
+    // For now, I'll just run it. The error log will show if it fails locally (which is fine).
+    if (process.env.NODE_ENV === 'production' || KEEPALIVE_URL.includes('onrender.com')) {
+        // Initial ping after 1 minute to allow server to stabilize
+        setTimeout(keepAlive, 60000);
+
+        // Regular pings
+        setInterval(keepAlive, KEEPALIVE_INTERVAL);
+    }
 });

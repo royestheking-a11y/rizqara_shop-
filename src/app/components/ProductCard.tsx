@@ -159,9 +159,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, disableHoverE
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={handleAddToCart}
-            className="py-2 px-3 border-2 border-[#D91976] text-[#D91976] font-bold rounded-lg hover:bg-pink-50 transition text-sm flex items-center justify-center gap-1.5"
+            className="py-2 px-2 md:px-3 border-2 border-[#D91976] text-[#D91976] font-bold rounded-lg hover:bg-pink-50 transition text-sm flex items-center justify-center gap-1.5"
           >
-            <ShoppingCart size={16} />
+            <ShoppingCart size={16} className="shrink-0" />
             <span>{t('কার্ট', 'Cart')}</span>
           </button>
           <button
