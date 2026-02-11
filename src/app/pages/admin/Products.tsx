@@ -109,12 +109,15 @@ export const AdminProducts = () => {
 
         // Map category names to IDs expected by Shop.tsx
         const categoryMap: Record<string, string> = {
-            'ক্লে (Clay)': 'Clay',
-            'উইমেন প্রোডাক্ট (Women\'s Items)': 'Women',
-            'গিফট বক্স (Gift Boxes)': 'Gifts',
-            'ওয়াল আর্ট (Wall Art / Sketch)': 'Art',
-            'ইনডোর প্ল্যান্টস (Indoor Plants)': 'Plants',
-            'কাস্টমাইজড (Customized Products)': 'Custom'
+            'মাটির শিল্প (Clay)': 'Clay',
+            'উইমেন (Women)': 'Women',
+            'গিফট বক্স (Gifts)': 'Gifts',
+            'ওয়াল আর্ট (Wall Art)': 'Art',
+            'কাস্টমাইজড (Custom)': 'Custom',
+            'প্ল্যান্টস (Plants)': 'Plants',
+            'পাটের পণ্য (Jute)': 'Jute',
+            'কাঠের পণ্য (Wood)': 'Wood',
+            'বাঁশ ও বেত (Bamboo)': 'Bamboo'
         };
 
         const productData: any = {
@@ -374,26 +377,7 @@ export const AdminProducts = () => {
                                         </select>
                                     </div>
 
-                                    {/* Item Type (If applicable) */}
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">{t('আইটেম টাইপ', 'Item Type')}</label>
-                                        <select
-                                            value={formData.itemType}
-                                            onChange={e => setFormData({ ...formData, itemType: e.target.value })}
-                                            disabled={!formData.subCategory}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#D91976] focus:border-transparent disabled:opacity-50"
-                                        >
-                                            <option value="">{t('টাইপ নির্বাচন করুন', 'Select Type')}</option>
-                                            {
-                                                // Type logic: Find the selected subcategory object within the selected category
-                                                PRODUCT_CATEGORIES.find(c => c.name === formData.category)
-                                                    ?.subcategories?.find(s => s.name === formData.subCategory)
-                                                    ?.types?.map(type => (
-                                                        <option key={type.id} value={type.name}>{type.name}</option>
-                                                    ))
-                                            }
-                                        </select>
-                                    </div>
+                                    {/* Item Type (Removed as per new category structure) */}
                                 </div>
                                 {/* Stock */}
                                 <div>

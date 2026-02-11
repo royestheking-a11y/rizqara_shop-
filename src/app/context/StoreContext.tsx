@@ -437,8 +437,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setProducts(prodData);
         setCarouselSlides(carouselData);
         setVouchers(voucherData);
-        setReviews(reviewData);
-        setPremiumReviews(premiumReviewData);
+        setReviews(reviewData.map((r: any) => ({ ...r, id: r._id || r.id })));
+        setPremiumReviews(premiumReviewData.map((r: any) => ({ ...r, id: r._id || r.id })));
 
         // Fetch users only if admin
         const storedUser = localStorage.getItem('rizqara_user');
@@ -446,7 +446,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const u = JSON.parse(storedUser);
           if (u.role === 'admin') {
             const userData = await apiCall('/users', 'GET', undefined, u.token);
-            setUsers(userData);
+            setUsers(userData.map((u: any) => ({ ...u, id: u._id || u.id })));
 
             // Also fetch all orders for admin
             const orderData = await apiCall('/orders', 'GET', undefined, u.token);
@@ -981,10 +981,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     toast.success('User unbanned');
   };
 
-  const deleteUser = (userId: string) => {
-    // Soft delete
-    setUsers(users.map((u: User) => u.id === userId ? { ...u, isDeleted: true } : u));
-    toast.success('User account deleted');
+  const deleteUser = async (userId: string) => {
+    try {
+      // Use user token for auth
+      const storedUser = localStorage.getItem('rizqara_user');
+      const token = storedUser ? JSON.parse(storedUser).token : null;
+
+      await apiCall(`/users/${userId}`, 'DELETE', undefined, token);
+      setUsers(users.filter((u: User) => u.id !== userId));
+      toast.success('User account deleted');
+    } catch (error) {
+      console.error('Delete user error:', error);
+      toast.error('Failed to delete user');
+    }
   };
 
   const updateUser = async (data: Partial<User>) => {
@@ -1557,7 +1566,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ...review,
         date: new Date().toISOString().split('T')[0]
       });
-      setReviews((prev: Review[]) => [newReview, ...prev]);
+      const reviewWithId = { ...newReview, id: newReview._id || newReview.id };
+      setReviews((prev: Review[]) => [reviewWithId, ...prev]);
       toast.success(t('রিভিউ যোগ করা হয়েছে', 'Review added successfully'));
     } catch (error) {
       toast.error('Failed to add review');
@@ -1578,7 +1588,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const token = localStorage.getItem('rizqara_token') || sessionStorage.getItem('rizqara_token');
       const newReview = await apiCall('/reviews/premium', 'POST', reviewData, token || undefined);
-      setPremiumReviews((prev: PremiumReview[]) => [newReview, ...prev]);
+      const reviewWithId = { ...newReview, id: newReview._id || newReview.id };
+      setPremiumReviews((prev: PremiumReview[]) => [reviewWithId, ...prev]);
       toast.success('Premium review added');
     } catch (error) {
       toast.error('Failed to add premium review');
