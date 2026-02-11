@@ -417,7 +417,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const stored = localStorage.getItem('rizqara_cart');
-    return stored ? JSON.parse(stored) : [];
+    const parsed = stored ? JSON.parse(stored) : [];
+    return Array.isArray(parsed) ? parsed : [];
   });
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -450,7 +451,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             // Also fetch all orders for admin
             const orderData = await apiCall('/orders', 'GET', undefined, u.token);
-            setOrders(orderData);
+            if (Array.isArray(orderData)) {
+              setOrders(orderData);
+            }
 
             // Fetch admin messages - Force 'admin_1' ID to retrieve ALL messages
             const msgData = await apiCall(`/messages/admin_1`, 'GET', undefined, u.token);
@@ -475,7 +478,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (u.role !== 'admin') {
           try {
             const myOrders = await apiCall(`/orders/myorders?userId=${u.id}`, 'GET', undefined, u.token);
-            setOrders(myOrders);
+            if (Array.isArray(myOrders)) {
+              setOrders(myOrders);
+            }
           } catch (e) {
             console.error('Failed to fetch my orders', e);
           }

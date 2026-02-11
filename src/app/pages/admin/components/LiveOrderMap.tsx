@@ -76,7 +76,7 @@ export const LiveOrderMap = () => {
 
     // Initialize with Recent Orders from Context (Handles Reload by showing history)
     useEffect(() => {
-        if (geoData && orders.length > 0) {
+        if (geoData && orders?.length > 0) {
             // Sort by date descending (newest first)
             const sortedOrders = [...orders].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             const recent = sortedOrders.slice(0, 5);

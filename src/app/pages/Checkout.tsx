@@ -70,8 +70,8 @@ export const Checkout = () => {
     }
   }, [isHighRiskUser]);
 
-  const isQuoteRequest = cart.length > 0 && cart.every(item => item.price === 0);
-  const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
+  const isQuoteRequest = cart?.length > 0 && cart.every(item => item.price === 0);
+  const subtotal = (cart || []).reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
 
   // Dynamic Delivery Fee based on District
   const deliveryFee = isQuoteRequest ? 0 : (
@@ -162,12 +162,12 @@ export const Checkout = () => {
 
   // Redirect to cart if empty
   useEffect(() => {
-    if (cart.length === 0) {
+    if (!cart || cart.length === 0) {
       navigate('/cart');
     }
   }, [cart.length, navigate]);
 
-  if (cart.length === 0) {
+  if (!cart || cart.length === 0) {
     return null;
   }
 
@@ -293,7 +293,7 @@ export const Checkout = () => {
             </h3>
 
             <div className="space-y-4 max-h-60 overflow-y-auto mb-6 custom-scrollbar pr-2">
-              {cart.map(item => (
+              {(cart || []).map(item => (
                 <div key={item.cartId} className="flex gap-3 text-sm border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                   <div className="w-14 h-14 bg-gray-100 rounded shrink-0 overflow-hidden">
                     <img src={item.images[0]} alt="" className="w-full h-full object-cover" />
@@ -383,8 +383,8 @@ export const Checkout = () => {
               type="submit"
               disabled={isSubmitting}
               className={`hidden lg:block w-full mt-6 py-4 font-bold rounded-xl transition shadow-lg text-lg uppercase tracking-wide ${isSubmitting
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
                 }`}
             >
               {isSubmitting ? t('অপেক্ষা করুন...', 'Processing...') : (isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order'))}
@@ -519,8 +519,8 @@ export const Checkout = () => {
             type="submit"
             disabled={isSubmitting}
             className={`lg:hidden w-full mt-6 py-4 font-bold rounded-xl transition shadow-lg text-lg uppercase tracking-wide ${isSubmitting
-                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              : 'bg-[#D91976] text-white hover:bg-[#A8145A] shadow-pink-200'
               }`}
           >
             {isSubmitting ? t('অপেক্ষা করুন...', 'Processing...') : (isQuoteRequest ? t('অনুরোধ পাঠান', 'Send Request') : t('অর্ডার কনফার্ম করুন', 'Confirm Order'))}
