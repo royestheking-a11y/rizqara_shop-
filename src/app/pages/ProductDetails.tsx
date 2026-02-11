@@ -24,7 +24,7 @@ const COLOR_MAP: Record<string, string> = {
 export const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { products, t, addToCart, sendMessage, user, reviews, addReview, toggleWishlist, isInWishlist, language } = useStore();
+  const { products, t, addToCart, sendMessage, user, reviews, addReview, toggleWishlist, isInWishlist, language, orders } = useStore();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -183,6 +183,13 @@ export const ProductDetails = () => {
   const discountPercent = product.discount_price
     ? Math.round(((product.price - product.discount_price) / product.price) * 100)
     : 0;
+
+  // Check if user has purchased this product and order is delivered
+  const hasPurchased = user && orders?.some?.(order =>
+    (order.userId === user.id) &&
+    order.status === 'delivered' &&
+    order.items.some(item => item.id === product.id)
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen pb-24 lg:pb-0">
@@ -507,46 +514,61 @@ export const ProductDetails = () => {
                   </div>
                 </div>
 
-                {/* Write Review Form */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-                  <h3 className="font-bold text-lg mb-4">{t('একটি রিভিউ লিখুন', 'Write a Review')}</h3>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">{t('রেটিং', 'Rating')}</label>
-                    <div className="flex gap-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setNewReviewRating(star)}
-                          className="focus:outline-none transition transform hover:scale-110"
-                        >
-                          <Star
-                            size={24}
-                            className={`${star <= newReviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                          />
-                        </button>
-                      ))}
+                {/* Write Review Form - Only for verified purchasers */}
+                {hasPurchased ? (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+                    <div className="flex items-center gap-2 mb-4 text-emerald-600 bg-emerald-50 p-3 rounded-lg">
+                      <CheckCircle2 size={18} />
+                      <span className="text-sm font-medium">{t('আপনি এই পণ্যটি কিনেছেন। রিভিউ দিতে পারেন।', 'Verified Purchase: You can review this product.')}</span>
                     </div>
-                  </div>
+                    <h3 className="font-bold text-lg mb-4">{t('একটি রিভিউ লিখুন', 'Write a Review')}</h3>
 
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-2">{t('আপনার রিভিউ', 'Your Review')}</label>
-                    <textarea
-                      value={newReviewText}
-                      onChange={(e) => setNewReviewText(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-[#D91976] focus:outline-none h-32 resize-none transition"
-                      placeholder={t('এই পণ্য সম্পর্কে আপনার অভিজ্ঞতা শেয়ার করুন...', 'Share your experience with this product...')}
-                    />
-                  </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">{t('রেটিং', 'Rating')}</label>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            onClick={() => setNewReviewRating(star)}
+                            className="focus:outline-none transition transform hover:scale-110"
+                          >
+                            <Star
+                              size={24}
+                              className={`${star <= newReviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                  <button
-                    onClick={handleReviewSubmit}
-                    disabled={isSubmittingReview}
-                    className="bg-[#D91976] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#A8145A] transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmittingReview ? t('জমা দেওয়া হচ্ছে...', 'Submitting...') : t('রিভিউ জমা দিন', 'Submit Review')}
-                  </button>
-                </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-2">{t('আপনার রিভিউ', 'Your Review')}</label>
+                      <textarea
+                        value={newReviewText}
+                        onChange={(e) => setNewReviewText(e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-[#D91976] focus:outline-none h-32 resize-none transition"
+                        placeholder={t('এই পণ্য সম্পর্কে আপনার অভিজ্ঞতা শেয়ার করুন...', 'Share your experience with this product...')}
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleReviewSubmit}
+                      disabled={isSubmittingReview}
+                      className="bg-[#D91976] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#A8145A] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmittingReview ? t('জমা দেওয়া হচ্ছে...', 'Submitting...') : t('রিভিউ জমা দিন', 'Submit Review')}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-xl border border-gray-200 p-6 mb-8 text-center">
+                    <p className="text-gray-600 mb-2">{t('শুধুমাত্র যারা এই পণ্যটি কিনেছেন এবং ডেলিভারি পেয়েছেন তারা রিভিউ দিতে পারবেন।', 'Only customers who verified purchased and received this product can write a review.')}</p>
+                    {!user && (
+                      <button onClick={() => navigate('/login')} className="text-[#D91976] font-bold hover:underline">
+                        {t('লগইন করুন', 'Login to check eligibility')}
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {productReviews.length > 0 ? (
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

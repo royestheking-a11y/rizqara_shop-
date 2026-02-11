@@ -1,4 +1,5 @@
 const Review = require('../models/Review');
+const Order = require('../models/Order');
 
 // @desc    Get all public reviews
 // @route   GET /api/reviews
@@ -17,7 +18,23 @@ const getReviews = async (req, res) => {
 // @access  Private
 const createReview = async (req, res) => {
     try {
-        const review = await Review.create(req.body);
+        const { productId } = req.body;
+
+        // Verify purchase
+        const order = await Order.findOne({
+            userId: req.user.id,
+            "items.id": productId,
+            status: 'delivered'
+        });
+
+        if (!order) {
+            return res.status(403).json({ message: 'আপনি শুধুমাত্র কেনা এবং প্রাপ্ত পণ্য রিভিউ করতে পারেন (You can only review products you have purchased and received)' });
+        }
+
+        const review = await Review.create({
+            ...req.body,
+            isVerifiedPurchase: true
+        });
         res.status(201).json(review);
     } catch (error) {
         res.status(400).json({ message: error.message });
