@@ -327,7 +327,7 @@ export const CustomCraft = () => {
             <SEO
                 title={t('Custom Craft Order | Handmade Personalized Craft in Bangladesh | Rizqara Shop', 'Custom Craft Order | Handmade Personalized Craft in Bangladesh | Rizqara Shop')}
                 description={t('আপনার ছবি বা আইডিয়া আপলোড করুন—আমরা বানাবো হ্যান্ডমেড কাস্টম ক্রাফট। কাস্টম সাইজ, ফিনিশিং, নাম/মেসেজ যোগ করে অর্ডার করুন।', 'Upload your photo or idea - we will make handmade custom crafts. Order with custom size, finishing, name/message.')}
-                url="https://rizqarashop.vercel.app/custom-craft"
+                url={`${import.meta.env.VITE_SITE_URL}/custom-craft`}
             />
             {/* Hero */}
             <div className="bg-[#D91976] text-white py-16">

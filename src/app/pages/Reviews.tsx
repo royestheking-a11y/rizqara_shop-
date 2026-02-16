@@ -13,7 +13,7 @@ export const Reviews = () => {
       <SEO
         title={t('গ্রাহক মতামত | রিজকারা শপ হ্যান্ডমেড গিফট স্টোর', 'Customer Reviews | Rizqara Shop Handmade & Gift Store')}
         description={t('রিজকারা শপের গ্রাহকদের রিভিউ দেখুন। হ্যান্ডমেড পণ্য, কাস্টম স্কেচ ও গিফট সার্ভিস সম্পর্কে আসল অভিজ্ঞতা।', 'See customer reviews of Rizqara Shop. Real experiences about handmade products, custom sketches and gift services.')}
-        url="https://rizqarashop.vercel.app/reviews"
+        url={`${import.meta.env.VITE_SITE_URL}/reviews`}
       />
       {/* Hero Section */}
       <div className="bg-[#D91976] text-white py-20 px-4 text-center relative overflow-hidden">

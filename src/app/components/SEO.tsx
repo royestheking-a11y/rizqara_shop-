@@ -19,13 +19,13 @@ export default function SEO({ title, description, url }: Props) {
             <meta property="og:title" content={title} />
             <meta property="og:description" content={description} />
             <meta property="og:url" content={url} />
-            <meta property="og:image" content="https://rizqarashop.vercel.app/og.jpg" />
+            <meta property="og:image" content={`${import.meta.env.VITE_SITE_URL}/og.jpg`} />
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={title} />
             <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content="https://rizqarashop.vercel.app/og.jpg" />
+            <meta name="twitter:image" content={`${import.meta.env.VITE_SITE_URL}/og.jpg`} />
 
             {/* Schema */}
             <script type="application/ld+json">
@@ -33,7 +33,7 @@ export default function SEO({ title, description, url }: Props) {
                     "@context": "https://schema.org",
                     "@type": "Store",
                     name: "Rizqara Shop",
-                    url: "https://rizqarashop.vercel.app",
+                    url: import.meta.env.VITE_SITE_URL,
                     sameAs: [
                         "https://www.instagram.com/rizqarashop/",
                         "https://www.pinterest.com/rizqarashop/"

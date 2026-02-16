@@ -169,7 +169,7 @@ export const CustomSketch = () => {
       <SEO
         title={t('Custom Sketch Order | Pencil, Digital & Framed Sketch | Rizqara Shop', 'Custom Sketch Order | Pencil, Digital & Framed Sketch | Rizqara Shop')}
         description={t('নিজের বা প্রিয়জনের ছবি দিয়ে কাস্টম স্কেচ অর্ডার করুন—পেন্সিল স্কেচ, ডিজিটাল স্কেচ, ফ্রেমসহ/ফ্রেম ছাড়া, বিভিন্ন সাইজে। অনন্য উপহার—রিজকারা শপ।', 'Order custom sketches with photos of yourself or loved ones - Pencil Sketch, Digital Sketch, With/Without Frame, in various sizes. Unique Gift - Rizqara Shop.')}
-        url="https://rizqarashop.vercel.app/custom-sketch"
+        url={`${import.meta.env.VITE_SITE_URL}/custom-sketch`}
       />
       {/* Header */}
       <div className="bg-[#D91976] text-white py-16">

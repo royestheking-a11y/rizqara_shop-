@@ -43,7 +43,7 @@ export const Careers = () => {
             <SEO
                 title={t('Careers at Rizqara Shop | Join Our Handmade Craft Team', 'Careers at Rizqara Shop | Join Our Handmade Craft Team')}
                 description={t('রিজকারা শপে ক্যারিয়ার—ক্রাফট, ডিজাইন, কাস্টমার সাপোর্ট ও অপারেশনস টিমে কাজের সুযোগ। আমাদের টিমে জয়েন করুন।', 'Careers at Rizqara Shop - Opportunities in crafts, design, customer support, and operations teams. Join our team.')}
-                url="https://rizqarashop.vercel.app/careers"
+                url={`${import.meta.env.VITE_SITE_URL}/careers`}
             />
             <PageHeader
                 title={t('ক্যারিয়ার', 'Careers')}

@@ -213,30 +213,30 @@ export const PolicyPage = ({ type }: PolicyPageProps) => {
                 return {
                     title: t('রিটার্ন ও রিফান্ড পলিসি | রিজকারা শপ', 'Return & Refund Policy | Rizqara Shop'),
                     description: t('পণ্য ফেরত এবং রিফান্ড প্রক্রিয়া সম্পর্কে জানুন। ৭ দিনের সহজ রিটার্ন পলিসি।', 'Conditions for returning products and refund process. 7-day easy return policy.'),
-                    url: 'https://rizqarashop.vercel.app/return-policy'
+                    url: `${import.meta.env.VITE_SITE_URL}/return-policy`
                 };
             case 'delivery':
                 return {
                     title: t('ডেলিভারি তথ্য | শিপিং চার্জ ও সময় | রিজকারা শপ', 'Delivery Information | Shipping Charges & Time | Rizqara Shop'),
                     description: t('শিপিং চার্জ এবং ডেলিভারি সময় সম্পর্কে বিস্তারিত জানুন। ঢাকা ও সারাদেশে দ্রুত ডেলিভারি।', 'View shipping charges and delivery time. Fast delivery in Dhaka and nationwide.'),
-                    url: 'https://rizqarashop.vercel.app/delivery-info'
+                    url: `${import.meta.env.VITE_SITE_URL}/delivery-info`
                 };
                 return {
                     title: t('Terms & Conditions | Rizqara Shop', 'Terms & Conditions | Rizqara Shop'),
                     description: t('রিজকারা শপের শর্তাবলী (Terms & Conditions) পড়ুন। অর্ডার, পেমেন্ট, ডেলিভারি ও সার্ভিস সংক্রান্ত নিয়মাবলি এখানে দেওয়া আছে।', 'Read the Terms & Conditions of Rizqara Shop. Rules regarding orders, payment, delivery, and services are provided here.'),
-                    url: 'https://rizqarashop.vercel.app/terms'
+                    url: `${import.meta.env.VITE_SITE_URL}/terms`
                 };
             case 'privacy':
                 return {
                     title: t('Privacy Policy | Rizqara Shop', 'Privacy Policy | Rizqara Shop'),
                     description: t('আপনার তথ্য কীভাবে সংগ্রহ ও সুরক্ষিত রাখা হয়—রিজকারা শপের প্রাইভেসি পলিসি দেখুন। নিরাপদ শপিং আমাদের অগ্রাধিকার।', 'See how your information is collected and protected - view Rizqara Shop\'s Privacy Policy. Safe shopping is our priority.'),
-                    url: 'https://rizqarashop.vercel.app/privacy-policy'
+                    url: `${import.meta.env.VITE_SITE_URL}/privacy-policy`
                 };
             default:
                 return {
                     title: 'Rizqara Shop',
                     description: 'Premium Handmade Gift Store',
-                    url: 'https://rizqarashop.vercel.app/'
+                    url: `${import.meta.env.VITE_SITE_URL}/`
                 };
         }
     };

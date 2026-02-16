@@ -310,7 +310,7 @@ export const generateInvoice = async ({ order, type }: Omit<InvoiceOptions, 'lan
 
     try {
       // Generate QR code as data URL
-      const qrDataUrl = await QRCode.toDataURL('https://rizqarashop.vercel.app/', {
+      const qrDataUrl = await QRCode.toDataURL(import.meta.env.VITE_SITE_URL || 'https://rizqarashop.me/', {
         width: 200,
         margin: 1,
         color: {

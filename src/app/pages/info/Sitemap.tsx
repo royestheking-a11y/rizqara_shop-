@@ -65,7 +65,7 @@ export const Sitemap = () => {
             <SEO
                 title={t('সাইটম্যাপ | রিজকারা শপ', 'Sitemap | Rizqara Shop')}
                 description={t('রিজকারা শপের সকল পেজের তালিকা।', 'List of all pages on Rizqara Shop.')}
-                url="https://rizqarashop.vercel.app/sitemap"
+                url={`${import.meta.env.VITE_SITE_URL}/sitemap`}
             />
 
             <div className="max-w-6xl mx-auto">

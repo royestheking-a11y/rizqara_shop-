@@ -291,7 +291,7 @@ export const GiftGenerator = () => {
             <SEO
                 title={t('গিফট ফাইন্ডার | আবেগ অনুযায়ী সেরা উপহার খুঁজুন | রিজকারা শপ', 'Gift Finder Tool | Find Perfect Gift by Emotion | Rizqara Shop')}
                 description={t('উপলক্ষ ও প্রিয়জন অনুযায়ী সেরা উপহার খুঁজুন রিজকারা শপের গিফট জেনারেটর দিয়ে। জন্মদিন, ঈদ, ভালোবাসা – সব কিছুর জন্য।', 'Find the perfect gift by occasion and loved one with Rizqara Shop\'s Gift Generator. For birthdays, Eid, love - everything.')}
-                url="https://rizqarashop.vercel.app/gift-generator"
+                url={`${import.meta.env.VITE_SITE_URL}/gift-generator`}
             />
             <div className="max-w-4xl mx-auto">
                 {step > 0 && step < 5 && (

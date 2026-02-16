@@ -37,7 +37,7 @@ export const About = () => {
             <SEO
                 title={t('About Rizqara Shop | Handmade Crafts & Custom Gift Brand in Bangladesh', 'About Rizqara Shop | Handmade Crafts & Custom Gift Brand in Bangladesh')}
                 description={t('রিজকারা শপ সম্পর্কে জানুন—হ্যান্ডমেড ক্রাফট, মাটির পণ্য, কাস্টম স্কেচ ও গিফট নিয়ে বাংলাদেশের প্রিমিয়াম অনলাইন শপ।', 'Learn about Rizqara Shop - Bangladesh\'s premium online shop for handmade crafts, clay products, custom sketches, and gifts.')}
-                url="https://rizqarashop.vercel.app/about"
+                url={`${import.meta.env.VITE_SITE_URL}/about`}
             />
             <PageHeader
                 title={t('আমাদের সম্পর্কে', 'About Us')}

@@ -40,7 +40,7 @@ export const Contact = () => {
             <SEO
                 title={t('যোগাযোগ | রিজকারা শপ - হ্যান্ডমেড গিফট স্টোর ঠিকানা ও সাপোর্ট', 'Contact Us | Rizqara Shop - Handmade Gift Store Location & Support')}
                 description={t('যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন। আমাদের ঠিকানা, ফোন নম্বর ও সোশ্যাল মিডিয়া লিংক।', 'Contact us for any needs. Our address, phone number and social media links.')}
-                url="https://rizqarashop.vercel.app/contact"
+                url={`${import.meta.env.VITE_SITE_URL}/contact`}
             />
             <PageHeader
                 title={t('যোগাযোগ', 'Contact Us')}

@@ -18,7 +18,7 @@ export const PERSON_TYPES = [
     { id: 'wife', label: 'স্ত্রী', tags: ['women', 'saree', 'jewelry', 'wife'] },
     { id: 'husband', label: 'স্বামী', tags: ['men', 'fashion', 'husband'] },
     { id: 'self', label: 'নিজের জন্য', tags: ['fashion', 'hobby', 'decor'] },
-    { id: 'corporate', label: 'কর্পোরেট গিফট', tags: ['corporate', 'office', 'desk'] },
+    { id: 'corporate', label: 'কর্পোরেট গিফট', tags: ['corporate', 'office', 'deskc'] },
     { id: 'colleague', label: 'সহকর্মী', tags: ['office', 'gift', 'formal'] },
 ];
 
