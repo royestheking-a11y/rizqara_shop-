@@ -24,7 +24,7 @@ const COLOR_MAP: Record<string, string> = {
 export const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { products, t, addToCart, sendMessage, user, reviews, addReview, toggleWishlist, isInWishlist, language, orders } = useStore();
+  const { products, t, addToCart, sendMessage, user, reviews, addReview, toggleWishlist, isInWishlist, language, orders, formatPrice } = useStore();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -270,11 +270,11 @@ export const ProductDetails = () => {
             <div className="flex items-end gap-4 mb-2">
               {product.discount_price ? (
                 <>
-                  <span className="text-3xl font-bold text-[#D91976]">৳{product.discount_price}</span>
-                  <span className="text-xl text-gray-400 line-through mb-1">৳{product.price}</span>
+                  <span className="text-3xl font-bold text-[#D91976]">{formatPrice(product.discount_price)}</span>
+                  <span className="text-xl text-gray-400 line-through mb-1">{formatPrice(product.price)}</span>
                 </>
               ) : (
-                <span className="text-3xl font-bold text-[#D91976]">৳{product.price}</span>
+                <span className="text-3xl font-bold text-[#D91976]">{formatPrice(product.price)}</span>
               )}
             </div>
 
@@ -282,7 +282,7 @@ export const ProductDetails = () => {
             {product.discount_price && (
               <div className="flex items-center gap-4 mb-6">
                 <div className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
-                  {t('সাশ্রয় হচ্ছে', 'Save')} ৳{product.price - product.discount_price}
+                  {t('সাশ্রয় হচ্ছে', 'Save')} {formatPrice(product.price - product.discount_price)}
                 </div>
                 <div className="text-sm text-gray-500">
                   ({discountPercent}% {t('ছাড়', 'off')})

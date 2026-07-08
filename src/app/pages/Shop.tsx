@@ -7,7 +7,7 @@ import { ProductCard } from '@/app/components/ProductCard';
 import SEO from '@/app/components/SEO';
 
 export const Shop = () => {
-  const { products, t, language } = useStore();
+  const { products, t, language, formatPrice } = useStore();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const categoryParam = searchParams.get('cat');
@@ -221,9 +221,9 @@ export const Shop = () => {
               <div className="pt-6 border-t border-gray-100">
                 <h3 className="font-bold mb-4 text-lg">{t('দাম', 'Price Range')}</h3>
                 <div className="flex items-center gap-3 text-sm text-gray-600 mb-4">
-                  <span className="font-medium">৳{priceRange[0]}</span>
+                  <span className="font-medium">{formatPrice(priceRange[0])}</span>
                   <span>-</span>
-                  <span className="font-medium">৳{priceRange[1]}</span>
+                  <span className="font-medium">{formatPrice(priceRange[1])}</span>
                 </div>
                 <input
                   type="range"
@@ -235,8 +235,8 @@ export const Shop = () => {
                   className="w-full accent-[#D91976] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
                 <div className="flex justify-between text-xs text-gray-400 mt-2">
-                  <span>৳0</span>
-                  <span>৳20,000</span>
+                  <span>{formatPrice(0)}</span>
+                  <span>{formatPrice(20000)}</span>
                 </div>
               </div>
 
@@ -331,7 +331,7 @@ export const Shop = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold mb-3">{t('দাম', 'Price Range')} (Max: ৳{priceRange[1]})</h4>
+                    <h4 className="font-semibold mb-3">{t('দাম', 'Price Range')} (Max: {formatPrice(priceRange[1])})</h4>
                     <input
                       type="range"
                       min="0"

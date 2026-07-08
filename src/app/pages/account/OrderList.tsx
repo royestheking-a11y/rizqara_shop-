@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 export const OrderList = () => {
-    const { orders, user, sendMessage, requestRefund, addReview, reviews, updateOrderStatus, verifyPayment, cancelOrder, t } = useStore();
+    const { orders, user, sendMessage, requestRefund, addReview, reviews, updateOrderStatus, verifyPayment, cancelOrder, t, formatPrice } = useStore();
     const [expandedOrder, setExpandedOrder] = React.useState<string | null>(null);
     const [refundOrder, setRefundOrder] = useState<string | null>(null);
     const [refundReason, setRefundReason] = useState('');
@@ -199,7 +199,7 @@ export const OrderList = () => {
                                     <span>•</span>
                                     <span>{order.items.length} items</span>
                                     <span>•</span>
-                                    <span className="font-bold text-gray-900">৳{order.total}</span>
+                                    <span className="font-bold text-gray-900">{formatPrice(order.total)}</span>
                                     {order.trxId && (
                                         <>
                                             <span>•</span>
@@ -268,7 +268,7 @@ export const OrderList = () => {
                                                         {item.selectedVariant && <p className="text-xs text-gray-500">Color: {item.selectedVariant}</p>}
                                                         <div className="flex justify-between items-center mt-2">
                                                             <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">Qty: {item.quantity}</span>
-                                                            <span className="font-bold text-sm">৳{(item.discount_price || item.price) * item.quantity}</span>
+                                                            <span className="font-bold text-sm">{formatPrice((item.discount_price || item.price) * item.quantity)}</span>
                                                         </div>
                                                         {renderCustomDetails(item)}
                                                     </div>
@@ -442,7 +442,7 @@ export const OrderList = () => {
                     <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative animate-in zoom-in-50 duration-200">
                         <button onClick={() => setPaymentModal(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={20} /></button>
                         <h3 className="text-xl font-bold mb-2">{t('পেমেন্ট কমপ্লিট করুন', 'Complete Payment')}</h3>
-                        <p className="text-gray-500 mb-6">Total Amount: <span className="font-bold text-[#D91976]">৳{paymentModal.total}</span></p>
+                        <p className="text-gray-500 mb-6">Total Amount: <span className="font-bold text-[#D91976]">{formatPrice(paymentModal.total)}</span></p>
 
                         <div className="grid grid-cols-2 gap-3 mb-4">
                             {['bkash', 'nagad', 'rocket'].map(m => (

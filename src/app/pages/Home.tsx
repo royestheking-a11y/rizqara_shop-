@@ -11,7 +11,7 @@ import bdCustomCraftImg from '@/assets/bd_custom_craft.png';
 import SEO from '@/app/components/SEO';
 
 export const Home = () => {
-  const { t, products, vouchers, isLoading } = useStore();
+  const { t, products, vouchers, isLoading, formatPrice } = useStore();
   const [copiedCode, setCopiedCode] = React.useState<string | null>(null);
 
   const bestSellers = products.filter(p => p.isBestSeller || (p.rating && p.rating > 4.5));
@@ -368,7 +368,7 @@ export const Home = () => {
                     <p className="text-lg font-bold">{voucher.discount}% OFF</p>
                   </div>
                   <p className="text-[10px] opacity-90">
-                    {t('সর্বোচ্চ', 'Up to')} ৳{voucher.maxDiscount.toLocaleString()}
+                    {t('সর্বোচ্চ', 'Up to')} {formatPrice(voucher.maxDiscount)}
                   </p>
                 </div>
 
@@ -382,7 +382,7 @@ export const Home = () => {
                     {/* Min Purchase */}
                     <div className="flex items-center justify-center gap-1 text-[10px] text-gray-500 mb-3">
                       <span>{t('ন্যূনতম', 'Min')}:</span>
-                      <span className="font-bold text-gray-700">৳{voucher.minPurchase.toLocaleString()}</span>
+                      <span className="font-bold text-gray-700">{formatPrice(voucher.minPurchase)}</span>
                     </div>
                   </div>
 

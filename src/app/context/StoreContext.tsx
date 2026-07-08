@@ -6,7 +6,7 @@ import { PushService } from '../services/PushService';
 
 // --- Types ---
 
-export type Language = 'bn' | 'en';
+export type Language = 'bn' | 'en' | string;
 
 export type UserRole = 'guest' | 'customer' | 'admin';
 
@@ -371,6 +371,7 @@ interface StoreContextType {
   isInWishlist: (productId: string) => boolean;
   // Helpers
   t: (bn: string, en: string) => string;
+  formatPrice: (amount: number) => string;
   // OTP
   otpState: OTPState | null;
   sendOTP: (email: string, type: 'signup' | 'reset', name?: string) => Promise<boolean>;
@@ -391,6 +392,46 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const stored = localStorage.getItem('rizqara_user') || sessionStorage.getItem('rizqara_user');
     return stored ? JSON.parse(stored) : null;
   });
+
+  // IP-based Language Detection
+  useEffect(() => {
+    const storedLang = localStorage.getItem('rizqara_lang');
+    if (!storedLang) {
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          let detectedLang = 'en'; // Default to English globally
+          if (data.country_code) {
+            const cc = data.country_code.toLowerCase();
+            if (cc === 'bd') detectedLang = 'bn';
+            else if (cc === 'in') detectedLang = 'hi';
+            else if (cc === 'de') detectedLang = 'de';
+            else if (cc === 'fr') detectedLang = 'fr';
+            else if (cc === 'es' || cc === 'mx' || cc === 'ar' || cc === 'co') detectedLang = 'es';
+            else if (cc === 'it') detectedLang = 'it';
+            else if (cc === 'jp') detectedLang = 'ja';
+            else if (cc === 'cn') detectedLang = 'zh-CN';
+            else if (cc === 'sa' || cc === 'ae' || cc === 'eg') detectedLang = 'ar';
+            else if (cc === 'pk') detectedLang = 'ur';
+            else if (cc === 'pt' || cc === 'br') detectedLang = 'pt';
+            else if (cc === 'ru') detectedLang = 'ru';
+          }
+          
+          setLanguage(detectedLang);
+          localStorage.setItem('rizqara_lang', detectedLang);
+
+          // Trigger Google Translate after a small delay to ensure it's loaded
+          setTimeout(() => {
+            const gtCombo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+            if (gtCombo) {
+              gtCombo.value = detectedLang;
+              gtCombo.dispatchEvent(new Event('change'));
+            }
+          }, 1500);
+        })
+        .catch(err => console.error('IP language detection failed:', err));
+    }
+  }, []);
 
   // Push Notification Registration
   useEffect(() => {
@@ -700,6 +741,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Helper
   const t = (bn: string, en: string) => (language === 'bn' ? bn : en);
+
+  const formatPrice = (amount: number) => {
+    // If we're not in Bangla (i.e. 'en' or other international language), show USD
+    if (language !== 'bn') {
+      const usdAmount = (amount / 100).toFixed(2);
+      return `$${usdAmount}`;
+    }
+    return `৳${amount}`;
+  };
 
   // Auth
   // Fetch notifications from backend
@@ -1892,6 +1942,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     bookSteadfast, // Exported
     cancelOrder,   // Exported
     t,
+    formatPrice,
   };
 
   return <StoreContext.Provider value={value} > {children}</StoreContext.Provider >;

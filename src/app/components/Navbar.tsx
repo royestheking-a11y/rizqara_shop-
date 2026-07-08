@@ -34,9 +34,6 @@ export const Navbar = () => {
   const unreadMessages = messages.filter(m => !m.read && m.receiverId === (user?.id || 'guest')).length;
   const unreadNotifs = notifications.filter(n => !n.read && n.userId === user?.id).length;
 
-  const toggleLanguage = () => {
-    setLanguage(language === 'bn' ? 'en' : 'bn');
-  };
 
   const isLinkActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -70,12 +67,86 @@ export const Navbar = () => {
       <div className="bg-[#D91976] text-white text-xs py-1.5 px-4">
         <div className="container mx-auto flex items-center justify-between">
           <p className="flex-1 text-center">{t('প্রথম অর্ডারে ১০% ছাড়! কোড: WELCOME10', '10% OFF on first order! Use Code: WELCOME10')}</p>
-          <button
-            onClick={toggleLanguage}
-            className="text-xs font-bold uppercase tracking-wider hover:bg-white/20 transition px-3 py-1 rounded ml-4 shrink-0"
+          <select
+            value={language}
+            onChange={(e) => {
+              const lang = e.target.value;
+              setLanguage(lang);
+              
+              // Trigger Google Translate
+              const gtCombo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+              if (gtCombo) {
+                gtCombo.value = lang === 'bn' ? 'bn' : lang;
+                gtCombo.dispatchEvent(new Event('change'));
+              }
+            }}
+            className="notranslate text-xs font-bold uppercase tracking-wider bg-transparent text-white border border-white/40 hover:bg-white/20 transition px-2 py-1 rounded ml-4 shrink-0 focus:outline-none cursor-pointer"
           >
-            {language === 'bn' ? 'English' : 'বাংলা'}
-          </button>
+            <option value="bn" className="text-black">বাংলা (BDT)</option>
+            <option value="en" className="text-black">English (USD)</option>
+            <option value="af" className="text-black">Afrikaans (USD)</option>
+            <option value="sq" className="text-black">Albanian (USD)</option>
+            <option value="ar" className="text-black">العربية (USD)</option>
+            <option value="hy" className="text-black">Armenian (USD)</option>
+            <option value="az" className="text-black">Azerbaijani (USD)</option>
+            <option value="eu" className="text-black">Basque (USD)</option>
+            <option value="be" className="text-black">Belarusian (USD)</option>
+            <option value="bg" className="text-black">Bulgarian (USD)</option>
+            <option value="ca" className="text-black">Catalan (USD)</option>
+            <option value="zh-CN" className="text-black">Chinese (Simplified) (USD)</option>
+            <option value="zh-TW" className="text-black">Chinese (Traditional) (USD)</option>
+            <option value="hr" className="text-black">Croatian (USD)</option>
+            <option value="cs" className="text-black">Czech (USD)</option>
+            <option value="da" className="text-black">Danish (USD)</option>
+            <option value="nl" className="text-black">Dutch (USD)</option>
+            <option value="et" className="text-black">Estonian (USD)</option>
+            <option value="tl" className="text-black">Filipino (USD)</option>
+            <option value="fi" className="text-black">Finnish (USD)</option>
+            <option value="fr" className="text-black">Français (USD)</option>
+            <option value="gl" className="text-black">Galician (USD)</option>
+            <option value="ka" className="text-black">Georgian (USD)</option>
+            <option value="de" className="text-black">German (USD)</option>
+            <option value="el" className="text-black">Greek (USD)</option>
+            <option value="gu" className="text-black">Gujarati (USD)</option>
+            <option value="ht" className="text-black">Haitian Creole (USD)</option>
+            <option value="iw" className="text-black">Hebrew (USD)</option>
+            <option value="hi" className="text-black">हिन्दी (USD)</option>
+            <option value="hu" className="text-black">Hungarian (USD)</option>
+            <option value="is" className="text-black">Icelandic (USD)</option>
+            <option value="id" className="text-black">Indonesian (USD)</option>
+            <option value="ga" className="text-black">Irish (USD)</option>
+            <option value="it" className="text-black">Italian (USD)</option>
+            <option value="ja" className="text-black">Japanese (USD)</option>
+            <option value="kn" className="text-black">Kannada (USD)</option>
+            <option value="ko" className="text-black">Korean (USD)</option>
+            <option value="la" className="text-black">Latin (USD)</option>
+            <option value="lv" className="text-black">Latvian (USD)</option>
+            <option value="lt" className="text-black">Lithuanian (USD)</option>
+            <option value="mk" className="text-black">Macedonian (USD)</option>
+            <option value="ms" className="text-black">Malay (USD)</option>
+            <option value="mt" className="text-black">Maltese (USD)</option>
+            <option value="no" className="text-black">Norwegian (USD)</option>
+            <option value="fa" className="text-black">Persian (USD)</option>
+            <option value="pl" className="text-black">Polish (USD)</option>
+            <option value="pt" className="text-black">Portuguese (USD)</option>
+            <option value="ro" className="text-black">Romanian (USD)</option>
+            <option value="ru" className="text-black">Russian (USD)</option>
+            <option value="sr" className="text-black">Serbian (USD)</option>
+            <option value="sk" className="text-black">Slovak (USD)</option>
+            <option value="sl" className="text-black">Slovenian (USD)</option>
+            <option value="es" className="text-black">Español (USD)</option>
+            <option value="sw" className="text-black">Swahili (USD)</option>
+            <option value="sv" className="text-black">Swedish (USD)</option>
+            <option value="ta" className="text-black">Tamil (USD)</option>
+            <option value="te" className="text-black">Telugu (USD)</option>
+            <option value="th" className="text-black">Thai (USD)</option>
+            <option value="tr" className="text-black">Turkish (USD)</option>
+            <option value="uk" className="text-black">Ukrainian (USD)</option>
+            <option value="ur" className="text-black">اردو (USD)</option>
+            <option value="vi" className="text-black">Vietnamese (USD)</option>
+            <option value="cy" className="text-black">Welsh (USD)</option>
+            <option value="yi" className="text-black">Yiddish (USD)</option>
+          </select>
           <a
             href="https://m.me/107858308889263"
             target="_blank"

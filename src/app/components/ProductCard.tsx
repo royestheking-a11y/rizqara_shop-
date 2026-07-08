@@ -10,7 +10,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, disableHoverEffect = false }) => {
-  const { language, addToCart, t, toggleWishlist, isInWishlist } = useStore();
+  const { language, addToCart, t, toggleWishlist, isInWishlist, formatPrice } = useStore();
   const navigate = useNavigate();
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -133,14 +133,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, disableHoverE
             {hasDiscount ? (
               <>
                 <p className="text-lg font-bold text-[#D91976]">
-                  ৳{product.discount_price}
+                  {formatPrice(product.discount_price!)}
                 </p>
                 <p className="text-xs text-gray-400 line-through">
-                  ৳{product.price}
+                  {formatPrice(product.price)}
                 </p>
               </>
             ) : (
-              <p className="text-lg font-bold text-[#D91976]">৳{product.price}</p>
+              <p className="text-lg font-bold text-[#D91976]">{formatPrice(product.price)}</p>
             )}
           </div>
           <div className="flex flex-col items-end gap-0.5">

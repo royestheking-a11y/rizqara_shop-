@@ -1,10 +1,9 @@
-import React from 'react';
-import { useStore, CartItem } from '@/app/context/StoreContext';
+import { useStore } from '@/app/context/StoreContext';
 import { Link, useNavigate } from 'react-router';
 import { Trash2, Minus, Plus, ArrowRight } from 'lucide-react';
 
 export const Cart = () => {
-  const { cart, removeFromCart, updateCartQuantity, t } = useStore();
+  const { cart, removeFromCart, updateCartQuantity, t, formatPrice } = useStore();
   const navigate = useNavigate();
 
   const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
@@ -47,7 +46,7 @@ export const Cart = () => {
                         </p>
                     )}
                     <div className="mt-2 font-bold text-gray-900">
-                        ৳{item.discount_price || item.price}
+                        {formatPrice(item.discount_price || item.price)}
                     </div>
                 </div>
 
@@ -87,15 +86,15 @@ export const Cart = () => {
                 <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-gray-600">
                         <span>{t('সাবটোটাল', 'Subtotal')}</span>
-                        <span>৳{subtotal}</span>
+                        <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between text-gray-600">
                         <span>{t('ডেলিভারি চার্জ (আনুমানিক)', 'Delivery (Est.)')}</span>
-                        <span>৳{deliveryFee}</span>
+                        <span>{formatPrice(deliveryFee)}</span>
                     </div>
                     <div className="border-t pt-3 flex justify-between font-bold text-lg">
                         <span>{t('সর্বমোট', 'Total')}</span>
-                        <span className="text-[#D91976]">৳{total}</span>
+                        <span className="text-[#D91976]">{formatPrice(total)}</span>
                     </div>
                 </div>
 

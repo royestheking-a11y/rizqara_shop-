@@ -20,10 +20,46 @@
   <link rel="manifest" href="/favicon/site.webmanifest" />
   <!-- v1.1 Deployment Fix -->
   <title>রিজকারা শপ | হ্যান্ডমেড উপহার ও কাস্টম স্কেচ শপ বাংলাদেশ</title>
+  <style>
+    /* Hide Google Translate top bar and tooltips */
+    iframe.goog-te-banner-frame {
+      display: none !important;
+    }
+    .goog-te-banner-frame {
+      display: none !important;
+    }
+    .VIpgJd-ZVi9od-ORHb-OEVmcd {
+      display: none !important;
+    }
+    .VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+      display: none !important;
+    }
+    iframe.skiptranslate {
+      display: none !important;
+    }
+    body {
+      top: 0px !important;
+    }
+    #goog-gt-tt, .goog-te-balloon-frame {
+      display: none !important;
+    }
+    .goog-text-highlight {
+      background: none !important;
+      box-shadow: none !important;
+    }
+  </style>
 </head>
 
 <body>
   <div id="root"></div>
+  <!-- Google Translate Widget -->
+  <div id="google_translate_element" style="display:none;"></div>
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

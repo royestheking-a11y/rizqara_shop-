@@ -18,7 +18,7 @@ type CheckoutForm = {
 };
 
 export const Checkout = () => {
-  const { cart, user, placeOrder, clearCart, t, language, applyVoucher } = useStore();
+  const { cart, user, placeOrder, clearCart, t, language, applyVoucher, formatPrice } = useStore();
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<CheckoutForm>({
     defaultValues: {
@@ -300,10 +300,10 @@ export const Checkout = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 truncate">{item.title_en}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{item.quantity} x ৳{item.discount_price || item.price}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.quantity} x {formatPrice(item.discount_price || item.price)}</p>
                   </div>
                   <div className="font-bold text-[#D91976]">
-                    ৳{(item.discount_price || item.price) * item.quantity}
+                    {formatPrice((item.discount_price || item.price) * item.quantity)}
                   </div>
                 </div>
               ))}
@@ -343,7 +343,7 @@ export const Checkout = () => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-pink-800 uppercase tracking-wide">{appliedVoucher.code}</p>
-                      <p className="text-xs text-pink-500 font-medium">-৳{appliedVoucher.discount} {t('ছাড়', 'discount')}</p>
+                      <p className="text-xs text-pink-500 font-medium">-{formatPrice(appliedVoucher.discount)} {t('ছাড়', 'discount')}</p>
                     </div>
                   </div>
                   <button
@@ -360,21 +360,21 @@ export const Checkout = () => {
             <div className="border-t pt-4 space-y-3 text-sm">
               <div className="flex justify-between items-center text-gray-600">
                 <span>{t('সাবটোটাল', 'Subtotal')}</span>
-                <span className="font-medium text-gray-900">৳{subtotal.toLocaleString()}</span>
+                <span className="font-medium text-gray-900">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between items-center text-gray-600">
                 <span>{t('ডেলিভারি', 'Delivery')}</span>
-                <span className="font-medium text-gray-900">৳{deliveryFee}</span>
+                <span className="font-medium text-gray-900">{formatPrice(deliveryFee)}</span>
               </div>
               {voucherDiscount > 0 && (
                 <div className="flex justify-between items-center text-pink-600">
                   <span>{t('ভাউচার ছাড়', 'Voucher Discount')}</span>
-                  <span className="font-bold">-৳{voucherDiscount.toLocaleString()}</span>
+                  <span className="font-bold">-{formatPrice(voucherDiscount)}</span>
                 </div>
               )}
               <div className="flex justify-between items-center font-bold text-lg pt-3 border-t mt-3">
                 <span className="text-gray-900">{t('মোট', 'Total')}</span>
-                <span className="text-[#D91976]">৳{total.toLocaleString()}</span>
+                <span className="text-[#D91976]">{formatPrice(total)}</span>
               </div>
             </div>
 

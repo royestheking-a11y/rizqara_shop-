@@ -142,11 +142,11 @@ export const Footer = () => {
               </h4>
               <div className="grid grid-cols-4 gap-3 max-w-[320px]">
                 {[
-                  { name: 'COD', img: 'https://cdn-icons-png.flaticon.com/512/1554/1554401.png', label: 'Cash on Delivery' },
+                  { name: 'COD', text: 'COD', color: '#16a34a', label: 'Cash on Delivery' },
                   { name: 'Visa', img: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg', label: 'Visa' },
                   { name: 'Mastercard', img: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg', label: 'Mastercard' },
                   { name: 'AMEX', img: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg', label: 'American Express' },
-                  { name: 'EMI', img: 'https://cdn-icons-png.flaticon.com/512/825/825590.png', label: 'Easy Monthly Installments' },
+                  { name: 'EMI', text: 'EMI', color: '#2563eb', label: 'Easy Monthly Installments' },
                   { name: 'bKash', text: 'bKash', color: '#D12053' },
                   { name: 'Nagad', text: 'Nagad', color: '#F7941D' },
                   { name: 'Rocket', text: 'Rocket', color: '#8C3494' },

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import SEO from '@/app/components/SEO';
 
 export const CustomSketch = () => {
-  const { t, addCustomItemToCart, sketchPricing, uploadFile } = useStore();
+  const { t, addCustomItemToCart, sketchPricing, uploadFile, formatPrice } = useStore();
   const navigate = useNavigate();
 
   // Form State
@@ -425,7 +425,7 @@ export const CustomSketch = () => {
               <div className="border-t border-dashed border-gray-300 my-6 pt-4">
                 <div className="flex justify-between items-center text-xl font-bold text-[#D91976]">
                   <span>{t('মোট', 'Total')}:</span>
-                  <span>৳{price.toLocaleString()}</span>
+                  <span>{formatPrice(price)}</span>
                 </div>
               </div>
 
@@ -442,23 +442,23 @@ export const CustomSketch = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <span className="font-semibold block underline">A4 Size</span>
-                    Frame: {sketchPricing.A4.onePieceWithFrame}৳ | {sketchPricing.A4.twoPieceWithFrame}৳<br />
-                    No Frame: {sketchPricing.A4.onePieceNoFrame}৳ | {sketchPricing.A4.twoPieceNoFrame}৳
+                    Frame: {formatPrice(sketchPricing.A4.onePieceWithFrame)} | {formatPrice(sketchPricing.A4.twoPieceWithFrame)}<br />
+                    No Frame: {formatPrice(sketchPricing.A4.onePieceNoFrame)} | {formatPrice(sketchPricing.A4.twoPieceNoFrame)}
                   </div>
                   <div>
                     <span className="font-semibold block underline">A5 Size</span>
-                    Frame: {sketchPricing.A5.onePieceWithFrame}৳ | {sketchPricing.A5.twoPieceWithFrame}৳<br />
-                    No Frame: {sketchPricing.A5.onePieceNoFrame}৳ | {sketchPricing.A5.twoPieceNoFrame}৳
+                    Frame: {formatPrice(sketchPricing.A5.onePieceWithFrame)} | {formatPrice(sketchPricing.A5.twoPieceWithFrame)}<br />
+                    No Frame: {formatPrice(sketchPricing.A5.onePieceNoFrame)} | {formatPrice(sketchPricing.A5.twoPieceNoFrame)}
                   </div>
                   <div>
                     <span className="font-semibold block underline">A3 Size</span>
-                    Frame: {sketchPricing.A3.onePieceWithFrame}৳ | {sketchPricing.A3.twoPieceWithFrame}৳<br />
-                    No Frame: {sketchPricing.A3.onePieceNoFrame}৳ | {sketchPricing.A3.twoPieceNoFrame}৳
+                    Frame: {formatPrice(sketchPricing.A3.onePieceWithFrame)} | {formatPrice(sketchPricing.A3.twoPieceWithFrame)}<br />
+                    No Frame: {formatPrice(sketchPricing.A3.onePieceNoFrame)} | {formatPrice(sketchPricing.A3.twoPieceNoFrame)}
                   </div>
                   <div>
                     <span className="font-semibold block underline">A2 Size</span>
-                    Frame: {sketchPricing.A2.onePieceWithFrame}৳ | {sketchPricing.A2.twoPieceWithFrame}৳<br />
-                    No Frame: {sketchPricing.A2.onePieceNoFrame}৳ | {sketchPricing.A2.twoPieceNoFrame}৳
+                    Frame: {formatPrice(sketchPricing.A2.onePieceWithFrame)} | {formatPrice(sketchPricing.A2.twoPieceWithFrame)}<br />
+                    No Frame: {formatPrice(sketchPricing.A2.onePieceNoFrame)} | {formatPrice(sketchPricing.A2.twoPieceNoFrame)}
                   </div>
                 </div>
               </div>
