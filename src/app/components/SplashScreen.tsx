@@ -1,67 +1,97 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface SplashScreenProps {
-  onComplete: () => void;
+  onComplete?: () => void;
 }
 
-export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
+export const SplashScreen = ({ onComplete }: SplashScreenProps) => {
   const [stage, setStage] = useState<'loading' | 'fadeout'>('loading');
 
   useEffect(() => {
-    // Shorter simpler timing
+    // Keep it showing for 2 seconds like the previous splash screen, then fade out
     const timer = setTimeout(() => {
       setStage('fadeout');
-      setTimeout(onComplete, 800); // Allow fadeout animation to finish
-    }, 2000); // 2 seconds total display time
+      setTimeout(() => {
+        onComplete?.();
+      }, 400); // 0.4 seconds to match the fade out transition duration
+    }, 2000); 
 
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   return (
     <AnimatePresence>
-      {stage !== 'fadeout' && (
+      {stage === 'loading' && (
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] bg-white flex items-center justify-center"
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-white"
         >
-          <div className="relative flex flex-col items-center">
-            {/* Centered Icon with Premium Pulse Effect */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{
-                scale: [0.8, 1.1, 1],
-                opacity: 1
-              }}
-              transition={{
-                duration: 1.2,
-                times: [0, 0.6, 1],
-                ease: "easeOut"
-              }}
-              className="relative w-32 h-32 md:w-40 md:h-40"
-            >
-              {/* Pulsing Background Glow */}
+          {/* Decorative Radial Background Orbs */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div
+              className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full blur-[160px] opacity-20 bg-[#F48FB1]/15"
+            />
+            <div
+              className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full blur-[160px] opacity-20 bg-[#E91E8C]/10"
+            />
+          </div>
+          {/* Subtle background color overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#fff6f9] via-[#fffbfd] to-[#fff1f5]"
+          />
+          {/* Clover / Flower Spinner in Center */}
+          <div className="relative z-10 flex flex-col items-center justify-center animate-in zoom-in-95 duration-500">
+            <div className="relative w-24 h-24 flex items-center justify-center">
+              {/* Spinning container */}
               <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.3, 0.6, 0.3]
-                }}
+                animate={{ rotate: 360 }}
                 transition={{
-                  duration: 2,
                   repeat: Infinity,
-                  ease: "easeInOut"
+                  duration: 2.5,
+                  ease: "linear",
                 }}
-                className="absolute inset-0 bg-[#D91976] rounded-3xl blur-3xl opacity-20"
-              />
-
-              {/* Main Icon */}
-              <div className="relative w-full h-full bg-gradient-to-br from-[#D91976] to-[#A8145A] rounded-3xl p-4 shadow-2xl flex items-center justify-center">
-                <ShoppingBag size={64} className="text-white drop-shadow-md" strokeWidth={1.5} />
-              </div>
-            </motion.div>
+                className="w-20 h-20 flex items-center justify-center"
+              >
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <defs>
+                    <linearGradient id="petal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#F48FB1" />
+                      <stop offset="100%" stopColor="#E91E8C" />
+                    </linearGradient>
+                  </defs>
+                  <g transform="translate(50, 50)">
+                    {/* 6 overlapping translucent petals */}
+                    {[...Array(6)].map((_, i) => {
+                      const angle = i * 60;
+                      return (
+                        <g key={i} transform={`rotate(${angle})`}>
+                          <circle
+                            cx="0"
+                            cy="-18"
+                            r="15"
+                            fill="url(#petal-grad)"
+                            opacity="0.65"
+                            style={{
+                              mixBlendMode: "multiply",
+                            }}
+                          />
+                        </g>
+                      );
+                    })}
+                    {/* Center core mask to form hollow ring effect */}
+                    <circle cx="0" cy="0" r="7" className="fill-white" />
+                  </g>
+                </svg>
+              </motion.div>
+            </div>
+            
+            {/* Extremely minimal text */}
+            <span className="text-[10px] tracking-[0.3em] uppercase font-semibold mt-6 animate-pulse text-gray-400 pl-[0.3em] select-none">
+              Loading
+            </span>
           </div>
         </motion.div>
       )}
