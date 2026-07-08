@@ -65,8 +65,10 @@ export const Navbar = () => {
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100 font-sans">
       {/* Top Bar with Language Toggle */}
       <div className="bg-[#D91976] text-white text-xs py-1.5 px-4">
-        <div className="container mx-auto flex items-center justify-between">
-          <p className="flex-1 text-center">{t('প্রথম অর্ডারে ১০% ছাড়! কোড: WELCOME10', '10% OFF on first order! Use Code: WELCOME10')}</p>
+        <div className="container mx-auto flex flex-row items-center justify-between gap-2">
+          <p className="flex-1 text-left md:text-center text-[10px] md:text-xs leading-tight line-clamp-2 md:line-clamp-1">
+            {t('প্রথম অর্ডারে ১০% ছাড়! কোড: WELCOME10', '10% OFF on first order! Use Code: WELCOME10')}
+          </p>
           <select
             value={language}
             onChange={(e) => {
@@ -80,7 +82,7 @@ export const Navbar = () => {
                 gtCombo.dispatchEvent(new Event('change'));
               }
             }}
-            className="notranslate text-xs font-bold uppercase tracking-wider bg-transparent text-white border border-white/40 hover:bg-white/20 transition px-2 py-1 rounded ml-4 shrink-0 focus:outline-none cursor-pointer"
+            className="notranslate text-[10px] md:text-xs font-bold uppercase tracking-wider bg-transparent text-white border border-white/40 hover:bg-white/20 transition px-1.5 md:px-2 py-1 rounded ml-auto shrink-0 focus:outline-none cursor-pointer max-w-[110px] md:max-w-none text-ellipsis overflow-hidden"
           >
             <option value="bn" className="text-black">বাংলা (BDT)</option>
             <option value="en" className="text-black">English (USD)</option>
