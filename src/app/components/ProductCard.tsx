@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router';
-import { ShoppingBag, Heart, Gift } from 'lucide-react';
+import { ShoppingCart, Heart, Gift } from 'lucide-react';
 import { Product, useStore } from '@/app/context/StoreContext';
 import { motion } from 'motion/react';
 
@@ -156,17 +156,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, disableHoverE
         </div>
 
         {/* Action Buttons */}
-        <div className="flex w-full gap-1.5 md:gap-2 mt-2">
+        <div className="grid grid-cols-2 gap-2">
           <button
             onClick={handleAddToCart}
-            className="flex-1 py-1.5 px-1 md:px-3 border-2 border-[#D91976] text-[#D91976] font-bold rounded-full hover:bg-pink-50 transition text-[11px] sm:text-sm flex items-center justify-center gap-1"
+            className="py-2 px-2 md:px-3 border-2 border-[#D91976] text-[#D91976] font-bold rounded-lg hover:bg-pink-50 transition text-sm flex items-center justify-center gap-1.5"
           >
-            <ShoppingBag size={14} className="shrink-0" />
-            <span className="whitespace-nowrap">{t('কার্ট', 'Add to Cart')}</span>
+            <ShoppingCart size={16} className="shrink-0" />
+            <span>{t('কার্ট', 'Cart')}</span>
           </button>
           <button
             onClick={handleBuyNow}
-            className="flex-1 py-1.5 px-1 md:px-3 bg-[#D91976] text-white font-bold rounded-full hover:bg-[#A8145A] transition text-[11px] sm:text-sm shadow-md whitespace-nowrap"
+            className="py-2 px-3 bg-[#D91976] text-white font-bold rounded-lg hover:bg-[#A8145A] transition text-sm shadow-md"
           >
             {t('কিনুন', 'Buy Now')}
           </button>
